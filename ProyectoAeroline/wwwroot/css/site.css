@@ -1,0 +1,52 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+/* ===== Ajuste de contenido sin distorsionar el sidebar ===== */
+.sb-content {
+    transition: margin-left .2s ease;
+}
+
+/* Mantén tus variables: --sb-width y --sb-width-collapsed */
+/* Solo definimos el ancho del sidebar cuando está colapsado */
+body.sb-collapsed .sb-sidebar {
+    width: var(--sb-width-collapsed);
+}
+
+/* (Opcional) evita un pequeño salto por barra de scroll */
+.sb-has-sidebar {
+    overflow-x: hidden;
+}
+/* Transición suave del margen del contenido */
+.sb-content, #sb-container, .sb-main, main {
+    transition: margin-left .2s ease;
+}
+
+/* Si usas colapso por clase en el body, define el ancho colapsado */
+body.sb-collapsed .sb-sidebar {
+    width: var(--sb-width-collapsed);
+}
+
+/* Evita scroll horizontal en el cambio */
+.sb-has-sidebar {
+    overflow-x: hidden;
+}

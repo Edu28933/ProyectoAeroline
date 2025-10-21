@@ -1,0 +1,100 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Inicio";
+
+    // Obtiene la ruta actual para marcar el enlace activo
+    var path = Request.Path.Value ?? "";
+    bool isHome = path.Equals("/", StringComparison.OrdinalIgnoreCase) || path.StartsWith("/Index", StringComparison.OrdinalIgnoreCase);
+    bool isEmpleados = path.StartsWith("/Empleados", StringComparison.OrdinalIgnoreCase);
+    bool isOrders = path.StartsWith("/Orders", StringComparison.OrdinalIgnoreCase);
+    bool isProducts = path.StartsWith("/Products", StringComparison.OrdinalIgnoreCase);
+    bool isCustomers = path.StartsWith("/Customers", StringComparison.OrdinalIgnoreCase);
+}
+
+<!-- Sidebar fijo + contenido desplazado -->
+<aside id="sidebar" class="sb-sidebar text-bg-dark">
+    <div class="sb-brand px-3 py-3 d-flex align-items-center">
+        <i class="bi bi-bootstrap-fill fs-4 me-2"></i>
+        <span class="sb-brand-text">Sidebar</span>
+    </div>
+
+    <hr class="m-0 opacity-25">
+
+    <nav class="sb-nav py-3">
+        <!-- Home (Razor Page) -->
+        <a class="sb-link @(isHome ? "active" : "")"
+           asp-page="/Index">
+            <i class="bi bi-house"></i><span>Home</span>
+        </a>
+
+        <a class="sb-link @(isEmpleados ? "active" : "")"
+           asp-controller="Empleados" asp-action="Listar">
+            <i class="bi bi-speedometer2"></i><span>Empleados</span>
+        </a>
+
+
+        <!-- Orders -->
+        <a class="sb-link @(isOrders ? "active" : "")"
+           asp-controller="Orders" asp-action="Listar">
+            <i class="bi bi-receipt"></i><span>Orders</span>
+        </a>
+
+        <!-- Products -->
+        <a class="sb-link @(isProducts ? "active" : "")"
+           asp-controller="Products" asp-action="Listar">
+            <i class="bi bi-box-seam"></i><span>Products</span>
+        </a>
+
+        <!-- Customers -->
+        <a class="sb-link @(isCustomers ? "active" : "")"
+           asp-controller="Customers" asp-action="Listar">
+            <i class="bi bi-people"></i><span>Customers</span>
+        </a>
+    </nav>
+
+    <div class="sb-footer mt-auto px-3 py-3">
+        <div class="dropdown">
+            <a class="d-flex align-items-center text-decoration-none text-white dropdown-toggle"
+               href="#" data-bs-toggle="dropdown">
+                <img src="https://avatars.githubusercontent.com/u/1?v=4"
+                     alt="mdo" class="rounded-circle me-2"
+                     width="32" height="32">
+                <strong class="sb-user">mdo</strong>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                <li><a class="dropdown-item" href="#">Settings</a></li>
+                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#">Sign out</a></li>
+            </ul>
+        </div>
+    </div>
+</aside>
+
+<main id="content" class="sb-content">
+    <div class="container-fluid py-4">
+        <h1 class="display-6">Bienvenido</h1>
+
+        <div class="card my-3">
+            <div class="card-body">
+                <h2 class="h5">Estado general</h2>
+                <p class="mb-0">Integra aquí tus componentes, tablas o gráficos.</p>
+            </div>
+        </div>
+
+        <!-- Ejemplo de lista -->
+        <ul class="list-group">
+            <li class="list-group-item active">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="fw-semibold">List group item heading</div>
+                        <small>Descripción o detalles del elemento.</small>
+                    </div>
+                    <span class="badge bg-secondary rounded-pill">14</span>
+                </div>
+            </li>
+            <li class="list-group-item">Otro elemento de ejemplo</li>
+        </ul>
+    </div>
+</main>

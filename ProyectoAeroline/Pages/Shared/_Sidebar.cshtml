@@ -1,0 +1,46 @@
+﻿@* Sidebar reutilizable *@
+<aside id="sidebar" class="sb-sidebar text-bg-dark">
+    <div class="sb-brand px-3 py-3 d-flex align-items-center">
+        <i class="bi bi-bootstrap-fill fs-4 me-2"></i>
+        <span class="sb-brand-text">Sidebar</span>
+    </div>
+
+    <hr class="m-0 opacity-25">
+
+    <nav class="sb-nav py-3">
+        <a class="sb-link" asp-page="/Index">
+            <i class="bi bi-house"></i><span>Home</span>
+        </a>
+
+        <a class="sb-link" asp-controller="Empleados" asp-action="Listar">
+            <i class="bi bi-speedometer2"></i><span>Empleados</span>
+        </a>
+
+        <a class="sb-link" asp-controller="Orders" asp-action="Listar">
+            <i class="bi bi-receipt"></i><span>Orders</span>
+        </a>
+
+        <a class="sb-link" asp-controller="Products" asp-action="Listar">
+            <i class="bi bi-box-seam"></i><span>Products</span>
+        </a>
+
+        <a class="sb-link" asp-controller="Customers" asp-action="Listar">
+            <i class="bi bi-people"></i><span>Customers</span>
+        </a>
+    </nav>
+
+    <div class="sb-footer mt-auto px-3 py-3">
+        <div class="dropdown">
+            <a class="d-flex align-items-center text-decoration-none text-white dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                <img src="https://avatars.githubusercontent.com/u/1?v=4" alt="mdo" class="rounded-circle me-2" width="32" height="32">
+                <strong class="sb-user">mdo</strong>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                <li><a class="dropdown-item" href="#">Settings</a></li>
+                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#">Sign out</a></li>
+            </ul>
+        </div>
+    </div>
+</aside>

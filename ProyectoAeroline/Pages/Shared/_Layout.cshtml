@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ProyectoAeroline</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Bootstrap Icons (CDN) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/sidebars.css" asp-append-version="true" />
+</head>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const links = document.querySelectorAll('.sb-link');
+
+      function setActive(el){
+        links.forEach(l => l.classList.remove('active'));
+        el.classList.add('active');
+      }
+
+      // 1) Marcar activo por URL o por lo guardado
+      const savedHref = localStorage.getItem('sb-active');
+      let initial = Array.from(links).find(a => a.pathname === location.pathname);
+      if (!initial && savedHref) initial = Array.from(links).find(a => a.getAttribute('href') === savedHref);
+      if (initial) setActive(initial);
+
+      // 2) Click: activa y guarda
+      links.forEach(a => {
+        a.addEventListener('click', function(){
+          setActive(this);
+          localStorage.setItem('sb-active', this.getAttribute('href'));
+        });
+      });
+    });
+</script>
+
+<body class="sb-has-sidebar">
+    <!-- Navbar superior -->
+    <header class="navbar navbar-dark bg-dark sticky-top shadow-sm">
+        <div class="container-fluid">
+            <button id="btnToggleSidebar" class="btn btn-outline-light me-2" type="button" title="Contraer/expandir">
+                <i class="bi bi-layout-sidebar-inset"></i>
+            </button>
+            <a class="navbar-brand" asp-page="/Index">ProyectoAeroline</a>
+            <div class="d-flex align-items-center gap-2">
+                @* espacio para acciones *@
+            </div>
+        </div>
+    </header>
+
+    <!-- Layout con sidebar + contenido -->
+    <div class="d-flex">
+        @await Html.PartialAsync("_Sidebar")  @* 👈 aquí se inyecta el sidebar en TODAS las páginas *@
+
+        <main id="sb-container" class="flex-grow-1">
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/sidebars.js" asp-append-version="true"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

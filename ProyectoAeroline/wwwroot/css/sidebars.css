@@ -1,0 +1,96 @@
+/* ===== CONFIGURACIÓN GENERAL ===== */
+:root {
+    --sb-width: 280px; /* ancho expandido */
+    --sb-width-collapsed: 72px; /* ancho colapsado (solo iconos) */
+}
+
+/* body con sidebar */
+.sb-has-sidebar {
+    overflow-x: hidden;
+}
+
+/* contenedor que envuelve el render body (para compatibilidad) */
+#sb-container {
+    position: relative;
+}
+
+
+/* ===== SIDEBAR ===== */
+.sb-sidebar {
+    position: fixed;
+    z-index: 1030; /* por encima del contenido */
+    top: 56px; /* altura del navbar sticky-top */
+    left: 0;
+    bottom: 0;
+    width: var(--sb-width);
+    display: flex;
+    flex-direction: column;
+    background-color: #111827; /* gris casi negro */
+    color: #e5e7eb;
+    border-right: 1px solid rgba(255,255,255,.08);
+    overflow-y: auto;
+}
+
+.sb-brand-text {
+    font-weight: 600;
+    letter-spacing: .2px;
+}
+
+.sb-nav {
+    display: flex;
+    flex-direction: column;
+    gap: .25rem;
+    padding: .25rem .5rem;
+}
+
+.sb-link {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    border-radius: .5rem;
+    padding: .625rem .75rem;
+    color: #cbd5e1;
+    text-decoration: none;
+}
+
+    .sb-link:hover {
+        background-color: rgba(255,255,255,.06);
+        color: #fff;
+    }
+
+    .sb-link.active {
+        background-color: #0d6efd;
+        color: #fff;
+    }
+
+.sb-footer {
+    border-top: 1px solid rgba(255,255,255,.08);
+}
+
+/* ===== CONTENIDO ===== */
+.sb-content {
+    margin-left: var(--sb-width);
+    min-height: calc(100vh - 56px);
+    background-color: #f8f9fa;
+}
+
+/* ===== ESTADO COLAPSADO (se aplica en <body>) ===== */
+body.sb-collapsed .sb-sidebar {
+    width: var(--sb-width-collapsed);
+}
+
+body.sb-collapsed .sb-content {
+    margin-left: var(--sb-width-collapsed);
+}
+
+/* escondemos textos cuando está colapsado */
+body.sb-collapsed .sb-brand-text,
+body.sb-collapsed .sb-link span,
+body.sb-collapsed .sb-user {
+    display: none;
+}
+
+/* centramos iconos cuando está colapsado */
+body.sb-collapsed .sb-link {
+    justify-content: center;
+}
