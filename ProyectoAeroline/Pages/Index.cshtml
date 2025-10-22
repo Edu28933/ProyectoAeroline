@@ -7,7 +7,7 @@
     var path = Request.Path.Value ?? "";
     bool isHome = path.Equals("/", StringComparison.OrdinalIgnoreCase) || path.StartsWith("/Index", StringComparison.OrdinalIgnoreCase);
     bool isEmpleados = path.StartsWith("/Empleados", StringComparison.OrdinalIgnoreCase);
-    bool isOrders = path.StartsWith("/Orders", StringComparison.OrdinalIgnoreCase);
+    bool isUsuarios = path.StartsWith("/Usuarios", StringComparison.OrdinalIgnoreCase);
     bool isProducts = path.StartsWith("/Products", StringComparison.OrdinalIgnoreCase);
     bool isCustomers = path.StartsWith("/Customers", StringComparison.OrdinalIgnoreCase);
 }
@@ -34,10 +34,10 @@
         </a>
 
 
-        <!-- Orders -->
-        <a class="sb-link @(isOrders ? "active" : "")"
-           asp-controller="Orders" asp-action="Listar">
-            <i class="bi bi-receipt"></i><span>Orders</span>
+        <!-- Usuarios -->
+        <a class="sb-link @(isUsuarios ? "active" : "")"
+           asp-controller="Usuarios" asp-action="Listar">
+            <i class="bi bi-receipt"></i><span>Usuarios</span>
         </a>
 
         <!-- Products -->

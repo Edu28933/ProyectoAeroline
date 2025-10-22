@@ -1,0 +1,78 @@
+﻿@model IEnumerable<ProyectoAeroline.Models.UsuariosModel>
+
+@{
+    ViewData["Title"] = "Listar";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Listar</h1>
+
+<p>
+    <a href="/Usuarios/Guardar" class="btn btn-primary">
+        Agregar nuevo usuario
+    </a>
+
+</p>
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.IdUsuario)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdRol)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Nombre)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Contraseña)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Estado)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdUsuario)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdRol)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nombre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Contraseña)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Estado)
+            </td>
+            <td>
+                    @Html.ActionLink(
+                    "Modificar",
+                                "Modificar",
+                                "Usuarios",
+                                new { CodigoUsuario = item.IdUsuario },
+                                new { @class = "btn btn-sm btn-warning" }
+                                )
+                |
+                @Html.ActionLink(
+                                "Eliminar",
+                                "Eliminar",                 // Acción en tu UsuariosController
+                                "Usuarios",                 // Controlador
+                                new { CodigoUsuario = item.IdUsuario }, // route values
+                                new { @class = "btn btn-sm btn-danger", onclick = "return confirm('¿Seguro que deseas eliminar este usuario?');" } // html attrs
+                                )
+
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
