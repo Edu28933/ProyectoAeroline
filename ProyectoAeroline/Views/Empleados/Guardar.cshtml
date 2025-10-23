@@ -6,12 +6,11 @@
 }
 
 <h1 class="mb-3">Guardar</h1>
-<h4 class="text-muted">EmpleadosModel</h4>
 <hr />
 
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Guardar">method="post">
+        <form asp-action="Guardar" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             @*<div class="form-group">
@@ -19,59 +18,49 @@
                 <input asp-for="IdEmpleado" class="form-control" />
                 <span asp-validation-for="IdEmpleado" class="text-danger"></span>
             </div>*@
-            <div class="form-group">
-                <label asp-for="IdUsuario" class="control-label"></label>
-                <input asp-for="IdUsuario" class="form-control" />
+            <div class="mb-3">
+                <input asp-for="IdUsuario" class="form-control" placeholder="IdUsuario" />
                 <span asp-validation-for="IdUsuario" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Nombre" class="control-label"></label>
-                <input asp-for="Nombre" class="form-control" />
+            <div class="mb-3">
+                <input asp-for="Nombre" class="form-control" placeholder="Nombre" />
                 <span asp-validation-for="Nombre" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Cargo" class="control-label"></label>
-                <input asp-for="Cargo" class="form-control" />
+            <div class="mb-3">
+                <input asp-for="Cargo" class="form-control" placeholder="Cargo" />
                 <span asp-validation-for="Cargo" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Licencia" class="control-label"></label>
-                <input asp-for="Licencia" class="form-control" />
+            <div class="mb-3">
+                <input asp-for="Licencia" class="form-control" placeholder="Licencia" />
                 <span asp-validation-for="Licencia" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Telefono" class="control-label"></label>
-                <input asp-for="Telefono" class="form-control" />
+            <div class="mb-3">
+                <input asp-for="Telefono" class="form-control" placeholder="Telefono" />
                 <span asp-validation-for="Telefono" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Correo" class="control-label"></label>
-                <input asp-for="Correo" class="form-control" />
+            <div class="mb-3">
+                <input asp-for="Correo" class="form-control" placeholder="Correo" />
                 <span asp-validation-for="Correo" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Salario" class="control-label"></label>
-                <input asp-for="Salario" class="form-control" />
+            <div class="mb-3">
+                <input asp-for="Salario" class="form-control" placeholder="Salario" />
                 <span asp-validation-for="Salario" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Direccion" class="control-label"></label>
-                <input asp-for="Direccion" class="form-control" />
+            <div class="mb-3">
+                <input asp-for="Direccion" class="form-control" placeholder="Direccion" />
                 <span asp-validation-for="Direccion" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="mb-3">
                 <label asp-for="FechaIngreso" class="control-label"></label>
-                <input asp-for="FechaIngreso" class="form-control" />
+                <input asp-for="FechaIngreso" class="form-control"  />
                 <span asp-validation-for="FechaIngreso" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="ContactoEmergencia" class="control-label"></label>
-                <input asp-for="ContactoEmergencia" class="form-control" />
+            <div class="mb-3">
+                <input asp-for="ContactoEmergencia" class="form-control" placeholder="ContactoEmergencia" />
                 <span asp-validation-for="ContactoEmergencia" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Estado" class="control-label"></label>
-                <input asp-for="Estado" class="form-control" />
+            <div class="mb-3">
+                <input asp-for="Estado" class="form-control" placeholder="Estado" />
                 <span asp-validation-for="Estado" class="text-danger"></span>
             </div>
 

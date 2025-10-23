@@ -5,7 +5,7 @@
         //prop, doble tabular y crea la sintaxis
         public int IdEmpleado { get; set; }
         public int IdUsuario { get; set; }
-        public string Nombre { get; set; }
+        public string? Nombre { get; set; }
         public string? Cargo { get; set; }
         public string? Licencia { get; set; }
         public int Telefono { get; set; }
