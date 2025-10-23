@@ -1,0 +1,58 @@
+﻿@model ProyectoAeroline.Models.AeropuertosModel
+@{
+    ViewData["Title"] = "Eliminar Aeropuerto";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h2>Eliminar</h2>
+<h5>¿Seguro que deseas eliminar este aeropuerto?</h5>
+<hr />
+
+<form asp-action="Eliminar" method="post">
+    @Html.AntiForgeryToken()
+
+    <!-- Campo oculto -->
+    <input type="hidden" asp-for="IdAeropuerto" />
+
+    <div class="mb-3">
+        <label class="form-label">IdAeropuerto</label>
+        <input class="form-control" value="@Model.IdAeropuerto" readonly />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">IdEmpleado</label>
+        <input class="form-control" value="@Model.IdEmpleado" readonly />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">IATA</label>
+        <input class="form-control" value="@Model.IATA" readonly />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        <input class="form-control" value="@Model.Nombre" readonly />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">País</label>
+        <input class="form-control" value="@Model.Pais" readonly />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Ciudad</label>
+        <input class="form-control" value="@Model.Ciudad" readonly />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Dirección</label>
+        <input class="form-control" value="@Model.Direccion" readonly />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Teléfono</label>
+        <input class="form-control" value="@Model.Telefono" readonly />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Estado</label>
+        <input class="form-control" value="@Model.Estado" readonly />
+    </div>
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-danger">Eliminar</button>
+        <a href="/Aeropuertos/Listar" class="btn btn-secondary">Cancelar</a>
+    </div>
+</form>

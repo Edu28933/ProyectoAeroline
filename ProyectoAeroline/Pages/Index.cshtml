@@ -8,7 +8,7 @@
     bool isHome = path.Equals("/", StringComparison.OrdinalIgnoreCase) || path.StartsWith("/Index", StringComparison.OrdinalIgnoreCase);
     bool isEmpleados = path.StartsWith("/Empleados", StringComparison.OrdinalIgnoreCase);
     bool isUsuarios = path.StartsWith("/Usuarios", StringComparison.OrdinalIgnoreCase);
-    bool isProducts = path.StartsWith("/Products", StringComparison.OrdinalIgnoreCase);
+    bool isAeropuertos = path.StartsWith("/Aeropuertos", StringComparison.OrdinalIgnoreCase);
     bool isCustomers = path.StartsWith("/Customers", StringComparison.OrdinalIgnoreCase);
 }
 
@@ -40,10 +40,10 @@
             <i class="bi bi-receipt"></i><span>Usuarios</span>
         </a>
 
-        <!-- Products -->
-        <a class="sb-link @(isProducts ? "active" : "")"
-           asp-controller="Products" asp-action="Listar">
-            <i class="bi bi-box-seam"></i><span>Products</span>
+        <!-- Aeropuertos -->
+        <a class="sb-link @(isAeropuertos ? "active" : "")"
+           asp-controller="Aeropuertos" asp-action="Listar">
+            <i class="bi bi-box-seam"></i><span>Aeropuertos</span>
         </a>
 
         <!-- Customers -->

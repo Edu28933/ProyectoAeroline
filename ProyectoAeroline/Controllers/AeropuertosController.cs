@@ -80,7 +80,7 @@ namespace ProyectoAeroline.Controllers
         [HttpPost]
         public IActionResult Eliminar(AeropuertosModel oAeropuerto)
         {
-            var respuesta = _AeropuertosData.MtdEliminarAeropuerto(oAeropuerto.IdEmpleado);
+            var respuesta = _AeropuertosData.MtdEliminarAeropuerto(oAeropuerto.IdAeropuerto);
 
             if (respuesta)
                 return RedirectToAction("Listar");

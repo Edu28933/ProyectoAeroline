@@ -5,7 +5,7 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Listar</h1>
+<h1>Lista Aeropuertos</h1>
 
 <p>
     <a href="/Aeropuertos/Guardar" class="btn btn-primary">
@@ -88,9 +88,9 @@
                 @Html.ActionLink(
                                 "Eliminar",
                                 "Eliminar",                 // Acción en tu UsuariosController
-                                "Empleados",                 // Controlador
+                                "Aeropuertos",                 // Controlador
                                 new { CodigoAeropuerto = item.IdAeropuerto }, // route values
-                                new { @class = "btn btn-dark", onclick = "return confirm('¿Seguro que deseas eliminar este empleado?');" } // html attrs
+                                new { @class = "btn btn-dark", onclick = "return confirm('¿Seguro que deseas eliminar este aeropuerto?');" } // html attrs
                                 )
 
             </td>
