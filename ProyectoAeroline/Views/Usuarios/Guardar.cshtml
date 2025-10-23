@@ -6,7 +6,6 @@
 }
 
 <h1 class="mb-3">Guardar</h1>
-<h4 class="text-muted">UsuariosModel</h4>
 <hr />
 
 <div class="row">
@@ -25,25 +24,21 @@
             *@
 
             <div class="mb-3">
-                <label asp-for="IdRol" class="form-label"></label>
                 <input asp-for="IdRol" class="form-control" placeholder="Id del Rol (1..n)" />
                 <span asp-validation-for="IdRol" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
-                <label asp-for="Nombre" class="form-label"></label>
                 <input asp-for="Nombre" class="form-control" placeholder="Nombre de usuario" />
                 <span asp-validation-for="Nombre" class="text-danger"></span>
             </div>
 
             <div class="mb-3">
-                <label asp-for="Contraseña" class="form-label"></label>
                 <input asp-for="Contraseña" type="password" class="form-control" placeholder="Contraseña" />
                 <span asp-validation-for="Contraseña" class="text-danger"></span>
             </div>
 
             <div class="mb-4">
-                <label asp-for="Estado" class="form-label"></label>
                 <input asp-for="Estado" class="form-control" placeholder="Estado (Activo / Inactivo)" />
                 <span asp-validation-for="Estado" class="text-danger"></span>
             </div>

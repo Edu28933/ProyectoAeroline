@@ -15,33 +15,7 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/sidebars.css" asp-append-version="true" />
 </head>
-
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const links = document.querySelectorAll('.sb-link');
-
-      function setActive(el){
-        links.forEach(l => l.classList.remove('active'));
-        el.classList.add('active');
-      }
-
-      // 1) Marcar activo por URL o por lo guardado
-      const savedHref = localStorage.getItem('sb-active');
-      let initial = Array.from(links).find(a => a.pathname === location.pathname);
-      if (!initial && savedHref) initial = Array.from(links).find(a => a.getAttribute('href') === savedHref);
-      if (initial) setActive(initial);
-
-      // 2) Click: activa y guarda
-      links.forEach(a => {
-        a.addEventListener('click', function(){
-          setActive(this);
-          localStorage.setItem('sb-active', this.getAttribute('href'));
-        });
-      });
-    });
-</script>
-
-<body class="sb-has-sidebar">
+<body class="sb-has-sidebar body-watermark">
     <!-- Navbar superior -->
     <header class="navbar navbar-dark bg-dark sticky-top shadow-sm">
         <div class="container-fluid">
@@ -57,16 +31,34 @@
 
     <!-- Layout con sidebar + contenido -->
     <div class="d-flex">
-        @await Html.PartialAsync("_Sidebar")  @* 👈 aquí se inyecta el sidebar en TODAS las páginas *@
+        @await Html.PartialAsync("_Sidebar")  @* Sidebar en todas las páginas *@
 
-        <main id="sb-container" class="flex-grow-1">
+        <!-- Contenido principal -->
+        <main id="sb-container" class="sb-content flex-grow-1">
             @RenderBody()
         </main>
     </div>
 
+    <!-- Scripts -->
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/sidebars.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
+
+    <!-- Activo en sidebar -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+          const links = document.querySelectorAll('.sb-link');
+          function setActive(el){ links.forEach(l => l.classList.remove('active')); el.classList.add('active'); }
+          const savedHref = localStorage.getItem('sb-active');
+          let initial = Array.from(links).find(a => a.pathname === location.pathname);
+          if (!initial && savedHref) initial = Array.from(links).find(a => a.getAttribute('href') === savedHref);
+          if (initial) setActive(initial);
+          links.forEach(a => a.addEventListener('click', function(){
+            setActive(this);
+            localStorage.setItem('sb-active', this.getAttribute('href'));
+          }));
+        });
+    </script>
 </body>
 </html>
