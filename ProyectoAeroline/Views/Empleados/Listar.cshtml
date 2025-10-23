@@ -8,8 +8,11 @@
 <h1>Listar</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a href="/Empleados/Guardar" class="btn btn-primary">
+        Agregar nuevo empleado
+    </a>
 </p>
+
 <table class="table">
     <thead>
         <tr>
@@ -91,10 +94,23 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Estado)
             </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                <td>
+                    @Html.ActionLink(
+                    "Modificar",
+                                "Modificar",
+                                "Empleados",
+                                new { CodigoEmpleado = item.IdEmpleado },
+                                new { @class = "btn btn-info" }
+                                )
+                |
+                @Html.ActionLink(
+                                "Eliminar",
+                                "Eliminar",                 // Acción en tu UsuariosController
+                                "Empleados",                 // Controlador
+                                new { CodigoEmpleado = item.IdEmpleado }, // route values
+                                new { @class = "btn btn-dark", onclick = "return confirm('¿Seguro que deseas eliminar este empleado?');" } // html attrs
+                                )
+
             </td>
         </tr>
 }

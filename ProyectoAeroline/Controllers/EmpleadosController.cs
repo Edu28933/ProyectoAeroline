@@ -46,7 +46,7 @@ namespace ProyectoAeroline.Controllers
         }
 
 
-        // Muestra el formulario llamador Guardar
+        // Muestra el formulario llamador Modificar
         public IActionResult Modificar(int CodigoEmpleado)
         {
             var oEmpleado = _EmpleadosData.MtdBuscarEmpleado(CodigoEmpleado);
@@ -69,29 +69,27 @@ namespace ProyectoAeroline.Controllers
             }
         }
 
+
         // Muestra el formulario llamador Eliminar
+        // GET: Empleados/Eliminar/5
         public IActionResult Eliminar(int CodigoEmpleado)
         {
             var oEmpleado = _EmpleadosData.MtdBuscarEmpleado(CodigoEmpleado);
             return View(oEmpleado);
         }
-/*
-        // Envia los datos del formulario Eliminar
+
+        // POST: Usuarios/Eliminar
         [HttpPost]
         public IActionResult Eliminar(EmpleadosModel oEmpleado)
         {
-            var respuesta = _EmpleadosData.MtdEliminarEmpleado(oEmpleado.>IdEmpleado);
+            var respuesta = _EmpleadosData.MtdEliminarEmpleado(oEmpleado.IdEmpleado);
 
-            if (respuesta == true)
-            {
+            if (respuesta)
                 return RedirectToAction("Listar");
-            }
             else
-            {
                 return View();
-            }
         }
-*/
+
 
     }
 }
