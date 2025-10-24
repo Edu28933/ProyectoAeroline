@@ -9,7 +9,8 @@
     bool isEmpleados = path.StartsWith("/Empleados", StringComparison.OrdinalIgnoreCase);
     bool isUsuarios = path.StartsWith("/Usuarios", StringComparison.OrdinalIgnoreCase);
     bool isAeropuertos = path.StartsWith("/Aeropuertos", StringComparison.OrdinalIgnoreCase);
-    bool isCustomers = path.StartsWith("/Customers", StringComparison.OrdinalIgnoreCase);
+    bool isAviones = path.StartsWith("/Aviones", StringComparison.OrdinalIgnoreCase);
+    bool isMantenimientos = path.StartsWith("/Mantenimientos", StringComparison.OrdinalIgnoreCase);
 }
 
 <!-- Sidebar fijo + contenido desplazado -->
@@ -46,10 +47,16 @@
             <i class="bi bi-box-seam"></i><span>Aeropuertos</span>
         </a>
 
-        <!-- Customers -->
-        <a class="sb-link @(isCustomers ? "active" : "")"
-           asp-controller="Customers" asp-action="Listar">
-            <i class="bi bi-people"></i><span>Customers</span>
+        <!-- Aviones -->
+        <a class="sb-link @(isAviones ? "active" : "")"
+           asp-controller="Aviones" asp-action="Listar">
+            <i class="bi bi-people"></i><span>Aviones</span>
+        </a>
+
+        <!-- Mantenimientos -->
+        <a class="sb-link @(isMantenimientos ? "active" : "")"
+           asp-controller="Mantenimientos" asp-action="Listar">
+            <i class="bi bi-people"></i><span>Mantenimientos</span>
         </a>
     </nav>
 
