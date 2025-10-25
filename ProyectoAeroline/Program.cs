@@ -9,6 +9,8 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
 
+app.UseStaticFiles(); // Habilita públicamente
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}"); // habilita /Empleados/Listar
@@ -16,3 +18,5 @@ app.MapControllerRoute(
 app.MapRazorPages(); // habilita /Index
 
 app.Run();
+
+
