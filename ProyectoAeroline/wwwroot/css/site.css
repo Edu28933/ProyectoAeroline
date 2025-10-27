@@ -71,3 +71,6 @@ main#sb-container.sb-content {
 .container, .container-fluid, .card, .card-body, .table, .table > :not(caption) > * > * {
     background-color: transparent !important;
 }
+
+
+
