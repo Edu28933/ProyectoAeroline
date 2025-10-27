@@ -1,4 +1,5 @@
-﻿@model IEnumerable<ProyectoAeroline.Models.EmpleadosModel>
+﻿
+@model IEnumerable<ProyectoAeroline.Models.EmpleadosModel>
 
 @{
     ViewData["Title"] = "Listar";
@@ -94,6 +95,30 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Estado)
             </td>
+
+                <!-- 📸 Columna de foto -->
+                <td>
+                    @if (!string.IsNullOrEmpty(item.FotoRuta))
+                    {
+                        var fotoConExt = System.IO.Path.HasExtension(item.FotoRuta)
+                        ? item.FotoRuta
+                        : item.FotoRuta + ".jpg";
+
+                        <img src="@fotoConExt"
+                             alt="Foto"
+                             class="foto-empleado"
+                             width="80"
+                             height="80"
+                             style="object-fit: cover; border-radius: 8px; box-shadow: 0 0 4px rgba(0,0,0,0.3); cursor: pointer; transition: transform 0.3s;"
+                             onmouseover="this.style.transform='scale(1.05)'"
+                             onmouseout="this.style.transform='scale(1)'" />
+                    }
+                    else
+                    {
+                        <span class="text-muted">Sin foto</span>
+                    }
+                </td>
+
                 <td>
                     @Html.ActionLink(
                     "Modificar",
@@ -116,3 +141,47 @@
 }
     </tbody>
 </table>
+<!-- ✅ Modal (fuera del bucle) -->
+<div class="modal fade" id="modalFoto" tabindex="-1" aria-labelledby="modalFotoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-transparent border-0 shadow-none">
+            <div class="modal-body text-center p-0">
+                <img id="fotoAmpliada" src="" class="img-fluid rounded zoom-in" alt="Foto del empleado" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ Estilos personalizados -->
+<style>
+    /* Efecto de zoom suave al abrir el modal */
+    .zoom-in {
+        transform: scale(0.8);
+        opacity: 0;
+        transition: transform 0.4s ease, opacity 0.4s ease;
+    }
+
+    .modal.show .zoom-in {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    /* Opcional: efecto de sombra más elegante al pasar el mouse */
+    .foto-empleado:hover {
+        box-shadow: 0 0 8px rgba(0, 123, 255, 0.6);
+    }
+</style>
+
+<!-- ✅ Scripts -->
+@section Scripts {
+    <script>
+        document.addEventListener("click", function (e) {
+            if (e.target.classList.contains("foto-empleado")) {
+                const ruta = e.target.getAttribute("src");
+                document.getElementById("fotoAmpliada").setAttribute("src", ruta);
+                const modal = new bootstrap.Modal(document.getElementById("modalFoto"));
+                modal.show();
+            }
+        });
+    </script>
+}

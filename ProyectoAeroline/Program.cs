@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
-// (Opcional, pero recomendado si luego harás login real con cookies)
+// (Opcional, pero recomendado si luego har�s login real con cookies)
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(opt =>
     {
@@ -22,9 +22,11 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// IMPORTANTE: autenticación antes de autorización
+// IMPORTANTE: autenticaci�n antes de autorizaci�n
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseStaticFiles(); // Habilita públicamente
 
 // Redirige "/" al Login MVC
 app.MapGet("/", ctx =>
@@ -43,3 +45,5 @@ app.MapControllerRoute(
 app.MapRazorPages();
 
 app.Run();
+
+

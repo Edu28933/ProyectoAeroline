@@ -1,0 +1,70 @@
+﻿@model ProyectoAeroline.Models.AvionesModel
+
+@{
+    ViewData["Title"] = "Guardar";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1 class="mb-3">Guardar</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Guardar" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            @*<div class="form-group">
+                <label asp-for="IdAvion" class="control-label"></label>
+                <input asp-for="IdAvion" class="form-control" />
+                <span asp-validation-for="IdAvion" class="text-danger"></span>
+            </div>*@
+            <div class="mb-3">
+                <input asp-for="IdAerolinea" class="form-control" placeholder="IdAerolinea" />
+                <span asp-validation-for="IdAerolinea" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <input asp-for="Placa" class="form-control" placeholder="Placa" />
+                <span asp-validation-for="Placa" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <input asp-for="Modelo" class="form-control" placeholder="Modelo" />
+                <span asp-validation-for="Modelo" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <input asp-for="Tipo" class="form-control" placeholder="Tipo" />
+                <span asp-validation-for="Tipo" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <input asp-for="Capacidad" class="form-control" placeholder="Capacidad" />
+                <span asp-validation-for="Capacidad" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="FechaUltimoMantenimiento" class="control-label"></label>
+                <input asp-for="FechaUltimoMantenimiento" class="form-control" />
+                <span asp-validation-for="FechaUltimoMantenimiento" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <input asp-for="RangoKm" class="form-control" placeholder="RangoKm" />
+                <span asp-validation-for="RangoKm" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <input asp-for="Estado" class="form-control" placeholder="Estado" />
+                <span asp-validation-for="Estado" class="text-danger"></span>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    Crear
+                </button>
+
+                <a href="/Aviones/Listar" class="btn btn-outline-secondary">
+                    Regresar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

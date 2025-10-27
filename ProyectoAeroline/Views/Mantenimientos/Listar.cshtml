@@ -1,0 +1,106 @@
+﻿@model IEnumerable<ProyectoAeroline.Models.MantenimientosModel>
+
+@{
+    ViewData["Title"] = "Listar";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Listar</h1>
+
+<p>
+    <a href="/Mantenimientos/Guardar" class="btn btn-primary">
+        Agregar nuevo mantenimiento
+    </a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.IdMantenimiento)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdAvion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdEmpleado)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaIngreso)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaSalida)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tipo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Costo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CostoExtra)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Descripcion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Estado)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdMantenimiento)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdAvion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdEmpleado)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FechaIngreso)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FechaSalida)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Tipo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Costo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CostoExtra)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Descripcion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Estado)
+            </td>
+                <td>
+                    @Html.ActionLink(
+                    "Modificar",
+                                "Modificar",
+                                "Mantenimientos",
+                                new { CodigoMantenimiento = item.IdMantenimiento },
+                                new { @class = "btn btn-info" }
+                                )
+                |
+                @Html.ActionLink(
+                                "Eliminar",
+                                "Eliminar",                 // Acción en tu UsuariosController
+                                "Mantenimientos",                 // Controlador
+                                new { CodigoMantenimiento = item.IdMantenimiento }, // route values
+                                new { @class = "btn btn-dark", onclick = "return confirm('¿Seguro que deseas eliminar este mantenimiento?');" } // html attrs
+                                )
+
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

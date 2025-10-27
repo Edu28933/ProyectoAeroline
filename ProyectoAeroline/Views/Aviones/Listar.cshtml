@@ -1,0 +1,100 @@
+﻿@model IEnumerable<ProyectoAeroline.Models.AvionesModel>
+
+@{
+    ViewData["Title"] = "Listar";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Listar</h1>
+
+<p>
+    <a href="/Aviones/Guardar" class="btn btn-primary">
+        Agregar nuevo avion
+    </a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.IdAvion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdAerolinea)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Placa)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Modelo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Tipo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Capacidad)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaUltimoMantenimiento)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RangoKm)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Estado)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdAvion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdAerolinea)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Placa)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Modelo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Tipo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Capacidad)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FechaUltimoMantenimiento)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RangoKm)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Estado)
+            </td>
+                <td>
+                    @Html.ActionLink(
+                    "Modificar",
+                                "Modificar",
+                                "Aviones",
+                                new { CodigoAvion = item.IdAvion },
+                                new { @class = "btn btn-info" }
+                                )
+                |
+                @Html.ActionLink(
+                                "Eliminar",
+                                "Eliminar",                 // Acción en tu UsuariosController
+                                "Aviones",                 // Controlador
+                                new { CodigoAvion = item.IdAvion }, // route values
+                                new { @class = "btn btn-dark", onclick = "return confirm('¿Seguro que deseas eliminar este avion?');" } // html attrs
+                                )
+
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

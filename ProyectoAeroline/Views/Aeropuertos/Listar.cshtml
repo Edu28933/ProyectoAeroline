@@ -1,0 +1,100 @@
+﻿@model IEnumerable<ProyectoAeroline.Models.AeropuertosModel>
+
+@{
+    ViewData["Title"] = "Listar";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<h1>Lista Aeropuertos</h1>
+
+<p>
+    <a href="/Aeropuertos/Guardar" class="btn btn-primary">
+        Agregar nuevo aeropuerto
+    </a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.IdAeropuerto)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdEmpleado)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IATA)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Nombre)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Pais)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Ciudad)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Direccion)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Telefono)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Estado)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdAeropuerto)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdEmpleado)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IATA)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nombre)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Pais)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Ciudad)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Direccion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Telefono)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Estado)
+            </td>
+                <td>
+                    @Html.ActionLink(
+                    "Modificar",
+                                "Modificar",
+                                "Aeropuertos",
+                                new { CodigoAeropuerto = item.IdAeropuerto },
+                                new { @class = "btn btn-info" }
+                                )
+                |
+                @Html.ActionLink(
+                                "Eliminar",
+                                "Eliminar",                 // Acción en tu UsuariosController
+                                "Aeropuertos",                 // Controlador
+                                new { CodigoAeropuerto = item.IdAeropuerto }, // route values
+                                new { @class = "btn btn-dark", onclick = "return confirm('¿Seguro que deseas eliminar este aeropuerto?');" } // html attrs
+                                )
+
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

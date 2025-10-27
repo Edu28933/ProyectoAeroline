@@ -40,6 +40,7 @@ namespace ProyectoAeroline.Data
                                 FechaIngreso = Convert.ToDateTime(dr["FechaIngreso"]),
                                 ContactoEmergencia = Convert.ToInt32(dr["ContactoEmergencia"]),
                                 Estado = dr["Estado"].ToString(),
+                                FotoRuta = dr["FotoRuta"] == DBNull.Value ? null : dr["FotoRuta"].ToString()
                             });
                         }
                     }
@@ -76,7 +77,11 @@ namespace ProyectoAeroline.Data
                     cmd.Parameters.AddWithValue("@Direccion", oEmpleado.Direccion);
                     cmd.Parameters.AddWithValue("@FechaIngreso", oEmpleado.FechaIngreso);
                     cmd.Parameters.AddWithValue("@ContactoEmergencia", oEmpleado.ContactoEmergencia);
+
                     cmd.Parameters.AddWithValue("@Estado", oEmpleado.Estado);
+                    // 🆕 Nuevo parámetro para guardar la ruta de la foto
+                    cmd.Parameters.AddWithValue("@FotoRuta", (object?)oEmpleado.FotoRuta ?? DBNull.Value);
+
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.ExecuteNonQuery();
                 }
@@ -117,6 +122,8 @@ namespace ProyectoAeroline.Data
                     cmd.Parameters.AddWithValue("@FechaIngreso", oEmpleado.FechaIngreso);
                     cmd.Parameters.AddWithValue("@ContactoEmergencia", oEmpleado.ContactoEmergencia);
                     cmd.Parameters.AddWithValue("@Estado", oEmpleado.Estado);
+                    cmd.Parameters.AddWithValue("@FotoRuta", (object?)oEmpleado.FotoRuta ?? DBNull.Value);
+
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.ExecuteNonQuery();
                 }
