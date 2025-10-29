@@ -1,0 +1,153 @@
+﻿/* 🎨 estilosGlobales.css */
+
+/* ======== TARJETAS ======== */
+.card {
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* ======== ENCABEZADOS ======== */
+.card-header {
+    border-radius: 1rem 1rem 0 0;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* ======== TABLAS ======== */
+.table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+    .table th {
+        vertical-align: middle !important;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+    }
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+    transition: background-color 0.2s ease;
+}
+
+/* ======== BOTONES ======== */
+.btn {
+    border-radius: 0.5rem !important;
+    transition: all 0.2s ease;
+}
+
+    .btn:hover {
+        transform: scale(1.03);
+    }
+
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-outline-danger:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* ======== FORMULARIOS ======== */
+.form-control, .form-select {
+    border-radius: 0.5rem;
+    border: 1px solid #ced4da;
+    box-shadow: none !important;
+}
+
+    .form-control:focus, .form-select:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    }
+
+/* ======== FOTOS ======== */
+.foto-empleado {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+    .foto-empleado:hover {
+        transform: scale(1.05);
+    }
+
+/* ======== MODALES ======== */
+.zoom-in {
+    transform: scale(0.8);
+    opacity: 0;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+.modal.show .zoom-in {
+    transform: scale(1);
+    opacity: 1;
+}
+
+/* ======== CARGA DE ARCHIVOS ======== */
+.custom-file-upload {
+    cursor: pointer;
+}
+
+#archivoSeleccionadoNombre {
+    font-style: italic;
+    color: #6c757d !important;
+}
+
+/* ======== CONTENEDORES ======== */
+.container-fluid {
+    max-width: 98%;
+}
+
+.card-body.bg-light {
+    border-radius: 0 0 1rem 1rem;
+}
+
+
+
+/*LO QUE ACABO DE AGREGAR*/
+
+/* ======== MODIFICAR EMPLEADO ======== */
+.custom-file-upload {
+    background-color: #212529;
+    color: #fff;
+    border-radius: 0.4rem;
+    padding: 0.4rem 0.8rem;
+    font-weight: 500;
+}
+
+    .custom-file-upload:hover {
+        background-color: #343a40;
+    }
+
+#vistaPreviaFoto {
+    border-radius: 0.6rem;
+    transition: transform 0.3s ease;
+}
+
+    #vistaPreviaFoto:hover {
+        transform: scale(1.05);
+    }
+
+
+
+    /**LO QUE ACABO DE AGREGAR PARA ELIMINAR*/
+/* ======== VISTAS DE CONFIRMACIÓN ======== */
+.text-danger.fw-semibold {
+    color: #dc3545 !important;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    border: none;
+}
+
+    .btn-danger:hover {
+        background-color: #bb2d3b;
+    }

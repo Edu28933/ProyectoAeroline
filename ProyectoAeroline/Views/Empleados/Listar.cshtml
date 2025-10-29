@@ -1,148 +1,100 @@
-﻿
-@model IEnumerable<ProyectoAeroline.Models.EmpleadosModel>
+﻿@model IEnumerable<ProyectoAeroline.Models.EmpleadosModel>
 
 @{
-    ViewData["Title"] = "Listar";
+    ViewData["Title"] = "Listar Empleados";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Listar</h1>
+<div class="container-fluid px-4 mt-4">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-primary text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center">
+            <h3 class="mb-0"><i class="bi bi-people-fill"></i> Lista de Empleados</h3>
+            <a href="/Empleados/Guardar" class="btn btn-light btn-sm fw-bold">
+                <i class="bi bi-plus-circle"></i> Agregar
+            </a>
+        </div>
 
-<p>
-    <a href="/Empleados/Guardar" class="btn btn-primary">
-        Agregar nuevo empleado
-    </a>
-</p>
+        <div class="card-body bg-light">
+            <table id="tablaEmpleados" class="table table-hover align-middle text-center w-100">
+                <thead class="table-primary">
+                    <tr>
+                        <th>ID</th>
+                        <th>Usuario</th>
+                        <th>Nombre</th>
+                        <th>Cargo</th>
+                        <th>Licencia</th>
+                        <th>Teléfono</th>
+                        <th>Correo</th>
+                        <th>Salario</th>
+                        <th>Dirección</th>
+                        <th>Fecha Ingreso</th>
+                        <th>Contacto Emergencia</th>
+                        <th>Estado</th>
+                        <th>Foto</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.IdEmpleado)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdUsuario)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Nombre)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Cargo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Licencia)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Telefono)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Correo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Salario)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Direccion)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FechaIngreso)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ContactoEmergencia)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Estado)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdEmpleado)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdUsuario)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nombre)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Cargo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Licencia)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Telefono)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Correo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Salario)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Direccion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaIngreso)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ContactoEmergencia)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Estado)
-            </td>
-
-                <!-- 📸 Columna de foto -->
-                <td>
-                    @if (!string.IsNullOrEmpty(item.FotoRuta))
+                <tbody>
+                    @foreach (var item in Model)
                     {
-                        var fotoConExt = System.IO.Path.HasExtension(item.FotoRuta)
+                        var fotoRuta = string.IsNullOrEmpty(item.FotoRuta)
+                        ? "/img/empleados/default-user.png"
+                        : (System.IO.Path.HasExtension(item.FotoRuta)
                         ? item.FotoRuta
-                        : item.FotoRuta + ".jpg";
+                        : item.FotoRuta + ".jpg");
 
-                        <img src="@fotoConExt"
-                             alt="Foto"
-                             class="foto-empleado"
-                             width="80"
-                             height="80"
-                             style="object-fit: cover; border-radius: 8px; box-shadow: 0 0 4px rgba(0,0,0,0.3); cursor: pointer; transition: transform 0.3s;"
-                             onmouseover="this.style.transform='scale(1.05)'"
-                             onmouseout="this.style.transform='scale(1)'" />
+
+                        <tr>
+                            <td>@item.IdEmpleado</td>
+                            <td>@item.IdUsuario</td>
+                            <td>@item.Nombre</td>
+                            <td>@item.Cargo</td>
+                            <td>@item.Licencia</td>
+                            <td>@item.Telefono</td>
+                            <td>@item.Correo</td>
+                            <td>Q @item.Salario.ToString("N2")</td>
+                            <td>@item.Direccion</td>
+                            <td>@item.FechaIngreso.ToString("dd/MM/yyyy")</td>
+                            <td>@item.ContactoEmergencia</td>
+                            <td>
+                                <span class="badge @(item.Estado == "Activo" ? "bg-success" : "bg-danger")">
+                                    @item.Estado
+                                </span>
+                            </td>
+
+                            <td>
+                                <img src="@fotoRuta"
+                                     alt="Foto"
+                                     class="foto-empleado shadow-sm"
+                                     width="60"
+                                     height="60"
+                                     style="object-fit: cover; border-radius: 10px; cursor: pointer;" />
+                            </td>
+
+                            <td>
+                                <div class="btn-group">
+                                    <a href="@Url.Action("Modificar", "Empleados", new { CodigoEmpleado = item.IdEmpleado })"
+                                       class="btn btn-outline-secondary btn-sm">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a href="@Url.Action("Eliminar", "Empleados", new { CodigoEmpleado = item.IdEmpleado })"
+                                       class="btn btn-outline-danger btn-sm"
+                                       onclick="return confirm('¿Seguro que deseas eliminar este empleado?');">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
                     }
-                    else
-                    {
-                        <span class="text-muted">Sin foto</span>
-                    }
-                </td>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
-                <td>
-                    @Html.ActionLink(
-                    "Modificar",
-                                "Modificar",
-                                "Empleados",
-                                new { CodigoEmpleado = item.IdEmpleado },
-                                new { @class = "btn btn-info" }
-                                )
-                |
-                @Html.ActionLink(
-                                "Eliminar",
-                                "Eliminar",                 // Acción en tu UsuariosController
-                                "Empleados",                 // Controlador
-                                new { CodigoEmpleado = item.IdEmpleado }, // route values
-                                new { @class = "btn btn-dark", onclick = "return confirm('¿Seguro que deseas eliminar este empleado?');" } // html attrs
-                                )
-
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
-<!-- ✅ Modal (fuera del bucle) -->
-<div class="modal fade" id="modalFoto" tabindex="-1" aria-labelledby="modalFotoLabel" aria-hidden="true">
+<!-- Modal para ampliar foto -->
+<div class="modal fade" id="modalFoto" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content bg-transparent border-0 shadow-none">
             <div class="modal-body text-center p-0">
@@ -152,29 +104,22 @@
     </div>
 </div>
 
-<!-- ✅ Estilos personalizados -->
-<style>
-    /* Efecto de zoom suave al abrir el modal */
-    .zoom-in {
-        transform: scale(0.8);
-        opacity: 0;
-        transition: transform 0.4s ease, opacity 0.4s ease;
-    }
-
-    .modal.show .zoom-in {
-        transform: scale(1);
-        opacity: 1;
-    }
-
-    /* Opcional: efecto de sombra más elegante al pasar el mouse */
-    .foto-empleado:hover {
-        box-shadow: 0 0 8px rgba(0, 123, 255, 0.6);
-    }
-</style>
-
-<!-- ✅ Scripts -->
 @section Scripts {
     <script>
+        $(document).ready(function () {
+            $('#tablaEmpleados').DataTable({
+                language: { url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json' },
+                pageLength: 10,
+                lengthMenu: [5, 10, 25, 50],
+                responsive: true,
+                ordering: true,
+                columnDefs: [
+                    { orderable: false, targets: [12, 13] } // foto y acciones no ordenables
+                ]
+            });
+        });
+
+        // Mostrar foto en modal
         document.addEventListener("click", function (e) {
             if (e.target.classList.contains("foto-empleado")) {
                 const ruta = e.target.getAttribute("src");
@@ -184,4 +129,6 @@
             }
         });
     </script>
+
+
 }

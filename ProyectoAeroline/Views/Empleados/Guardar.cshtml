@@ -5,84 +5,148 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1 class="mb-3">Guardar</h1>
-<hr />
 
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Guardar" method="post" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+@*<h1 class="mb-3">Guardar</h1>
+<hr />*@
 
-            @*<div class="form-group">
-                <label asp-for="IdEmpleado" class="control-label"></label>
-                <input asp-for="IdEmpleado" class="form-control" />
-                <span asp-validation-for="IdEmpleado" class="text-danger"></span>
-            </div>*@
-            <div class="mb-3">
-                <input asp-for="IdUsuario" class="form-control" placeholder="IdUsuario" />
-                <span asp-validation-for="IdUsuario" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <input asp-for="Nombre" class="form-control" placeholder="Nombre" />
-                <span asp-validation-for="Nombre" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <input asp-for="Cargo" class="form-control" placeholder="Cargo" />
-                <span asp-validation-for="Cargo" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <input asp-for="Licencia" class="form-control" placeholder="Licencia" />
-                <span asp-validation-for="Licencia" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <input asp-for="Telefono" class="form-control" placeholder="Telefono" />
-                <span asp-validation-for="Telefono" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <input asp-for="Correo" class="form-control" placeholder="Correo" />
-                <span asp-validation-for="Correo" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <input asp-for="Salario" class="form-control" placeholder="Salario" />
-                <span asp-validation-for="Salario" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <input asp-for="Direccion" class="form-control" placeholder="Direccion" />
-                <span asp-validation-for="Direccion" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="FechaIngreso" class="control-label"></label>
-                <input asp-for="FechaIngreso" class="form-control"  />
-                <span asp-validation-for="FechaIngreso" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <input asp-for="ContactoEmergencia" class="form-control" placeholder="ContactoEmergencia" />
-                <span asp-validation-for="ContactoEmergencia" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <input asp-for="Estado" class="form-control" placeholder="Estado" />
-                <span asp-validation-for="Estado" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label>Fotografía</label>
-                <input type="file" class="form-control" asp-for="FotoArchivo" accept="image/*" />
+<div class="card shadow-lg border-0 rounded-4 mt-4">
+    <div class="card-header bg-dark text-white rounded-top-4 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0"><i class="bi bi-person-plus-fill"></i> Registrar nuevo empleado</h4>
+        <a href="/Empleados/Listar" class="btn btn-outline-light btn-sm">
+            <i class="bi bi-arrow-left"></i> Regresar
+        </a>
+    </div>
+
+    <div class="card-body bg-light rounded-bottom-4">
+        <form asp-action="Guardar" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="IdUsuario" class="form-label fw-bold">Usuario</label>
+                    <input asp-for="IdUsuario" class="form-control" placeholder="Id de usuario" />
+                    <span asp-validation-for="IdUsuario" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Nombre" class="form-label fw-bold">Nombre completo</label>
+                    <input asp-for="Nombre" class="form-control" placeholder="Nombre del empleado" />
+                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Cargo" class="form-label fw-bold">Cargo</label>
+                    <input asp-for="Cargo" class="form-control" placeholder="Cargo del empleado" />
+                    <span asp-validation-for="Cargo" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Licencia" class="form-label fw-bold">Licencia</label>
+                    <input asp-for="Licencia" class="form-control" placeholder="Número de licencia" />
+                    <span asp-validation-for="Licencia" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Telefono" class="form-label fw-bold">Teléfono</label>
+                    <input asp-for="Telefono" class="form-control" placeholder="Teléfono" />
+                    <span asp-validation-for="Telefono" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Correo" class="form-label fw-bold">Correo</label>
+                    <input asp-for="Correo" class="form-control" placeholder="Correo electrónico" />
+                    <span asp-validation-for="Correo" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Salario" class="form-label fw-bold">Salario</label>
+                    <input asp-for="Salario" class="form-control" placeholder="Salario mensual" />
+                    <span asp-validation-for="Salario" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Direccion" class="form-label fw-bold">Dirección</label>
+                    <input asp-for="Direccion" class="form-control" placeholder="Dirección del empleado" />
+                    <span asp-validation-for="Direccion" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="FechaIngreso" class="form-label fw-bold">Fecha de ingreso</label>
+                    <input asp-for="FechaIngreso" type="date" class="form-control" />
+                    <span asp-validation-for="FechaIngreso" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="ContactoEmergencia" class="form-label fw-bold">Contacto de emergencia</label>
+                    <input asp-for="ContactoEmergencia" class="form-control" placeholder="Teléfono de emergencia" />
+                    <span asp-validation-for="ContactoEmergencia" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Estado" class="form-label fw-bold">Estado</label>
+                    <select asp-for="Estado" class="form-select">
+                        <option value="Activo">Activo</option>
+                        <option value="Inactivo">Inactivo</option>
+                    </select>
+                    <span asp-validation-for="Estado" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Fotografía</label>
+                    <div class="d-flex align-items-center">
+                        <input type="file" id="FotoArchivoInput" class="d-none" asp-for="FotoArchivo" accept="image/*" />
+                        <label for="FotoArchivoInput" class="btn btn-dark btn-sm me-2 custom-file-upload">
+                            <i class="bi bi-upload"></i> Seleccionar archivo
+                        </label>
+                        <span id="archivoSeleccionadoNombre" class="text-muted fst-italic">Sin archivo</span>
+                    </div>
+
+                    <div class="mt-2 text-center">
+                        <img id="vistaPreviaFoto" src="#" alt="Vista previa" class="rounded shadow-sm border" style="max-width: 180px; display: none;" />
+                    </div>
+                </div>
             </div>
 
-            <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-primary">
-                    Crear
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-success px-4">
+                    <i class="bi bi-save"></i> Guardar
                 </button>
-
-                <a href="/Empleados/Listar" class="btn btn-outline-secondary">
-                    Regresar
+                <a href="/Empleados/Listar" class="btn btn-outline-secondary ms-2 px-4">
+                    <i class="bi bi-x-circle"></i> Cancelar
                 </a>
             </div>
-
         </form>
     </div>
 </div>
 
 
+
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.getElementById('FotoArchivoInput').addEventListener('change', function(event) {
+            var fileNameSpan = document.getElementById('archivoSeleccionadoNombre');
+            var previewImage = document.getElementById('vistaPreviaFoto');
+
+            if (this.files && this.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    previewImage.style.display = 'block'; // Muestra la imagen una vez cargada
+                };
+
+                reader.readAsDataURL(this.files[0]); // Lee el archivo como una URL de datos
+
+                fileNameSpan.textContent = this.files[0].name; // Actualiza el nombre del archivo
+            } else {
+                previewImage.src = '#';
+                previewImage.style.display = 'none'; // Oculta la imagen si no hay archivo
+                fileNameSpan.textContent = 'Sin archivos seleccionados'; // Restablece el texto
+            }
+        });
+    </script>
 }

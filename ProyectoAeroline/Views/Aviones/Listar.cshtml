@@ -1,100 +1,86 @@
 ﻿@model IEnumerable<ProyectoAeroline.Models.AvionesModel>
 
 @{
-    ViewData["Title"] = "Listar";
+    ViewData["Title"] = "Listar Aviones";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Listar</h1>
+<div class="container-fluid px-4 mt-4">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-primary text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center">
+            <h3 class="mb-0"><i class="bi bi-airplane"></i> Lista de Aviones</h3>
+            <a href="/Aviones/Guardar" class="btn btn-light btn-sm fw-bold">
+                <i class="bi bi-plus-circle"></i> Agregar
+            </a>
+        </div>
 
-<p>
-    <a href="/Aviones/Guardar" class="btn btn-primary">
-        Agregar nuevo avion
-    </a>
-</p>
+        <div class="card-body bg-light">
+            <table id="tablaAviones" class="table table-hover align-middle text-center w-100">
+                <thead class="table-primary">
+                    <tr>
+                        <th>ID</th>
+                        <th>Aerolínea</th>
+                        <th>Placa</th>
+                        <th>Modelo</th>
+                        <th>Tipo</th>
+                        <th>Capacidad</th>
+                        <th>Último Mantenimiento</th>
+                        <th>Rango (Km)</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.IdAvion</td>
+                            <td>@item.IdAerolinea</td>
+                            <td>@item.Placa</td>
+                            <td>@item.Modelo</td>
+                            <td>@item.Tipo</td>
+                            <td>@item.Capacidad</td>
+                            <td>@item.FechaUltimoMantenimiento.ToString("dd/MM/yyyy")</td>
+                            <td>@item.RangoKm</td>
+                            <td>
+                                <span class="badge @(item.Estado == "Activo" ? "bg-success" : "bg-danger")">
+                                    @item.Estado
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="@Url.Action("Modificar", "Aviones", new { CodigoAvion = item.IdAvion })"
+                                       class="btn btn-outline-secondary btn-sm">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a href="@Url.Action("Eliminar", "Aviones", new { CodigoAvion = item.IdAvion })"
+                                       class="btn btn-outline-danger btn-sm"
+                                       onclick="return confirm('¿Seguro que deseas eliminar este avión?');">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.IdAvion)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdAerolinea)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Placa)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Modelo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Tipo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Capacidad)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FechaUltimoMantenimiento)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.RangoKm)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Estado)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdAvion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdAerolinea)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Placa)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Modelo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Tipo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Capacidad)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaUltimoMantenimiento)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RangoKm)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Estado)
-            </td>
-                <td>
-                    @Html.ActionLink(
-                    "Modificar",
-                                "Modificar",
-                                "Aviones",
-                                new { CodigoAvion = item.IdAvion },
-                                new { @class = "btn btn-info" }
-                                )
-                |
-                @Html.ActionLink(
-                                "Eliminar",
-                                "Eliminar",                 // Acción en tu UsuariosController
-                                "Aviones",                 // Controlador
-                                new { CodigoAvion = item.IdAvion }, // route values
-                                new { @class = "btn btn-dark", onclick = "return confirm('¿Seguro que deseas eliminar este avion?');" } // html attrs
-                                )
-
-            </td>
-        </tr>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#tablaAviones').DataTable({
+                language: { url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json' },
+                pageLength: 10,
+                lengthMenu: [5, 10, 25, 50],
+                responsive: true,
+                ordering: true,
+                columnDefs: [
+                    { orderable: false, targets: [9] } // columna de Acciones no ordenable
+                ]
+            });
+        });
+    </script>
 }
-    </tbody>
-</table>

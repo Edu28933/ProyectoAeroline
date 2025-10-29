@@ -5,75 +5,94 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Modificar</h1>
+<div class="card shadow-lg border-0 rounded-4 mt-4">
+    <div class="card-header bg-primary text-white rounded-top-4 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0"><i class="bi bi-pencil-square"></i> Modificar mantenimiento</h4>
+        <a href="/Mantenimientos/Listar" class="btn btn-light btn-sm fw-bold">
+            <i class="bi bi-arrow-left-circle"></i> Regresar
+        </a>
+    </div>
 
-<h4>MantenimientosModel</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Modificar">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="IdMantenimiento" class="control-label"></label>
-                <input asp-for="IdMantenimiento" class="form-control" />
-                <span asp-validation-for="IdMantenimiento" class="text-danger"></span>
+    <div class="card-body bg-light rounded-bottom-4">
+        <form asp-action="Modificar" method="post" class="needs-validation" novalidate>
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="IdMantenimiento" class="control-label"></label>
+                    <input asp-for="IdMantenimiento" class="form-control" readonly />
+                    <span asp-validation-for="IdMantenimiento" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="IdAvion" class="control-label"></label>
+                    <input asp-for="IdAvion" class="form-control" />
+                    <span asp-validation-for="IdAvion" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="IdEmpleado" class="control-label"></label>
+                    <input asp-for="IdEmpleado" class="form-control" />
+                    <span asp-validation-for="IdEmpleado" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="FechaIngreso" class="control-label"></label>
+                    <input asp-for="FechaIngreso" class="form-control" type="date" />
+                    <span asp-validation-for="FechaIngreso" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="FechaSalida" class="control-label"></label>
+                    <input asp-for="FechaSalida" class="form-control" type="date" />
+                    <span asp-validation-for="FechaSalida" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Tipo" class="control-label"></label>
+                    <input asp-for="Tipo" class="form-control" />
+                    <span asp-validation-for="Tipo" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Costo" class="control-label"></label>
+                    <input asp-for="Costo" class="form-control" />
+                    <span asp-validation-for="Costo" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="CostoExtra" class="control-label"></label>
+                    <input asp-for="CostoExtra" class="form-control" />
+                    <span asp-validation-for="CostoExtra" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-12">
+                    <label asp-for="Descripcion" class="control-label"></label>
+                    <textarea asp-for="Descripcion" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Descripcion" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Estado" class="control-label"></label>
+                    <input asp-for="Estado" class="form-control" />
+                    <span asp-validation-for="Estado" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="IdAvion" class="control-label"></label>
-                <input asp-for="IdAvion" class="form-control" />
-                <span asp-validation-for="IdAvion" class="text-danger"></span>
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-success px-4">
+                    <i class="bi bi-save"></i> Guardar cambios
+                </button>
+                <a href="/Mantenimientos/Listar" class="btn btn-outline-secondary ms-2 px-4">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
             </div>
-            <div class="form-group">
-                <label asp-for="IdEmpleado" class="control-label"></label>
-                <input asp-for="IdEmpleado" class="form-control" />
-                <span asp-validation-for="IdEmpleado" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FechaIngreso" class="control-label"></label>
-                <input asp-for="FechaIngreso" class="form-control" />
-                <span asp-validation-for="FechaIngreso" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FechaSalida" class="control-label"></label>
-                <input asp-for="FechaSalida" class="form-control" />
-                <span asp-validation-for="FechaSalida" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Tipo" class="control-label"></label>
-                <input asp-for="Tipo" class="form-control" />
-                <span asp-validation-for="Tipo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Costo" class="control-label"></label>
-                <input asp-for="Costo" class="form-control" />
-                <span asp-validation-for="Costo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CostoExtra" class="control-label"></label>
-                <input asp-for="CostoExtra" class="form-control" />
-                <span asp-validation-for="CostoExtra" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Descripcion" class="control-label"></label>
-                <input asp-for="Descripcion" class="form-control" />
-                <span asp-validation-for="Descripcion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Estado" class="control-label"></label>
-                <input asp-for="Estado" class="form-control" />
-                <span asp-validation-for="Estado" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-            <a href="/Mantenimientos/Listar" class="btn btn-outline-secondary">
-                Regresar
-            </a>
         </form>
     </div>
 </div>
 
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

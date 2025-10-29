@@ -5,70 +5,82 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1 class="mb-3">Guardar</h1>
-<hr />
+<div class="card shadow-lg border-0 rounded-4 mt-4">
+    <div class="card-header bg-dark text-white rounded-top-4 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0"><i class="bi bi-person-plus-fill"></i> Registrar nuevo mantenimiento</h4>
+        <a href="/Mantenimientos/Listar" class="btn btn-outline-light btn-sm">
+            <i class="bi bi-arrow-left"></i> Regresar
+        </a>
+    </div>
 
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Guardar" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            @*<div class="mb-3">
-                <label asp-for="IdMantenimiento" class="control-label"></label>
-                <input asp-for="IdMantenimiento" class="form-control" />
-                <span asp-validation-for="IdMantenimiento" class="text-danger"></span>
-            </div>*@
-            <div class="mb-3">
-                <input asp-for="IdAvion" class="form-control" placeholder="IdAvion" />
-                <span asp-validation-for="IdAvion" class="text-danger"></span>
+    <div class="card-body bg-light rounded-bottom-4">
+        <form asp-action="Guardar" method="post" class="needs-validation" novalidate>
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <input asp-for="IdAvion" class="form-control" placeholder="IdAvion" />
+                    <span asp-validation-for="IdAvion" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <input asp-for="IdEmpleado" class="form-control" placeholder="IdEmpleado" />
+                    <span asp-validation-for="IdEmpleado" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="FechaIngreso" class="form-label fw-bold">Fecha ingreso</label>
+                    <input asp-for="FechaIngreso" type="date" class="form-control" />
+                    <span asp-validation-for="FechaIngreso" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="FechaSalida" class="form-label fw-bold">Fecha salida</label>
+                    <input asp-for="FechaSalida" type="date" class="form-control" />
+                    <span asp-validation-for="FechaSalida" class="text-danger"></span>
+                </div>
+
+
+                <div class="col-md-6">
+                    <input asp-for="Tipo" class="form-control" placeholder="Tipo" />
+                    <span asp-validation-for="Tipo" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <input asp-for="Costo" class="form-control" placeholder="Costo" />
+                    <span asp-validation-for="Costo" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <input asp-for="CostoExtra" class="form-control" placeholder="CostoExtra" />
+                    <span asp-validation-for="CostoExtra" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <input asp-for="Descripcion" class="form-control" placeholder="Descripcion" />
+                    <span asp-validation-for="Descripcion" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <input asp-for="Estado" class="form-control" placeholder="Estado" />
+                    <span asp-validation-for="Estado" class="text-danger"></span>
+                </div>
             </div>
-            <div class="mb-3">
-                <input asp-for="IdEmpleado" class="form-control" placeholder="IdEmpleado" />
-                <span asp-validation-for="IdEmpleado" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="FechaIngreso" class="control-label"></label>
-                <input asp-for="FechaIngreso" class="form-control" />
-                <span asp-validation-for="FechaIngreso" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="FechaSalida" class="control-label"></label>
-                <input asp-for="FechaSalida" class="form-control" />
-                <span asp-validation-for="FechaSalida" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <input asp-for="Tipo" class="form-control" placeholder="Tipo" />
-                <span asp-validation-for="Tipo" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <input asp-for="Costo" class="form-control" placeholder="Costo" />
-                <span asp-validation-for="Costo" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <input asp-for="CostoExtra" class="form-control" placeholder="CostoExtra" />
-                <span asp-validation-for="CostoExtra" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <input asp-for="Descripcion" class="form-control" placeholder="Descripcion" />
-                <span asp-validation-for="Descripcion" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <input asp-for="Estado" class="form-control" placeholder="Estado" />
-                <span asp-validation-for="Estado" class="text-danger"></span>
-            </div>
-            <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-primary">
-                    Crear
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-success px-4">
+                    <i class="bi bi-save"></i> Guardar
                 </button>
-
-                <a href="/Mantenimientos/Listar" class="btn btn-outline-secondary">
-                    Regresar
+                <a href="/Mantenimientos/Listar" class="btn btn-outline-secondary ms-2 px-4">
+                    <i class="bi bi-x-circle"></i> Cancelar
                 </a>
             </div>
         </form>
     </div>
 </div>
 
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

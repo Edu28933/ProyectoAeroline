@@ -5,59 +5,79 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h2>Eliminar</h2>
-<h5>¿Seguro que deseas eliminar este mantenimiento?</h5>
-<hr />
+<div class="container-fluid px-4 mt-4">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-danger text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">
+                <i class="bi bi-person-x-fill"></i> Eliminar Mantenimiento
+            </h3>
+            <a href="/Mantenimientos/Listar" class="btn btn-light btn-sm fw-bold">
+                <i class="bi bi-arrow-left-circle"></i> Regresar
+            </a>
+        </div>
 
-<form asp-action="Eliminar" method="post">
-    @Html.AntiForgeryToken()
+        <div class="card-body bg-light">
+            <h5 class="text-center mb-4 text-danger fw-semibold">
+                ¿Seguro que deseas eliminar este mantenimiento?
+            </h5>
 
-    <!-- Campo oculto -->
-    <input type="hidden" asp-for="IdMantenimiento" />
+            <form asp-action="Eliminar" method="post">
+                @Html.AntiForgeryToken()
 
-    <div class="mb-3">
-        <label class="form-label">IdMantenimiento</label>
-        <input class="form-control" value="@Model.IdMantenimiento" readonly />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">IdAvion</label>
-        <input class="form-control" value="@Model.IdAvion" readonly />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">IdEmpleado</label>
-        <input class="form-control" value="@Model.IdEmpleado" readonly />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Fecha Ingreso</label>
-        <input class="form-control" value="@Model.FechaIngreso" readonly />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Fecha Salida</label>
-        <input class="form-control" value="@Model.FechaSalida" readonly />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Tipo</label>
-        <input class="form-control" value="@Model.Tipo" readonly />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Costo</label>
-        <input class="form-control" value="@Model.Costo" readonly />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Costo Extra</label>
-        <input class="form-control" value="@Model.CostoExtra" readonly />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Descripción</label>
-        <input class="form-control" value="@Model.Descripcion" readonly />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Estado</label>
-        <input class="form-control" value="@Model.Estado" readonly />
-    </div>
+                <!-- Campo oculto -->
+                <input type="hidden" asp-for="IdMantenimiento" />
 
-    <div class="d-flex gap-2">
-        <button type="submit" class="btn btn-danger">Eliminar</button>
-        <a href="/Mantenimientos/Listar" class="btn btn-secondary">Cancelar</a>
+                <div class="mb-3">
+                    <label class="form-label">IdMantenimiento</label>
+                    <input class="form-control" value="@Model.IdMantenimiento" readonly />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">IdAvion</label>
+                    <input class="form-control" value="@Model.IdAvion" readonly />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">IdEmpleado</label>
+                    <input class="form-control" value="@Model.IdEmpleado" readonly />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Fecha Ingreso</label>
+                    <input class="form-control" value="@Model.FechaIngreso" readonly />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Fecha Salida</label>
+                    <input class="form-control" value="@Model.FechaSalida" readonly />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Tipo</label>
+                    <input class="form-control" value="@Model.Tipo" readonly />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Costo</label>
+                    <input class="form-control" value="@Model.Costo" readonly />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Costo Extra</label>
+                    <input class="form-control" value="@Model.CostoExtra" readonly />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Descripción</label>
+                    <input class="form-control" value="@Model.Descripcion" readonly />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Estado</label>
+                    <input class="form-control" value="@Model.Estado" readonly />
+                </div>
+
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-danger px-4 me-2">
+                        <i class="bi bi-trash3-fill"></i> Eliminar definitivamente
+                    </button>
+                    <a href="/Mantenimientos/Listar" class="btn btn-outline-secondary px-4">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
-</form>
+</div>

@@ -1,100 +1,87 @@
 ﻿@model IEnumerable<ProyectoAeroline.Models.AeropuertosModel>
 
 @{
-    ViewData["Title"] = "Listar";
+    ViewData["Title"] = "Listar Aeropuertos";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Lista Aeropuertos</h1>
+<div class="container-fluid px-4 mt-4">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-primary text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center">
+            <h3 class="mb-0"><i class="bi bi-building"></i> Lista de Aeropuertos</h3>
+            <a href="/Aeropuertos/Guardar" class="btn btn-light btn-sm fw-bold">
+                <i class="bi bi-plus-circle"></i> Agregar
+            </a>
+        </div>
 
-<p>
-    <a href="/Aeropuertos/Guardar" class="btn btn-primary">
-        Agregar nuevo aeropuerto
-    </a>
-</p>
+        <div class="card-body bg-light">
+            <table id="tablaAeropuertos" class="table table-hover align-middle text-center w-100">
+                <thead class="table-primary">
+                    <tr>
+                        <th>ID</th>
+                        <th>Empleado</th>
+                        <th>IATA</th>
+                        <th>Nombre</th>
+                        <th>País</th>
+                        <th>Ciudad</th>
+                        <th>Dirección</th>
+                        <th>Teléfono</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.IdAeropuerto)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdEmpleado)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IATA)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Nombre)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Pais)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Ciudad)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Direccion)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Telefono)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Estado)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdAeropuerto)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdEmpleado)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IATA)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nombre)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Pais)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Ciudad)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Direccion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Telefono)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Estado)
-            </td>
-                <td>
-                    @Html.ActionLink(
-                    "Modificar",
-                                "Modificar",
-                                "Aeropuertos",
-                                new { CodigoAeropuerto = item.IdAeropuerto },
-                                new { @class = "btn btn-info" }
-                                )
-                |
-                @Html.ActionLink(
-                                "Eliminar",
-                                "Eliminar",                 // Acción en tu UsuariosController
-                                "Aeropuertos",                 // Controlador
-                                new { CodigoAeropuerto = item.IdAeropuerto }, // route values
-                                new { @class = "btn btn-dark", onclick = "return confirm('¿Seguro que deseas eliminar este aeropuerto?');" } // html attrs
-                                )
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.IdAeropuerto</td>
+                            <td>@item.IdEmpleado</td>
+                            <td>@item.IATA</td>
+                            <td>@item.Nombre</td>
+                            <td>@item.Pais</td>
+                            <td>@item.Ciudad</td>
+                            <td>@item.Direccion</td>
+                            <td>@item.Telefono</td>
+                            <td>
+                                <span class="badge @(item.Estado == "Activo" ? "bg-success" : "bg-danger")">
+                                    @item.Estado
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="@Url.Action("Modificar", "Aeropuertos", new { CodigoAeropuerto = item.IdAeropuerto })"
+                                       class="btn btn-outline-secondary btn-sm">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a href="@Url.Action("Eliminar", "Aeropuertos", new { CodigoAeropuerto = item.IdAeropuerto })"
+                                       class="btn btn-outline-danger btn-sm"
+                                       onclick="return confirm('¿Seguro que deseas eliminar este aeropuerto?');">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
-            </td>
-        </tr>
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#tablaAeropuertos').DataTable({
+                language: { url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json' },
+                pageLength: 10,
+                lengthMenu: [5, 10, 25, 50],
+                responsive: true,
+                ordering: true,
+                columnDefs: [
+                    { orderable: false, targets: [9] } // columna de Acciones no ordenable
+                ]
+            });
+        });
+    </script>
 }
-    </tbody>
-</table>
