@@ -1,0 +1,218 @@
+﻿/* ===== Base ===== */
+:root {
+    --bg: #0f172a; /* fondo oscuro */
+    --panel: #ffffff; /* tarjeta */
+    --muted: #6b7280;
+    --text: #111827;
+    --brand: #111827; /* botón oscuro */
+    --brand-contrast: #fff;
+    --ring: rgba(99,102,241,.45);
+    --radius: 20px;
+}
+
+* {
+    box-sizing: border-box
+}
+
+html, body {
+    height: 100%
+}
+
+body {
+    margin: 0;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+    color: var(--text);
+    background: var(--bg);
+}
+
+/* ===== Contenedor ===== */
+.auth-page {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: clamp(16px,3vw,40px);
+}
+
+.auth-shell.single {
+    width: min(1040px,96vw);
+    display: grid;
+    grid-template-columns: 1fr;
+}
+
+.auth-right {
+    display: grid;
+    place-items: center;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 460px;
+    background: var(--panel);
+    border-radius: var(--radius);
+    box-shadow: 0 20px 40px rgba(0,0,0,.18);
+    padding: 34px 32px;
+}
+
+/* ===== Cabecera ===== */
+.auth-logo {
+    width: 44px;
+    height: 44px;
+    margin: 0 auto 12px;
+    display: grid;
+    place-items: center;
+    background: #f3f4f6;
+    border-radius: 12px;
+    font-weight: 700;
+    color: #111827;
+}
+
+.auth-title {
+    margin: 8px 0 4px;
+    font-size: 28px;
+    line-height: 1.2
+}
+
+.auth-sub {
+    margin: 0 0 18px;
+    color: var(--muted)
+}
+
+/* ===== Form ===== */
+.form-label {
+    display: block;
+    margin: 14px 0 6px;
+    font-weight: 600
+}
+
+.form-input {
+    width: 100%;
+    height: 44px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    outline: none;
+}
+
+    .form-input:focus {
+        border-color: #6366f1;
+        box-shadow: 0 0 0 4px var(--ring);
+    }
+
+.field {
+    margin-top: 8px;
+    position: relative
+}
+
+.pwd-wrapper {
+    position: relative
+}
+
+.eye {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 6px;
+    border-radius: 8px;
+}
+
+    .eye:focus {
+        outline: 2px solid #6366f1
+    }
+
+/* fila recordar / link */
+.form-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 12px 0 18px;
+}
+
+.check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #374151
+}
+
+.link-muted {
+    color: #6366f1;
+    text-decoration: none
+}
+
+    .link-muted:hover {
+        text-decoration: underline
+    }
+
+/* ===== Botones ===== */
+.btn {
+    width: 100%;
+    height: 46px;
+    border-radius: 12px;
+    border: 0;
+    cursor: pointer;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .btn + .btn {
+        margin-top: 10px
+    }
+
+.btn-dark {
+    background: var(--brand);
+    color: var(--brand-contrast)
+}
+
+    .btn-dark:hover {
+        filter: brightness(.94)
+    }
+
+.btn-light {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    color: #111827;
+}
+
+    .btn-light:hover {
+        background: #f9fafb
+    }
+
+.gicon {
+    width: 22px;
+    height: 22px;
+    margin-right: 10px;
+    display: inline-block
+}
+
+/* texto final */
+.auth-small {
+    margin: 14px 0 0;
+    color: #374151
+}
+
+    .auth-small a {
+        color: #111827;
+        font-weight: 600;
+        text-decoration: none
+    }
+
+        .auth-small a:hover {
+            text-decoration: underline
+        }
+
+/* ===== Responsive ===== */
+@media (max-width:480px) {
+    .auth-card {
+        padding: 26px 20px
+    }
+}

@@ -1,0 +1,20 @@
+﻿@{
+    Layout = null;
+    var title = ViewData["Title"] as string ?? "Login";
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@title</title>
+
+    <!-- Hoja de estilos del login -->
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+</head>
+<body class="auth">
+    @* IMPORTANTE: clase auth para el fondo oscuro *@
+    @RenderBody()
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

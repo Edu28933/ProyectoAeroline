@@ -1,0 +1,272 @@
+﻿/* ===== LOGIN LAYOUT CONSOLIDADO ===== */
+:root {
+    --bg-dark: #12171c;
+    --panel: #fff;
+    --soft: #e9ece8;
+    --ink: #111315;
+    --line: #d4d7dd;
+    --muted: #7b8190;
+    --radius-xl: 28px;
+    --shell-w: clamp(1040px, 86vw, 1260px);
+    --card-w: 540px;
+    --panel-h: clamp(440px, 62vh, 560px);
+    --gap: 36px;
+}
+
+/* === BASE === */
+html, body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial, "Helvetica Neue";
+    background: var(--bg-dark);
+    color: var(--ink);
+}
+
+/* === SHELL PRINCIPAL === */
+.auth-shell {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+}
+
+/* === ESTRUCTURA DE DOS COLUMNAS === */
+.lg2-wrap {
+    width: var(--shell-w);
+    display: grid;
+    grid-template-columns: 1fr var(--card-w);
+    gap: var(--gap);
+    align-items: center;
+}
+
+/* === PANEL IZQUIERDO (vacío) === */
+.lg2-left {
+    background: var(--soft);
+    display: grid;
+    place-items: center;
+    height: var(--panel-h);
+    padding: clamp(16px, 2.5vw, 28px);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: inset 0 12px 28px rgba(0, 0, 0, .06);
+}
+
+/* === PANEL DERECHO === */
+.lg2-right {
+    display: grid;
+    place-items: center;
+}
+
+/* === TARJETA DE LOGIN === */
+.lg2-card {
+    width: var(--card-w);
+    height: var(--panel-h);
+    background: var(--panel);
+    border: 10px solid #e6e7e6;
+    border-radius: var(--radius-xl);
+    padding: 40px 36px 34px;
+    box-shadow: 0 24px 44px rgba(0, 0, 0, .14);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.lg2-title {
+    text-align: center;
+    margin: 12px 0 6px;
+    font-size: clamp(26px, 3vw, 34px);
+    line-height: 1.15;
+    font-weight: 800;
+}
+
+.lg2-sub {
+    text-align: center;
+    margin: 0 0 26px;
+    color: var(--muted);
+}
+
+/* === CAMPOS UNDERLINE === */
+.lg2-field {
+    position: relative;
+    margin: 18px 0 8px;
+}
+
+    .lg2-field label {
+        display: block;
+        font-size: 14px;
+        color: #4b4f58;
+        margin-bottom: 10px;
+        font-weight: 600;
+    }
+
+    .lg2-field input {
+        width: 100%;
+        border: 0;
+        outline: 0;
+        background: transparent;
+        padding: 8px 36px 8px 0;
+        font-size: 16px;
+    }
+
+.lg2-underline {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--line), var(--line));
+}
+
+.lg2-field:focus-within .lg2-underline {
+    background: linear-gradient(90deg, var(--ink), var(--ink));
+}
+
+.lg2-eye {
+    position: absolute;
+    right: 0;
+    top: 30px;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 6px;
+    border-radius: 10px;
+}
+
+/* === BOTONES Y OPCIONES === */
+.lg2-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 12px 0 20px;
+}
+
+.lg2-btn {
+    width: 100%;
+    height: 54px;
+    border-radius: 9999px;
+    border: 0;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+    .lg2-btn + .lg2-btn {
+        margin-top: 12px;
+    }
+
+.lg2-btn-primary {
+    background: var(--ink);
+    color: #fff;
+}
+
+    .lg2-btn-primary:hover {
+        filter: brightness(.92);
+    }
+
+.lg2-btn-google {
+    background: #f2f3f4;
+    color: #111;
+    border: 1px solid #e5e7eb;
+}
+
+    .lg2-btn-google:hover {
+        background: #ebecee;
+    }
+
+.gicon {
+    width: 22px;
+    height: 22px;
+    margin-right: 10px;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 980px) {
+    .lg2-wrap {
+        width: min(96vw, 640px);
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .lg2-left {
+        display: none;
+    }
+
+    .lg2-card {
+        width: 100%;
+        height: auto;
+    }
+}
+
+@media (min-width: 981px) {
+    .lg2-left {
+        display: grid !important;
+    }
+
+    .lg2-wrap {
+        grid-template-columns: 1fr var(--card-w) !important;
+    }
+}
+
+/* === PANEL DE ANIMACIÓN (fotogramas) === */
+.frame-wrap {
+    position: relative;
+    width: clamp(520px, 46vw, 700px);
+    aspect-ratio: 700 / 420;
+    display: grid;
+    place-items: center;
+    background: var(--soft);
+    border-radius: 16px;
+}
+
+    .frame-wrap img {
+        width: 100%;
+        height: auto;
+        display: block;
+        object-fit: contain;
+        border-radius: 12px;
+    }
+
+
+.frame-wrap {
+    overflow: hidden;
+}
+/* por si escalas mucho */
+.frame-scale {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    transform: scale(var(--scale,1));
+    transform-origin: center bottom; /* apoya “en el piso” del cuadro */
+}
+
+    .frame-scale img {
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+    }
+
+
+.frame-wrap {
+    --stage-max: clamp(520px, 46vw, 700px);
+    --fit: 0.88; /* ← AJUSTA ESTE */
+    width: var(--stage-max);
+    aspect-ratio: var(--ar, 16/9);
+    display: grid;
+    place-items: center;
+}
+
+    .frame-wrap img {
+        width: calc(100% * var(--fit));
+        max-height: calc(100% * var(--fit));
+        object-fit: contain;
+    }
+
+
