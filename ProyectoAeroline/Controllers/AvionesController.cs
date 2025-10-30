@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis.Options;
 using ProyectoAeroline.Data;
 using ProyectoAeroline.Models;
 
@@ -9,7 +11,14 @@ namespace ProyectoAeroline.Controllers
         // Instancia de la clase con la conexion y stored procedures
         AvionesData _AvionesData = new AvionesData();
 
-
+        private string GenerarPlaca()
+        {
+            var random = new Random();
+            string letras = new string(Enumerable.Range(0, 3)
+                .Select(_ => (char)random.Next('A', 'Z' + 1)).ToArray());
+            string numeros = random.Next(1000, 9999).ToString();
+            return $"{letras}-{numeros}"; // Ejemplo: ABC-1234
+        }
 
         // Muestra el formulario principal con la lista de datos
 
@@ -25,23 +34,36 @@ namespace ProyectoAeroline.Controllers
         // Muestra el formulario llamador Guardar
         public IActionResult Guardar()
         {
-            return View();
+            // Obtener aerolíneas activas desde el usp
+            var aerolineas = _AvionesData.MtdObtenerAerolineas();
+            ViewBag.Aerolineas = new SelectList(aerolineas, "IdAerolinea", "Nombre");
+
+            ViewBag.Tipos = new SelectList(AvionesModel.Tipos);
+            ViewBag.Modelos = new SelectList(AvionesModel.Modelos);
+            ViewBag.Capacidades = new SelectList(AvionesModel.Capacidades);
+            ViewBag.Estados = new SelectList(AvionesModel.Estados);
+
+            var model = new AvionesModel
+            {
+                Placa = GenerarPlaca(),
+                FechaUltimoMantenimiento = DateTime.Now
+            };
+
+            return View(model);
         }
 
         // Almacena los datos del formulario Guardar
         [HttpPost]
         public IActionResult Guardar(AvionesModel oAviones)
         {
+            oAviones.Placa ??= GenerarPlaca();
             var respuesta = _AvionesData.MtdAgregarAvion(oAviones);
 
-            if (respuesta == true)
-            {
+            if (respuesta)
                 return RedirectToAction("Listar");
-            }
             else
-            {
-                return View();
-            }
+                return View(oAviones);
+
         }
 
 
@@ -49,7 +71,21 @@ namespace ProyectoAeroline.Controllers
         public IActionResult Modificar(int CodigoAvion)
         {
             var oAvion = _AvionesData.MtdBuscarAvion(CodigoAvion);
+            var aerolineas = _AvionesData.MtdObtenerAerolineas();
+            ViewBag.Aerolineas = new SelectList(aerolineas, "IdAerolinea", "Nombre", oAvion.IdAerolinea);
+
+            ViewBag.Tipos = new SelectList(AvionesModel.Tipos, oAvion.Tipo);
+            ViewBag.Modelos = new SelectList(AvionesModel.Modelos, oAvion.Modelo);
+            ViewBag.Capacidades = new SelectList(AvionesModel.Capacidades, oAvion.Capacidad);
+            ViewBag.Estados = new SelectList(AvionesModel.Estados, oAvion.Estado);
+
             return View(oAvion);
+
+            /*En SelectList del Modificar se pasa oAvion.IdAerolinea para que el dropdown muestre 
+             * seleccionada la aerolínea actual.*/
+
+            //var oAvion = _AvionesData.MtdBuscarAvion(CodigoAvion);
+            //return View(oAvion);
         }
 
         // Almacena los datos del formulario Editar
@@ -57,15 +93,10 @@ namespace ProyectoAeroline.Controllers
         public IActionResult Modificar(AvionesModel oAvion)
         {
             var respuesta = _AvionesData.MtdEditarAvion(oAvion);
-
-            if (respuesta == true)
-            {
+            if (respuesta)
                 return RedirectToAction("Listar");
-            }
             else
-            {
-                return View();
-            }
+                return View(oAvion);
         }
 
 

@@ -190,5 +190,34 @@ namespace ProyectoAeroline.Data
 
             return respuesta;
         }
+
+        //MÉTODO QUE BUSCA Y LISTA LOS ID PARA AGREGAR
+        public List<AerolineasModel> MtdObtenerAerolineas()
+        {
+            var lista = new List<AerolineasModel>();
+            var conn = new Conexion();
+
+            using (var conexion = new SqlConnection(conn.GetConnectionString()))
+            {
+                conexion.Open();
+                using (var cmd = new SqlCommand("usp_AerolineasListar", conexion))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            lista.Add(new AerolineasModel
+                            {
+                                IdAerolinea = Convert.ToInt32(dr["IdAerolinea"]),
+                                Nombre = dr["Nombre"].ToString()
+                            });
+                        }
+                    }
+                }
+            }
+
+            return lista;
+        }
     }
 }

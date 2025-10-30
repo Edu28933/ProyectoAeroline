@@ -18,29 +18,33 @@
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
             <div class="row g-3">
+
                 <div class="col-md-6">
-                    <input asp-for="IdAerolinea" class="form-control" placeholder="IdAerolinea" />
+                    <label asp-for="IdAerolinea" class="form-label fw-bold">Aerolínea</label>
+                    <select asp-for="IdAerolinea" class="form-select" asp-items="ViewBag.Aerolineas">
+                        <option value="">-- Seleccione Aerolínea --</option>
+                    </select>
                     <span asp-validation-for="IdAerolinea" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6">
-                    <input asp-for="Placa" class="form-control" placeholder="Placa" />
-                    <span asp-validation-for="Placa" class="text-danger"></span>
+                    <label class="form-label fw-bold">Placa</label>
+                    <input asp-for="Placa" class="form-control" readonly />
                 </div>
 
                 <div class="col-md-6">
-                    <input asp-for="Modelo" class="form-control" placeholder="Modelo" />
-                    <span asp-validation-for="Modelo" class="text-danger"></span>
+                    <label class="form-label fw-bold">Modelo</label>
+                    <select asp-for="Modelo" class="form-select" asp-items="ViewBag.Modelos" id="modeloSelect"></select>
                 </div>
 
                 <div class="col-md-6">
-                    <input asp-for="Tipo" class="form-control" placeholder="Tipo" />
-                    <span asp-validation-for="Tipo" class="text-danger"></span>
+                    <label class="form-label fw-bold">Tipo</label>
+                    <select asp-for="Tipo" class="form-select" asp-items="ViewBag.Tipos"></select>
                 </div>
 
                 <div class="col-md-6">
-                    <input asp-for="Capacidad" class="form-control" placeholder="Capacidad" />
-                    <span asp-validation-for="Capacidad" class="text-danger"></span>
+                    <label class="form-label fw-bold">Capacidad</label>
+                    <select asp-for="Capacidad" class="form-select" asp-items="ViewBag.Capacidades"></select>
                 </div>
 
                 <div class="col-md-6">
@@ -51,13 +55,13 @@
 
 
                 <div class="col-md-6">
-                    <input asp-for="RangoKm" class="form-control" placeholder="RangoKm" />
-                    <span asp-validation-for="RangoKm" class="text-danger"></span>
+                    <label class="form-label fw-bold">Rango (Km)</label>
+                    <input asp-for="RangoKm" class="form-control" id="rangoKm" />
                 </div>
 
                 <div class="col-md-6">
-                    <input asp-for="Estado" class="form-control" placeholder="Estado" />
-                    <span asp-validation-for="Estado" class="text-danger"></span>
+                    <label class="form-label fw-bold">Estado</label>
+                    <select asp-for="Estado" class="form-select" asp-items="ViewBag.Estados"></select>
                 </div>
             </div>
 
@@ -74,7 +78,20 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <script>
+        const rangosPorModelo = {
+            "Boeing 737": 5600,
+            "Airbus A320": 6100,
+            "Cessna 172": 1200,
+            "Embraer E190": 4500
+        };
+
+        document.getElementById("modeloSelect").addEventListener("change", function () {
+            const modelo = this.value;
+            const rangoInput = document.getElementById("rangoKm");
+            if (rangosPorModelo[modelo]) {
+                rangoInput.value = rangosPorModelo[modelo];
+            }
+        });
+    </script>
 }
