@@ -170,6 +170,7 @@ namespace ProyectoAeroline.Data
                             oEmpleado.FechaIngreso = Convert.ToDateTime(dr["FechaIngreso"]);
                             oEmpleado.ContactoEmergencia = Convert.ToInt32(dr["ContactoEmergencia"]);
                             oEmpleado.Estado = dr["Estado"].ToString();
+                            oEmpleado.FotoRuta = dr["FotoRuta"] == DBNull.Value ? null : dr["FotoRuta"].ToString(); 
                         }
                     }
                 }

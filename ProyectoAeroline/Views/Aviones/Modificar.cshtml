@@ -5,71 +5,99 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Modificar</h1>
+<div class="card shadow-lg border-0 rounded-4 mt-4">
+    <div class="card-header bg-primary text-white rounded-top-4 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0"><i class="bi bi-pencil-square"></i> Modificar avión</h4>
+        <a href="/Aviones/Listar" class="btn btn-light btn-sm fw-bold">
+            <i class="bi bi-arrow-left-circle"></i> Regresar
+        </a>
+    </div>
 
-<h4>AvionesModel</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Modificar">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="IdAvion" class="control-label"></label>
-                <input asp-for="IdAvion" class="form-control" />
-                <span asp-validation-for="IdAvion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IdAerolinea" class="control-label"></label>
-                <input asp-for="IdAerolinea" class="form-control" />
-                <span asp-validation-for="IdAerolinea" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Placa" class="control-label"></label>
-                <input asp-for="Placa" class="form-control" />
-                <span asp-validation-for="Placa" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Modelo" class="control-label"></label>
-                <input asp-for="Modelo" class="form-control" />
-                <span asp-validation-for="Modelo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Tipo" class="control-label"></label>
-                <input asp-for="Tipo" class="form-control" />
-                <span asp-validation-for="Tipo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Capacidad" class="control-label"></label>
-                <input asp-for="Capacidad" class="form-control" />
-                <span asp-validation-for="Capacidad" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FechaUltimoMantenimiento" class="control-label"></label>
-                <input asp-for="FechaUltimoMantenimiento" class="form-control" />
-                <span asp-validation-for="FechaUltimoMantenimiento" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="RangoKm" class="control-label"></label>
-                <input asp-for="RangoKm" class="form-control" />
-                <span asp-validation-for="RangoKm" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Estado" class="control-label"></label>
-                <input asp-for="Estado" class="form-control" />
-                <span asp-validation-for="Estado" class="text-danger"></span>
+    <div class="card-body bg-light rounded-bottom-4">
+        <form asp-action="Modificar" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="IdAvion" class="control-label"></label>
+                    <input asp-for="IdAvion" class="form-control" readonly />
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="IdAerolinea" class="form-label fw-bold">Aerolínea</label>
+                    <select asp-for="IdAerolinea" class="form-select" asp-items="ViewBag.Aerolineas!">
+                        <option value="">-- Seleccione Aerolínea --</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Placa" class="control-label"></label>
+                    <input asp-for="Placa" class="form-control" readonly />
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Modelo" class="form-label fw-bold">Modelo</label>
+                    <select asp-for="Modelo" class="form-select" asp-items="ViewBag.Modelos!" id="modeloSelect">
+                        <option value="">-- Seleccione modelo --</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Tipo" class="form-label fw-bold">Tipo</label>
+                    <select asp-for="Tipo" class="form-select" asp-items="ViewBag.Tipos!"></select>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Capacidad" class="form-label fw-bold">Capacidad</label>
+                    <select asp-for="Capacidad" class="form-select" asp-items="ViewBag.Capacidades!"></select>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="FechaUltimoMantenimiento" class="form-label fw-bold">Último mantenimiento</label>
+                    <input asp-for="FechaUltimoMantenimiento" class="form-control" readonly />
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="RangoKm" class="form-label fw-bold">Rango (Km)</label>
+                    <input asp-for="RangoKm" class="form-control" id="rangoKm" />
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Estado</label>
+                    <select asp-for="Estado" class="form-select" asp-items="ViewBag.Estados"></select>
+                </div>
             </div>
 
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-success px-4">
+                    <i class="bi bi-save"></i> Guardar cambios
+                </button>
+                <a href="/Aviones/Listar" class="btn btn-outline-secondary ms-2 px-4">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
             </div>
-            <a href="/Aviones/Listar" class="btn btn-outline-secondary">
-                Regresar
-            </a>
         </form>
     </div>
 </div>
 
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+   <script>
+        // Valores recomendados de rango por modelo
+        const rangosPorModelo = {
+            "Boeing 737": 5600,
+            "Airbus A320": 6100,
+            "Cessna 172": 1200,
+            "Embraer E190": 4500
+        };
+
+        const modeloSelect = document.getElementById("modeloSelect");
+        const rangoInput = document.getElementById("rangoKm");
+
+        modeloSelect.addEventListener("change", function () {
+            const modelo = this.value;
+            if (rangosPorModelo[modelo]) {
+                rangoInput.value = rangosPorModelo[modelo];
+            }
+        });
+    </script>
 }

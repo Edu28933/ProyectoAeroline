@@ -5,69 +5,122 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Modificar</h1>
+<div class="card shadow-lg border-0 rounded-4 mt-4">
+    <div class="card-header bg-primary text-white rounded-top-4 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0"><i class="bi bi-pencil-square"></i> Modificar aeropuerto</h4>
+        <a href="/Aeropuertos/Listar" class="btn btn-light btn-sm fw-bold">
+            <i class="bi bi-arrow-left-circle"></i> Regresar
+        </a>
+    </div>
 
-<h4>AeropuertosModel</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Modificar">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="IdAeropuerto" class="control-label"></label>
-                <input asp-for="IdAeropuerto" class="form-control" />
-                <span asp-validation-for="IdAeropuerto" class="text-danger"></span>
+    <div class="card-body bg-light rounded-bottom-4">
+        <form asp-action="Modificar" method="post" class="needs-validation" novalidate>
+            <input type="hidden" asp-for="IdAeropuerto" />
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row g-3">
+                <!-- Combo Empleado -->
+                <div class="col-md-6">
+                    <label asp-for="IdEmpleado" class="form-label fw-bold">Empleado</label>
+                    <select asp-for="IdEmpleado" class="form-select" asp-items="ViewBag.Empleados">
+                        <option value="">-- Seleccione Empleado --</option>
+                    </select>
+                    <span asp-validation-for="IdEmpleado" class="text-danger"></span>
+                </div>
+
+                <!-- Código IATA -->
+                <div class="col-md-6">
+                    <label asp-for="IATA" class="form-label fw-bold">Código IATA</label>
+                    <input asp-for="IATA" class="form-control" readonly />
+                    <span asp-validation-for="IATA" class="text-danger"></span>
+                </div>
+
+                <!-- Nombre -->
+                <div class="col-md-6">
+                    <label asp-for="Nombre" class="form-label fw-bold">Nombre</label>
+                    <input asp-for="Nombre" class="form-control" />
+                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                </div>
+
+                <!-- País -->
+                <div class="col-md-6">
+                    <label asp-for="Pais" class="form-label fw-bold">País</label>
+                    @Html.DropDownListFor(model => model.Pais,
+                    new SelectList(ViewBag.Paises as List<string> ?? new List<string>(), Model.Pais),
+                                        "-- Seleccione País --",
+                                        new { @class = "form-select", id = "ddlPais" })
+                    <span asp-validation-for="Pais" class="text-danger"></span>
+                </div>
+
+                <!-- Ciudad -->
+                <div class="col-md-6">
+                    <label asp-for="Ciudad" class="form-label fw-bold">Ciudad</label>
+                    @Html.DropDownListFor(model => model.Ciudad,
+                                        new SelectList(ViewBag.Ciudades as List<string> ?? new List<string>(), Model.Ciudad),
+                                        "-- Seleccione Ciudad --",
+                                        new { @class = "form-select", id = "ddlCiudad" })
+                    <span asp-validation-for="Ciudad" class="text-danger"></span>
+                </div>
+
+                <!-- Dirección -->
+                <div class="col-md-6">
+                    <label asp-for="Direccion" class="form-label fw-bold">Dirección</label>
+                    <input asp-for="Direccion" class="form-control" />
+                    <span asp-validation-for="Direccion" class="text-danger"></span>
+                </div>
+
+                <!-- Teléfono -->
+                <div class="col-md-6">
+                    <label asp-for="Telefono" class="form-label fw-bold">Teléfono</label>
+                    <input asp-for="Telefono" class="form-control" />
+                    <span asp-validation-for="Telefono" class="text-danger"></span>
+                </div>
+
+                <!-- Estado -->
+                <div class="col-md-6">
+                    <label asp-for="Estado" class="form-label fw-bold">Estado</label>
+                    @Html.DropDownListFor(model => model.Estado,
+                                        new SelectList(ViewBag.Estados as List<string> ?? new List<string>(), Model.Estado),
+                                        "-- Seleccione Estado --",
+                                        new { @class = "form-select" })
+                    <span asp-validation-for="Estado" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="IdEmpleado" class="control-label"></label>
-                <input asp-for="IdEmpleado" class="form-control" />
-                <span asp-validation-for="IdEmpleado" class="text-danger"></span>
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-success px-4">
+                    <i class="bi bi-save"></i> Guardar cambios
+                </button>
+                <a href="/Aeropuertos/Listar" class="btn btn-outline-secondary ms-2 px-4">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
             </div>
-            <div class="form-group">
-                <label asp-for="IATA" class="control-label"></label>
-                <input asp-for="IATA" class="form-control" />
-                <span asp-validation-for="IATA" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Nombre" class="control-label"></label>
-                <input asp-for="Nombre" class="form-control" />
-                <span asp-validation-for="Nombre" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Pais" class="control-label"></label>
-                <input asp-for="Pais" class="form-control" />
-                <span asp-validation-for="Pais" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Ciudad" class="control-label"></label>
-                <input asp-for="Ciudad" class="form-control" />
-                <span asp-validation-for="Ciudad" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Direccion" class="control-label"></label>
-                <input asp-for="Direccion" class="form-control" />
-                <span asp-validation-for="Direccion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Telefono" class="control-label"></label>
-                <input asp-for="Telefono" class="form-control" />
-                <span asp-validation-for="Telefono" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Estado" class="control-label"></label>
-                <input asp-for="Estado" class="form-control" />
-                <span asp-validation-for="Estado" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-            <a href="/Empleados/Listar" class="btn btn-outline-secondary">
-                Regresar
-            </a>
         </form>
     </div>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#ddlPais').change(function () {
+                var pais = $(this).val();
+                $('#ddlCiudad').html('<option>-- Cargando ciudades --</option>');
+
+                if (pais) {
+                    $.getJSON('/Aeropuertos/ObtenerCiudades', { pais: pais }, function (data) {
+                        var options = '<option value="">-- Seleccione Ciudad --</option>';
+                        $.each(data, function (i, ciudad) {
+                            options += '<option value="' + ciudad + '">' + ciudad + '</option>';
+                        });
+                        $('#ddlCiudad').html(options);
+                    });
+                } else {
+                    $('#ddlCiudad').html('<option value="">-- Seleccione Ciudad --</option>');
+                }
+            });
+        });
+    </script>
+
 }

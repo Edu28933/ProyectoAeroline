@@ -12,9 +12,15 @@
     <!-- Bootstrap Icons (CDN) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
+    <!-- ✅ DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+
     <!-- Estilos -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/sidebars.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/estilosGlobales.css" asp-append-version="true" />
+
+
 </head>
 <body class="sb-has-sidebar body-watermark">
     <!-- Navbar superior -->
@@ -44,6 +50,12 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/sidebars.js" asp-append-version="true"></script>
+
+    <!-- ✅ jQuery y DataTables -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+
     @RenderSection("Scripts", required: false)
 
     <!-- Activo en sidebar -->

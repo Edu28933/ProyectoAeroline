@@ -50,7 +50,7 @@ namespace ProyectoAeroline.Controllers
             if (oEmpleados.FotoArchivo != null && oEmpleados.FotoArchivo.Length > 0)
             {
                 // Ruta base: wwwroot/img/empleados
-                string carpetaFotos = Path.Combine(_webHostEnvironment.WebRootPath, "img", "empleados");
+                string carpetaFotos = Path.Combine(_webHostEnvironment.WebRootPath, "img", "Empleados");
 
                 // Crear carpeta si no existe
                 if (!Directory.Exists(carpetaFotos))
@@ -69,7 +69,7 @@ namespace ProyectoAeroline.Controllers
                 }
 
                 // Guardar la ruta relativa en la BD
-                oEmpleados.FotoRuta = "/img/empleados/" + nombreArchivo;
+                oEmpleados.FotoRuta = "/img/Empleados/" + nombreArchivo;
             }
 
             // 2️⃣ Llamar al método Data para guardar el empleado
@@ -101,7 +101,7 @@ namespace ProyectoAeroline.Controllers
             // 🆕 Manejo de la foto si se sube una nueva
             if (oEmpleado.FotoArchivo != null && oEmpleado.FotoArchivo.Length > 0)
             {
-                string carpetaFotos = Path.Combine(_webHostEnvironment.WebRootPath, "img", "empleados");
+                string carpetaFotos = Path.Combine(_webHostEnvironment.WebRootPath, "img", "Empleados");
 
                 // Crear carpeta si no existe
                 if (!Directory.Exists(carpetaFotos))
@@ -120,7 +120,7 @@ namespace ProyectoAeroline.Controllers
                 }
 
                 // Actualizar ruta en BD
-                oEmpleado.FotoRuta = "/img/empleados/" + nombreArchivo;
+                oEmpleado.FotoRuta = "/img/Empleados/" + nombreArchivo;
             }
 
             var respuesta = _EmpleadosData.MtdEditarEmpleado(oEmpleado);

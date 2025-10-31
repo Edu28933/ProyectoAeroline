@@ -11,5 +11,12 @@
         public string? Direccion { get; set; }  // Dirección exacta
         public int? Telefono { get; set; }      // Número telefónico (opcional)
         public string? Estado { get; set; }     // Estado (Activo/Inactivo)
+
+        //PARA PODER LLAMAR A LOS CAMPOS DE LA BDD
+        public class EmpleadosModel
+        {
+            public int IdEmpleado { get; set; }
+            public string? Nombre { get; set; }
+        }
     }
 }

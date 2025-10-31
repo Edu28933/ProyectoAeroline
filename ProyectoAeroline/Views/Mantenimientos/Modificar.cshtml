@@ -5,75 +5,137 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Modificar</h1>
+<div class="card shadow-lg border-0 rounded-4 mt-4">
+    <div class="card-header bg-primary text-white rounded-top-4 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0"><i class="bi bi-pencil-square"></i> Modificar mantenimiento</h4>
+        <a href="/Mantenimientos/Listar" class="btn btn-light btn-sm fw-bold">
+            <i class="bi bi-arrow-left-circle"></i> Regresar
+        </a>
+    </div>
 
-<h4>MantenimientosModel</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Modificar">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="IdMantenimiento" class="control-label"></label>
-                <input asp-for="IdMantenimiento" class="form-control" />
-                <span asp-validation-for="IdMantenimiento" class="text-danger"></span>
+    <div class="card-body bg-light rounded-bottom-4">
+        <form asp-action="Modificar" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+                    <label asp-for="IdMantenimiento" class="form-label fw-bold">ID Mantenimiento</label>
+                    <input asp-for="IdMantenimiento" class="form-control" readonly />
+                    <span asp-validation-for="IdMantenimiento" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Avión</label>
+                    <select asp-for="IdAvion" asp-items="ViewBag.Aviones" class="form-select"></select>
+                    <span asp-validation-for="IdAvion" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Empleado</label>
+                    <select asp-for="IdEmpleado" asp-items="ViewBag.Empleados" class="form-select">
+                        <option value="">-- Sin asignar --</option>
+                    </select>
+                    <span asp-validation-for="IdEmpleado" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="FechaIngreso" class="form-label fw-bold">Fecha de ingreso</label>
+                    <input asp-for="FechaIngreso" class="form-control" type="date" />
+                    <span asp-validation-for="FechaIngreso" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="FechaSalida" class="form-label fw-bold">Fecha de salida</label>
+                    <input asp-for="FechaSalida" class="form-control" type="date" />
+                    <span asp-validation-for="FechaSalida" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Tipo" class="form-label fw-bold">Tipo</label>
+                    <select asp-for="Tipo" asp-items="ViewBag.Tipos" class="form-select" id="Tipo"></select>
+                    <span asp-validation-for="Tipo" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Costo" class="form-label fw-bold">Costo</label>
+                    <input asp-for="Costo" id="Costo" class="form-control" readonly />
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="CostoExtra" class="form-label fw-bold">Costo extra</label>
+                    <input asp-for="CostoExtra" class="form-control" />
+                </div>
+
+                <div class="col-md-12">
+                    <label asp-for="Descripcion" class="form-label fw-bold">Descripción</label>
+                    <textarea asp-for="Descripcion" class="form-control" rows="3"></textarea>
+                    <span asp-validation-for="Descripcion" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Estado" class="form-label fw-bold">Estado</label>
+                    <select asp-for="Estado" asp-items="ViewBag.Estados" class="form-select"></select>
+                    <span asp-validation-for="Estado" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="IdAvion" class="control-label"></label>
-                <input asp-for="IdAvion" class="form-control" />
-                <span asp-validation-for="IdAvion" class="text-danger"></span>
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-success px-4">
+                    <i class="bi bi-save"></i> Guardar cambios
+                </button>
+                <a href="/Mantenimientos/Listar" class="btn btn-outline-secondary ms-2 px-4">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
             </div>
-            <div class="form-group">
-                <label asp-for="IdEmpleado" class="control-label"></label>
-                <input asp-for="IdEmpleado" class="form-control" />
-                <span asp-validation-for="IdEmpleado" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FechaIngreso" class="control-label"></label>
-                <input asp-for="FechaIngreso" class="form-control" />
-                <span asp-validation-for="FechaIngreso" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="FechaSalida" class="control-label"></label>
-                <input asp-for="FechaSalida" class="form-control" />
-                <span asp-validation-for="FechaSalida" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Tipo" class="control-label"></label>
-                <input asp-for="Tipo" class="form-control" />
-                <span asp-validation-for="Tipo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Costo" class="control-label"></label>
-                <input asp-for="Costo" class="form-control" />
-                <span asp-validation-for="Costo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CostoExtra" class="control-label"></label>
-                <input asp-for="CostoExtra" class="form-control" />
-                <span asp-validation-for="CostoExtra" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Descripcion" class="control-label"></label>
-                <input asp-for="Descripcion" class="form-control" />
-                <span asp-validation-for="Descripcion" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Estado" class="control-label"></label>
-                <input asp-for="Estado" class="form-control" />
-                <span asp-validation-for="Estado" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-            <a href="/Mantenimientos/Listar" class="btn btn-outline-secondary">
-                Regresar
-            </a>
+
         </form>
     </div>
 </div>
 
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Asignar costo automáticamente según el tipo de mantenimiento
+        const tipo = document.getElementById("Tipo");
+        const costo = document.getElementById("Costo");
+
+        function actualizarCosto() {
+            switch (tipo.value) {
+                case "Preventivo":
+                    costo.value = 5000;
+                    break;
+                case "Correctivo":
+                    costo.value = 8000;
+                    break;
+                case "Inspección":
+                    costo.value = 3000;
+                    break;
+                default:
+                    costo.value = "";
+                    break;
+            }
+        }
+
+        tipo.addEventListener("change", actualizarCosto);
+
+        // Inicializar costo al cargar la vista
+        actualizarCosto();
+
+        // Validación de fechas en cliente
+        document.querySelector("form").addEventListener("submit", function (e) {
+            const hoy = new Date().toISOString().split("T")[0];
+            const ingreso = document.querySelector("[name='FechaIngreso']").value;
+            const salida = document.querySelector("[name='FechaSalida']").value;
+
+            if (ingreso < hoy) {
+                alert("La fecha de ingreso no puede ser menor al día actual.");
+                e.preventDefault();
+            } else if (salida && salida < ingreso) {
+                alert("La fecha de salida no puede ser menor que la fecha de ingreso.");
+                e.preventDefault();
+            }
+        });
+    </script>
+
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 }
