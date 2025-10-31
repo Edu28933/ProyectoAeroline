@@ -40,7 +40,9 @@
                             <td>@item.Modelo</td>
                             <td>@item.Tipo</td>
                             <td>@item.Capacidad</td>
-                            <td>@item.FechaUltimoMantenimiento.ToString("dd/MM/yyyy")</td>
+                            <td>@(item.FechaUltimoMantenimiento.HasValue
+                            ? item.FechaUltimoMantenimiento.Value.ToString("dd/MM/yyyy"): "-")
+                            </td>
                             <td>@item.RangoKm</td>
                             <td>
                                 <span class="badge @(item.Estado == "Activo" ? "bg-success" : "bg-danger")">

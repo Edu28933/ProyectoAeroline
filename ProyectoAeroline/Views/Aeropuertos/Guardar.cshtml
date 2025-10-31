@@ -18,43 +18,63 @@
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
             <div class="row g-3">
+                <!-- Combo Empleado -->
                 <div class="col-md-6">
-                    <input asp-for="IdEmpleado" class="form-control" placeholder="IdEmpleado" />
+                    <label asp-for="IdEmpleado" class="form-label fw-bold">Empleado</label>
+                    <select asp-for="IdEmpleado" class="form-select" asp-items="ViewBag.Empleados">
+                        <option value="">-- Seleccione Empleado --</option>
+                    </select>
                     <span asp-validation-for="IdEmpleado" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6">
-                    <input asp-for="IATA" class="form-control" placeholder="IATA" />
+                    <label asp-for="IATA" class="form-label fw-bold">Código IATA</label>
+                    <input asp-for="IATA" class="form-control" readonly />
                     <span asp-validation-for="IATA" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6">
+                    <label asp-for="Nombre" class="control-label"></label>
                     <input asp-for="Nombre" class="form-control" placeholder="Nombre" />
                     <span asp-validation-for="Nombre" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6">
-                    <input asp-for="Pais" class="form-control" placeholder="Pais" />
+                    <label asp-for="Pais" class="form-label fw-bold">País</label>
+                    @Html.DropDownListFor(model => model.Pais,
+                    new SelectList(ViewBag.Paises as List<string> ?? new List<string>(), Model.Pais),
+                                        "-- Seleccione País --",
+                                        new { @class = "form-select", id = "ddlPais" })
                     <span asp-validation-for="Pais" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6">
-                    <input asp-for="Ciudad" class="form-control" placeholder="Ciudad" />
+                    <label asp-for="Ciudad" class="form-label fw-bold">Ciudad</label>
+                    @Html.DropDownListFor(model => model.Ciudad,
+                                        new SelectList(ViewBag.Ciudades as List<string> ?? new List<string>(), Model.Ciudad),
+                                        "-- Seleccione Ciudad --",
+                                        new { @class = "form-select", id = "ddlCiudad" })
                     <span asp-validation-for="Ciudad" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6">
+                    <label asp-for="Direccion" class="control-label"></label>
                     <input asp-for="Direccion" class="form-control" placeholder="Direccion" />
                     <span asp-validation-for="Direccion" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6">
+                    <label asp-for="Telefono" class="control-label"></label>
                     <input asp-for="Telefono" class="form-control" placeholder="Telefono" />
                     <span asp-validation-for="Telefono" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6">
-                    <input asp-for="Estado" class="form-control" placeholder="Estado" />
+                    <label asp-for="Estado" class="control-label"></label>
+                    @Html.DropDownListFor(model => model.Estado,
+                                        new SelectList(ViewBag.Estados as List<string> ?? new List<string>(), Model.Estado),
+                                        "-- Seleccione Estado --",
+                                        new { @class = "form-select" })
                     <span asp-validation-for="Estado" class="text-danger"></span>
                 </div>
             </div>
@@ -71,8 +91,27 @@
     </div>
 </div>
 
+
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#ddlPais').change(function () {
+                var pais = $(this).val();
+                $('#ddlCiudad').html('<option>-- Cargando ciudades --</option>');
+
+                if (pais) {
+                    $.getJSON('/Aeropuertos/ObtenerCiudades', { pais: pais }, function (data) {
+                        var options = '<option value="">-- Seleccione Ciudad --</option>';
+                        $.each(data, function (i, ciudad) {
+                            options += '<option value="' + ciudad + '">' + ciudad + '</option>';
+                        });
+                        $('#ddlCiudad').html(options);
+                    });
+                } else {
+                    $('#ddlCiudad').html('<option value="">-- Seleccione Ciudad --</option>');
+                }
+            });
+        });
+    </script>
 }

@@ -34,7 +34,8 @@ namespace ProyectoAeroline.Data
                                 Modelo = dr["Modelo"].ToString(),
                                 Tipo = dr["Tipo"].ToString(),
                                 Capacidad = Convert.ToInt32(dr["Capacidad"]),
-                                FechaUltimoMantenimiento = Convert.ToDateTime(dr["FechaUltimoMantenimiento"]),
+                                FechaUltimoMantenimiento = dr["FechaUltimoMantenimiento"] == DBNull.Value
+                                    ? (DateTime?)null: Convert.ToDateTime(dr["FechaUltimoMantenimiento"]),
                                 RangoKm = Convert.ToInt32(dr["RangoKm"]),
                                 Estado = dr["Estado"].ToString()
                             });
@@ -68,7 +69,10 @@ namespace ProyectoAeroline.Data
                     cmd.Parameters.AddWithValue("@Modelo", oAvion.Modelo);
                     cmd.Parameters.AddWithValue("@Tipo", oAvion.Tipo);
                     cmd.Parameters.AddWithValue("@Capacidad", oAvion.Capacidad);
-                    cmd.Parameters.AddWithValue("@FechaUltimoMantenimiento", oAvion.FechaUltimoMantenimiento);
+
+                    //No se envía el campo por qué el trigger lo manejará
+                    //cmd.Parameters.AddWithValue("@FechaUltimoMantenimiento", (object?)oAvion.FechaUltimoMantenimiento ?? DBNull.Value);
+                    
                     cmd.Parameters.AddWithValue("@RangoKm", oAvion.RangoKm);
                     cmd.Parameters.AddWithValue("@Estado", oAvion.Estado);
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -105,7 +109,8 @@ namespace ProyectoAeroline.Data
                     cmd.Parameters.AddWithValue("@Modelo", oAvion.Modelo);
                     cmd.Parameters.AddWithValue("@Tipo", oAvion.Tipo);
                     cmd.Parameters.AddWithValue("@Capacidad", oAvion.Capacidad);
-                    cmd.Parameters.AddWithValue("@FechaUltimoMantenimiento", oAvion.FechaUltimoMantenimiento);
+                    //No se envía el campo por qué el trigger lo manejará
+                    //cmd.Parameters.AddWithValue("@FechaUltimoMantenimiento", (object?)oAvion.FechaUltimoMantenimiento ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@RangoKm", oAvion.RangoKm);
                     cmd.Parameters.AddWithValue("@Estado", oAvion.Estado);
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -148,7 +153,8 @@ namespace ProyectoAeroline.Data
                             oAvion.Modelo = dr["Modelo"].ToString();
                             oAvion.Tipo = dr["Tipo"].ToString();
                             oAvion.Capacidad = Convert.ToInt32(dr["Capacidad"]);
-                            oAvion.FechaUltimoMantenimiento = Convert.ToDateTime(dr["FechaUltimoMantenimiento"]);
+                            oAvion.FechaUltimoMantenimiento = dr["FechaUltimoMantenimiento"] == DBNull.Value
+                                ? (DateTime?)null : Convert.ToDateTime(dr["FechaUltimoMantenimiento"]);
                             oAvion.RangoKm = Convert.ToInt32(dr["RangoKm"]);
                             oAvion.Estado = dr["Estado"].ToString();
                         }

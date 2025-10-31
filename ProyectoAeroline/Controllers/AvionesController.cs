@@ -36,17 +36,23 @@ namespace ProyectoAeroline.Controllers
         {
             // Obtener aerolíneas activas desde el usp
             var aerolineas = _AvionesData.MtdObtenerAerolineas();
-            ViewBag.Aerolineas = new SelectList(aerolineas, "IdAerolinea", "Nombre");
+            ViewBag.Aerolineas = aerolineas
+                .Select(a => new SelectListItem
+                {
+                    Value = a.IdAerolinea.ToString(),
+                    Text = $"{a.IdAerolinea} - {a.Nombre}"
+                }).ToList();
 
-            ViewBag.Tipos = new SelectList(AvionesModel.Tipos);
-            ViewBag.Modelos = new SelectList(AvionesModel.Modelos);
-            ViewBag.Capacidades = new SelectList(AvionesModel.Capacidades);
-            ViewBag.Estados = new SelectList(AvionesModel.Estados);
+            ViewBag.Tipos = new SelectList(AvionesModel.Tipos ?? new List<string>());
+            ViewBag.Modelos = new SelectList(AvionesModel.Modelos ?? new List<string>());
+            ViewBag.Capacidades = new SelectList(AvionesModel.Capacidades ?? new List<int>());
+            ViewBag.Estados = new SelectList(AvionesModel.Estados ?? new List<string>());
+
 
             var model = new AvionesModel
             {
                 Placa = GenerarPlaca(),
-                FechaUltimoMantenimiento = DateTime.Now
+                FechaUltimoMantenimiento = null
             };
 
             return View(model);
@@ -56,8 +62,14 @@ namespace ProyectoAeroline.Controllers
         [HttpPost]
         public IActionResult Guardar(AvionesModel oAviones)
         {
+            if (!ModelState.IsValid)
+                return View(oAviones);
+
             oAviones.Placa ??= GenerarPlaca();
+            oAviones.FechaUltimoMantenimiento = null;
+
             var respuesta = _AvionesData.MtdAgregarAvion(oAviones);
+
 
             if (respuesta)
                 return RedirectToAction("Listar");
@@ -70,14 +82,26 @@ namespace ProyectoAeroline.Controllers
         // Muestra el formulario llamador Modificar
         public IActionResult Modificar(int CodigoAvion)
         {
-            var oAvion = _AvionesData.MtdBuscarAvion(CodigoAvion);
-            var aerolineas = _AvionesData.MtdObtenerAerolineas();
-            ViewBag.Aerolineas = new SelectList(aerolineas, "IdAerolinea", "Nombre", oAvion.IdAerolinea);
 
-            ViewBag.Tipos = new SelectList(AvionesModel.Tipos, oAvion.Tipo);
-            ViewBag.Modelos = new SelectList(AvionesModel.Modelos, oAvion.Modelo);
-            ViewBag.Capacidades = new SelectList(AvionesModel.Capacidades, oAvion.Capacidad);
-            ViewBag.Estados = new SelectList(AvionesModel.Estados, oAvion.Estado);
+            var oAvion = _AvionesData.MtdBuscarAvion(CodigoAvion);
+
+            //Llamado de IdAerolinea y Nombre a la BDD
+            var aerolineas = _AvionesData.MtdObtenerAerolineas();
+            ViewBag.Aerolineas = aerolineas
+                .Select(a => new SelectListItem
+                {
+                    Value = a.IdAerolinea.ToString(),
+                    Text = $"{a.IdAerolinea} - {a.Nombre}",
+                    Selected = a.IdAerolinea == oAvion.IdAerolinea
+                }).ToList();
+
+
+            ViewBag.Tipos = new SelectList(AvionesModel.Tipos ?? new List<string>(), oAvion.Tipo);
+            ViewBag.Modelos = new SelectList(AvionesModel.Modelos ?? new List<string>(), oAvion.Modelo);
+            ViewBag.Capacidades = new SelectList(AvionesModel.Capacidades ?? new List<int>(), oAvion.Capacidad);
+            ViewBag.Estados = new SelectList(AvionesModel.Estados ?? new List<string>(), oAvion.Estado);
+
+
 
             return View(oAvion);
 
@@ -92,6 +116,7 @@ namespace ProyectoAeroline.Controllers
         [HttpPost]
         public IActionResult Modificar(AvionesModel oAvion)
         {
+            oAvion.FechaUltimoMantenimiento = null;
             var respuesta = _AvionesData.MtdEditarAvion(oAvion);
             if (respuesta)
                 return RedirectToAction("Listar");

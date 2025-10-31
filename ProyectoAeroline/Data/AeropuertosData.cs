@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using ProyectoAeroline.Models;
 using System.Data;
+using static ProyectoAeroline.Models.AvionesModel;
 namespace ProyectoAeroline.Data
 {
     public class AeropuertosData
@@ -188,6 +189,36 @@ namespace ProyectoAeroline.Data
             }
 
             return respuesta;
+        }
+
+        //MÉTODO QUE BUSCA Y LISTA LOS ID PARA AGREGAR
+        public List<EmpleadosModel> MtdObtenerEmpleados()
+        {
+            List<EmpleadosModel> lista = new List<EmpleadosModel>();
+            var conn = new Conexion();
+
+            using (var conexion = new SqlConnection(conn.GetConnectionString()))
+            {
+                conexion.Open();
+                using (var cmd = new SqlCommand("usp_EmpleadosListar", conexion))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            lista.Add(new EmpleadosModel
+                            {
+                                IdEmpleado = Convert.ToInt32(dr["IdEmpleado"]),
+                                Nombre = dr["Nombre"].ToString()  // viene como "1 - Juan Pérez"
+                            });
+                        }
+                    }
+                }
+            }
+
+            return lista;
         }
     }
 }
