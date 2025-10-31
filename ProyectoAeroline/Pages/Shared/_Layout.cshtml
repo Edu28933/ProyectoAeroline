@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@* Pages/Shared/_Layout.cshtml *@
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
@@ -60,5 +61,44 @@
           }));
         });
     </script>
+
+
+    @* Pegar en Pages/Shared/_Layout.cshtml, antes de </body> *@
+    @if (User?.Identity?.IsAuthenticated ?? false)
+    {
+        <script>
+            (() => {
+              const LOGOUT_URL = "/Account/Logout";
+
+              // 1) Inyecta estados en el historial para que "Atrás" dispare popstate sin salirte aún de la página
+              try {
+                history.replaceState({ guard: true }, document.title, location.href);
+                history.pushState({ guard: true }, document.title, location.href);
+              } catch {}
+
+              // 2) Al presionar Atrás: cerrar sesión y llevar a Login
+              let loggingOut = false;
+              window.addEventListener("popstate", () => {
+                if (loggingOut) return;
+                loggingOut = true;
+
+                // Cierra sesión en el servidor
+                fetch(LOGOUT_URL, { method: "GET", credentials: "include", cache: "no-store" })
+                  .catch(() => { /* no-op */ })
+                  .finally(() => {
+                    // Redirige al Login y evita dejar rastro en el historial
+                    location.replace("/Account/Login");
+                  });
+              }, { passive: true });
+
+              // 3) Si el navegador intenta “revivir” la página protegida desde el Back/Forward cache, forzar reload
+              window.addEventListener("pageshow", (e) => {
+                if (e.persisted) location.reload();
+              });
+            })();
+        </script>
+    }
+
+
 </body>
 </html>

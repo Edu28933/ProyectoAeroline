@@ -1,11 +1,27 @@
-﻿@* Sidebar reutilizable *@
+﻿@* Pages/Shared/_Sidebar.cshtml *@
+@using System.Security.Claims
+@{
+    // Muestra el nombre del usuario priorizando Claims; luego Session; luego Identity.Name
+    var nombre =
+        User.FindFirst(ClaimTypes.Name)?.Value
+        ?? User.FindFirst("Nombre")?.Value
+        ?? Context.Session?.GetString("Nombre")
+        ?? User.Identity?.Name
+        ?? "Usuario";
+
+    // ⬇️ ID del usuario actual para armar la ruta a Usuarios/Modificar
+    var idUsuario =
+        User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+        ?? Context.Session?.GetInt32("IdUsuario")?.ToString();
+}
+
 <aside id="sidebar" class="sb-sidebar text-bg-dark">
     <div class="sb-brand px-3 py-3 d-flex align-items-center">
         <i class="bi bi-bootstrap-fill fs-4 me-2"></i>
-        <span class="sb-brand-text">Sidebar</span>
+        <span class="sb-brand-text">Aerolinea</span>
     </div>
 
-    <hr class="m-0 opacity-25">
+    <hr class="m-0 opacity-25" />
 
     <nav class="sb-nav py-3">
         <a class="sb-link" asp-page="/Index">
@@ -29,21 +45,57 @@
         </a>
 
         <a class="sb-link" asp-controller="Mantenimientos" asp-action="Listar">
-            <i class="bi bi-people"></i><span>Mantenimientos</span>
+            <i class="bi bi-tools"></i><span>Mantenimientos</span>
         </a>
     </nav>
 
     <div class="sb-footer mt-auto px-3 py-3">
         <div class="dropdown">
-            <a class="d-flex align-items-center text-decoration-none text-white dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                <img src="https://avatars.githubusercontent.com/u/1?v=4" alt="mdo" class="rounded-circle me-2" width="32" height="32">
-                <strong class="sb-user">mdo</strong>
+            <a class="d-flex align-items-center text-decoration-none text-white dropdown-toggle"
+               href="#" data-bs-toggle="dropdown">
+                <img src="https://avatars.githubusercontent.com/u/1?v=4"
+                     alt="Usuario" class="rounded-circle me-2"
+                     width="32" height="32">
+                <strong class="sb-user">@nombre</strong>
             </a>
             <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                <li><a class="dropdown-item" href="#">Settings</a></li>
-                <li><a class="dropdown-item" href="#">Profile</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#">Sign out</a></li>
+                <li>
+                    <a class="dropdown-item"
+                       asp-controller="Usuarios"
+                       asp-action="Modificar"
+                       asp-route-id="@idUsuario"
+                       asp-route-IdUsuario="@idUsuario">
+                        Configuración
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item"
+                       asp-controller="Usuarios"
+                       asp-action="Modificar"
+                       asp-route-id="@idUsuario"
+                       asp-route-IdUsuario="@idUsuario">
+                        Perfil
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider" /></li>
+
+                @*  Opción 1: Logout por GET *@
+                <li>
+                    <a class="dropdown-item" asp-controller="Account" asp-action="Logout">
+                        Cerrar sesión
+                    </a>
+                </li>
+
+                @*  Opción 2 (POST) 
+                <li>
+                    <form asp-controller="Account" asp-action="Logout" method="post" class="px-2 m-0">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="dropdown-item w-100 text-start">
+                            Cerrar sesión
+                        </button>
+                    </form>
+                </li>
+                *@
             </ul>
         </div>
     </div>
