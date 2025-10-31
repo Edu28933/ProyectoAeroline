@@ -20,6 +20,7 @@
             <h5 class="text-center mb-4 text-danger fw-semibold">
                 ¿Seguro que deseas eliminar este mantenimiento?
             </h5>
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3 text-center fw-semibold"></div>
 
             <form asp-action="Eliminar" method="post">
                 @Html.AntiForgeryToken()
@@ -28,44 +29,53 @@
                 <input type="hidden" asp-for="IdMantenimiento" />
 
                 <div class="mb-3">
-                    <label class="form-label">IdMantenimiento</label>
-                    <input class="form-control" value="@Model.IdMantenimiento" readonly />
+                    <label asp-for="IdMantenimiento" class="form-label"></label>
+                    <input asp-for="IdMantenimiento" class="form-control" readonly />
                 </div>
+
                 <div class="mb-3">
-                    <label class="form-label">IdAvion</label>
-                    <input class="form-control" value="@Model.IdAvion" readonly />
+                    <label asp-for="IdAvion" class="form-label"></label>
+                    <input asp-for="IdAvion" class="form-control" readonly />
                 </div>
+
                 <div class="mb-3">
-                    <label class="form-label">IdEmpleado</label>
-                    <input class="form-control" value="@Model.IdEmpleado" readonly />
+                    <label asp-for="IdEmpleado" class="form-label"></label>
+                    <input asp-for="IdEmpleado" class="form-control" readonly />
                 </div>
+
                 <div class="mb-3">
-                    <label class="form-label">Fecha Ingreso</label>
-                    <input class="form-control" value="@Model.FechaIngreso" readonly />
+                    <label asp-for="FechaIngreso" class="form-label"></label>
+                    <input asp-for="FechaIngreso" class="form-control" readonly />
                 </div>
+
                 <div class="mb-3">
-                    <label class="form-label">Fecha Salida</label>
-                    <input class="form-control" value="@Model.FechaSalida" readonly />
+                    <label asp-for="FechaSalida" class="form-label"></label>
+                    <input asp-for="FechaSalida" class="form-control" readonly />
                 </div>
+
                 <div class="mb-3">
-                    <label class="form-label">Tipo</label>
-                    <input class="form-control" value="@Model.Tipo" readonly />
+                    <label asp-for="Tipo" class="form-label"></label>
+                    <input asp-for="Tipo" class="form-control" readonly />
                 </div>
+
                 <div class="mb-3">
-                    <label class="form-label">Costo</label>
-                    <input class="form-control" value="@Model.Costo" readonly />
+                    <label asp-for="Costo" class="form-label"></label>
+                    <input asp-for="Costo" class="form-control" readonly />
                 </div>
+
                 <div class="mb-3">
-                    <label class="form-label">Costo Extra</label>
-                    <input class="form-control" value="@Model.CostoExtra" readonly />
+                    <label asp-for="CostoExtra" class="form-label"></label>
+                    <input asp-for="CostoExtra" class="form-control" readonly />
                 </div>
+
                 <div class="mb-3">
-                    <label class="form-label">Descripción</label>
-                    <input class="form-control" value="@Model.Descripcion" readonly />
+                    <label asp-for="Descripcion" class="form-label"></label>
+                    <textarea asp-for="Descripcion" class="form-control" rows="3" readonly></textarea>
                 </div>
+
                 <div class="mb-3">
-                    <label class="form-label">Estado</label>
-                    <input class="form-control" value="@Model.Estado" readonly />
+                    <label asp-for="Estado" class="form-label"></label>
+                    <input asp-for="Estado" class="form-control" readonly />
                 </div>
 
 
