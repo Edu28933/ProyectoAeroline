@@ -169,8 +169,7 @@ namespace ProyectoAeroline.Data
             bool respuesta = false;
             var conn = new Conexion();
 
-            try
-            {
+            
                 using (var conexion = new SqlConnection(conn.GetConnectionString()))
                 {
                     conexion.Open();
@@ -181,12 +180,7 @@ namespace ProyectoAeroline.Data
                 }
 
                 respuesta = true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                respuesta = false;
-            }
+            
 
             return respuesta;
         }

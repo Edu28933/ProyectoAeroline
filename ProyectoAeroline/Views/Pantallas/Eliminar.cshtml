@@ -1,6 +1,6 @@
-﻿@model ProyectoAeroline.Models.UsuariosModel
+@model ProyectoAeroline.Models.PantallasModel
 @{
-    ViewData["Title"] = "Eliminar Usuario";
+    ViewData["Title"] = "Eliminar Pantalla";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
@@ -8,43 +8,48 @@
     <div class="card shadow-lg border-0 rounded-4">
         <div class="card-header bg-danger text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center">
             <h3 class="mb-0">
-                <i class="bi bi-person-x-fill"></i> Eliminar Usuario
+                <i class="bi bi-window-x"></i> Eliminar Pantalla
             </h3>
-            <a href="/Usuarios/Listar" class="btn btn-light btn-sm fw-bold">
+            <a href="/Pantallas/Listar" class="btn btn-light btn-sm fw-bold">
                 <i class="bi bi-arrow-left-circle"></i> Regresar
             </a>
         </div>
 
         <div class="card-body bg-light">
             <h5 class="text-center mb-4 text-danger fw-semibold">
-                ¿Seguro que deseas eliminar este usuario?
+                ¿Seguro que deseas eliminar esta pantalla?
             </h5>
 
             <form asp-action="Eliminar" method="post">
                 @Html.AntiForgeryToken()
 
                 <!-- Campo oculto: ESTE ES CLAVE -->
-                <input type="hidden" asp-for="IdUsuario" />
+                <input type="hidden" asp-for="IdPantalla" />
 
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label class="form-label fw-bold">ID Usuario</label>
-                        <input class="form-control" value="@Model.IdUsuario" readonly />
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Rol</label>
-                        <input class="form-control" value="@Model.IdRol" readonly />
+                        <label class="form-label fw-bold">ID Pantalla</label>
+                        <input class="form-control" value="@Model.IdPantalla" readonly />
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label fw-bold">Nombre</label>
-                        <input class="form-control" value="@Model.Nombre" readonly />
+                        <input class="form-control" value="@Model.NombrePantalla" readonly />
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-bold">Correo</label>
-                        <input class="form-control" value="@(Model.Correo ?? "N/A")" readonly />
+                        <label class="form-label fw-bold">Ruta</label>
+                        <input class="form-control" value="@(Model.Ruta ?? "N/A")" readonly />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Icono</label>
+                        <input class="form-control" value="@(Model.Icono ?? "Sin icono")" readonly />
+                    </div>
+
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold">Descripción</label>
+                        <textarea class="form-control" rows="3" readonly>@(Model.Descripcion ?? "Sin descripción")</textarea>
                     </div>
 
                     <div class="col-md-6">
@@ -57,7 +62,7 @@
                     <button type="submit" class="btn btn-danger px-4 me-2">
                         <i class="bi bi-trash3-fill"></i> Eliminar definitivamente
                     </button>
-                    <a href="/Usuarios/Listar" class="btn btn-outline-secondary px-4">
+                    <a href="/Pantallas/Listar" class="btn btn-outline-secondary px-4">
                         <i class="bi bi-x-circle"></i> Cancelar
                     </a>
                 </div>
@@ -65,3 +70,4 @@
         </div>
     </div>
 </div>
+

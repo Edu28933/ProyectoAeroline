@@ -1,78 +1,130 @@
 ﻿@model IEnumerable<ProyectoAeroline.Models.UsuariosModel>
 
 @{
-    ViewData["Title"] = "Listar";
+    ViewData["Title"] = "Listar Usuarios";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Listar</h1>
+<div class="container-fluid px-4 mt-4">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-primary text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center">
+            <h3 class="mb-0"><i class="bi bi-people-fill"></i> Lista de Usuarios</h3>
+            <a href="/Usuarios/Guardar" class="btn btn-light btn-sm fw-bold">
+                <i class="bi bi-plus-circle"></i> Agregar
+            </a>
+        </div>
 
-<p>
-    <a href="/Usuarios/Guardar" class="btn btn-primary">
-        Agregar nuevo usuario
-    </a>
+        <div class="card-body bg-light">
+            <!-- Barra de búsqueda -->
+            <div class="mb-3">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" id="buscarInput" class="form-control" placeholder="Buscar por nombre, correo, ID o rol..." />
+                    <button class="btn btn-primary" type="button" id="btnBuscar">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                    <button class="btn btn-outline-secondary" type="button" id="btnLimpiar">
+                        <i class="bi bi-x-circle"></i> Limpiar
+                    </button>
+                </div>
+            </div>
 
-</p>
+            <table id="tablaUsuarios" class="table table-hover align-middle text-center w-100">
+                <thead class="table-primary">
+                    <tr>
+                        <th>ID</th>
+                        <th>Rol</th>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
 
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.IdUsuario</td>
+                            <td>@item.IdRol</td>
+                            <td>@item.Nombre</td>
+                            <td>@(item.Correo ?? "N/A")</td>
+                            <td>
+                                <span class="badge @(item.Estado == "Activo" ? "bg-success" : "bg-danger")">
+                                    @item.Estado
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="@Url.Action("Modificar", "Usuarios", new { CodigoUsuario = item.IdUsuario })"
+                                       class="btn btn-outline-secondary btn-sm" title="Modificar">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a href="@Url.Action("Eliminar", "Usuarios", new { CodigoUsuario = item.IdUsuario })"
+                                       class="btn btn-outline-danger btn-sm"
+                                       title="Eliminar"
+                                       onclick="return confirm('¿Seguro que deseas eliminar este usuario?');">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.IdUsuario)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdRol)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Nombre)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Contraseña)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Estado)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdUsuario)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdRol)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nombre)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Contraseña)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Estado)
-            </td>
-            <td>
-                    @Html.ActionLink(
-                    "Modificar",
-                                "Modificar",
-                                "Usuarios",
-                                new { CodigoUsuario = item.IdUsuario },
-                                new { @class = "btn btn-sm btn-warning" }
-                                )
-                |
-                @Html.ActionLink(
-                                "Eliminar",
-                                "Eliminar",                 // Acción en tu UsuariosController
-                                "Usuarios",                 // Controlador
-                                new { CodigoUsuario = item.IdUsuario }, // route values
-                                new { @class = "btn btn-sm btn-danger", onclick = "return confirm('¿Seguro que deseas eliminar este usuario?');" } // html attrs
-                                )
+@section Scripts {
+    <script>
+        // Asegurar que jQuery y DataTables estén cargados
+        (function() {
+            function initTable() {
+                if (typeof jQuery === 'undefined' || typeof jQuery.fn.DataTable === 'undefined') {
+                    setTimeout(initTable, 100);
+                    return;
+                }
 
-            </td>
-        </tr>
+                var table = $('#tablaUsuarios').DataTable({
+                    language: { url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json' },
+                    pageLength: 10,
+                    lengthMenu: [5, 10, 25, 50],
+                    responsive: true,
+                    ordering: true,
+                    columnDefs: [
+                        { orderable: false, targets: [5] } // acciones no ordenables
+                    ]
+                });
+
+                // Funcionalidad de búsqueda
+                $('#btnBuscar').on('click', function (e) {
+                    e.preventDefault();
+                    var searchValue = $('#buscarInput').val();
+                    table.search(searchValue).draw();
+                });
+
+                $('#btnLimpiar').on('click', function (e) {
+                    e.preventDefault();
+                    $('#buscarInput').val('');
+                    table.search('').draw();
+                });
+
+                // Búsqueda al presionar Enter
+                $('#buscarInput').on('keyup', function (e) {
+                    if (e.key === 'Enter' || e.keyCode === 13) {
+                        e.preventDefault();
+                        table.search(this.value).draw();
+                    }
+                });
+            }
+
+            // Intentar inicializar cuando el DOM esté listo
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initTable);
+            } else {
+                initTable();
+            }
+        })();
+    </script>
 }
-    </tbody>
-</table>

@@ -1,4 +1,4 @@
-﻿@model ProyectoAeroline.Models.UsuariosModel
+@model ProyectoAeroline.Models.PantallasModel
 
 @{
     ViewData["Title"] = "Guardar";
@@ -7,8 +7,8 @@
 
 <div class="card shadow-lg border-0 rounded-4 mt-4">
     <div class="card-header bg-dark text-white rounded-top-4 d-flex justify-content-between align-items-center">
-        <h4 class="mb-0"><i class="bi bi-person-plus-fill"></i> Registrar nuevo usuario</h4>
-        <a href="/Usuarios/Listar" class="btn btn-outline-light btn-sm">
+        <h4 class="mb-0"><i class="bi bi-window-plus"></i> Registrar nueva pantalla</h4>
+        <a href="/Pantallas/Listar" class="btn btn-outline-light btn-sm">
             <i class="bi bi-arrow-left"></i> Regresar
         </a>
     </div>
@@ -24,28 +24,30 @@
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                 <div class="row g-3">
-                    <div class="col-md-6">
-                        <label asp-for="IdRol" class="form-label fw-bold">Rol</label>
-                        <input asp-for="IdRol" class="form-control" type="number" placeholder="ID del Rol (1-Admin, 2-Usuario, etc.)" />
-                        <span asp-validation-for="IdRol" class="text-danger"></span>
+                    <div class="col-md-12">
+                        <label asp-for="NombrePantalla" class="form-label fw-bold">Nombre de la Pantalla <span class="text-danger">*</span></label>
+                        <input asp-for="NombrePantalla" class="form-control" placeholder="Ej: Gestión de Usuarios, Reportes" required />
+                        <span asp-validation-for="NombrePantalla" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="Nombre" class="form-label fw-bold">Nombre completo</label>
-                        <input asp-for="Nombre" class="form-control" placeholder="Nombre del usuario" required />
-                        <span asp-validation-for="Nombre" class="text-danger"></span>
+                        <label asp-for="Ruta" class="form-label fw-bold">Ruta</label>
+                        <input asp-for="Ruta" class="form-control" placeholder="Ej: /Usuarios/Listar" />
+                        <small class="form-text text-muted">Ruta donde se encuentra esta pantalla</small>
+                        <span asp-validation-for="Ruta" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="Correo" class="form-label fw-bold">Correo electrónico</label>
-                        <input asp-for="Correo" class="form-control" type="email" placeholder="correo@ejemplo.com" />
-                        <span asp-validation-for="Correo" class="text-danger"></span>
+                        <label asp-for="Icono" class="form-label fw-bold">Icono</label>
+                        <input asp-for="Icono" class="form-control" placeholder="Ej: bi bi-people-fill" />
+                        <small class="form-text text-muted">Clase de icono Bootstrap Icons</small>
+                        <span asp-validation-for="Icono" class="text-danger"></span>
                     </div>
 
-                    <div class="col-md-6">
-                        <label asp-for="Contraseña" class="form-label fw-bold">Contraseña</label>
-                        <input asp-for="Contraseña" type="password" class="form-control" placeholder="Contraseña" required />
-                        <span asp-validation-for="Contraseña" class="text-danger"></span>
+                    <div class="col-md-12">
+                        <label asp-for="Descripcion" class="form-label fw-bold">Descripción</label>
+                        <textarea asp-for="Descripcion" class="form-control" rows="3" placeholder="Descripción de la pantalla..."></textarea>
+                        <span asp-validation-for="Descripcion" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-6">
@@ -62,7 +64,7 @@
                     <button type="submit" class="btn btn-success px-4">
                         <i class="bi bi-save"></i> Guardar
                     </button>
-                    <a href="/Usuarios/Listar" class="btn btn-outline-secondary ms-2 px-4">
+                    <a href="/Pantallas/Listar" class="btn btn-outline-secondary ms-2 px-4">
                         <i class="bi bi-x-circle"></i> Cancelar
                     </a>
                 </div>
@@ -76,3 +78,4 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+

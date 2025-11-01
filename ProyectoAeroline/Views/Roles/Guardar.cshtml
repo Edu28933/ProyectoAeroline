@@ -1,4 +1,4 @@
-﻿@model ProyectoAeroline.Models.UsuariosModel
+@model ProyectoAeroline.Models.RolesModel
 
 @{
     ViewData["Title"] = "Guardar";
@@ -7,8 +7,8 @@
 
 <div class="card shadow-lg border-0 rounded-4 mt-4">
     <div class="card-header bg-dark text-white rounded-top-4 d-flex justify-content-between align-items-center">
-        <h4 class="mb-0"><i class="bi bi-person-plus-fill"></i> Registrar nuevo usuario</h4>
-        <a href="/Usuarios/Listar" class="btn btn-outline-light btn-sm">
+        <h4 class="mb-0"><i class="bi bi-shield-plus"></i> Registrar nuevo rol</h4>
+        <a href="/Roles/Listar" class="btn btn-outline-light btn-sm">
             <i class="bi bi-arrow-left"></i> Regresar
         </a>
     </div>
@@ -24,28 +24,16 @@
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                 <div class="row g-3">
-                    <div class="col-md-6">
-                        <label asp-for="IdRol" class="form-label fw-bold">Rol</label>
-                        <input asp-for="IdRol" class="form-control" type="number" placeholder="ID del Rol (1-Admin, 2-Usuario, etc.)" />
-                        <span asp-validation-for="IdRol" class="text-danger"></span>
+                    <div class="col-md-12">
+                        <label asp-for="NombreRol" class="form-label fw-bold">Nombre del Rol <span class="text-danger">*</span></label>
+                        <input asp-for="NombreRol" class="form-control" placeholder="Ej: Administrador, Usuario, Moderador" required />
+                        <span asp-validation-for="NombreRol" class="text-danger"></span>
                     </div>
 
-                    <div class="col-md-6">
-                        <label asp-for="Nombre" class="form-label fw-bold">Nombre completo</label>
-                        <input asp-for="Nombre" class="form-control" placeholder="Nombre del usuario" required />
-                        <span asp-validation-for="Nombre" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label asp-for="Correo" class="form-label fw-bold">Correo electrónico</label>
-                        <input asp-for="Correo" class="form-control" type="email" placeholder="correo@ejemplo.com" />
-                        <span asp-validation-for="Correo" class="text-danger"></span>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label asp-for="Contraseña" class="form-label fw-bold">Contraseña</label>
-                        <input asp-for="Contraseña" type="password" class="form-control" placeholder="Contraseña" required />
-                        <span asp-validation-for="Contraseña" class="text-danger"></span>
+                    <div class="col-md-12">
+                        <label asp-for="Descripcion" class="form-label fw-bold">Descripción</label>
+                        <textarea asp-for="Descripcion" class="form-control" rows="3" placeholder="Descripción del rol y sus permisos..."></textarea>
+                        <span asp-validation-for="Descripcion" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-6">
@@ -62,7 +50,7 @@
                     <button type="submit" class="btn btn-success px-4">
                         <i class="bi bi-save"></i> Guardar
                     </button>
-                    <a href="/Usuarios/Listar" class="btn btn-outline-secondary ms-2 px-4">
+                    <a href="/Roles/Listar" class="btn btn-outline-secondary ms-2 px-4">
                         <i class="bi bi-x-circle"></i> Cancelar
                     </a>
                 </div>
@@ -76,3 +64,4 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+

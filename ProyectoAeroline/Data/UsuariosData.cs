@@ -3,6 +3,7 @@ using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Threading.Tasks; // <-- NUEVO
 using System;                 // <-- por excepciones/DateTime
+using System.Linq;            // <-- para LINQ
 
 namespace ProyectoAeroline.Data
 {
@@ -47,6 +48,7 @@ namespace ProyectoAeroline.Data
                                 IdRol = Convert.ToInt32(dr["IdRol"]),
                                 Nombre = dr["Nombre"].ToString(),
                                 Contraseña = dr["Contraseña"].ToString(), // en DB es 'Contraseña'
+                                Correo = dr["Correo"] != DBNull.Value ? dr["Correo"].ToString() : null,
                                 Estado = dr["Estado"].ToString(),
                             });
                         }
@@ -149,6 +151,7 @@ namespace ProyectoAeroline.Data
                             oUsuario.IdRol = Convert.ToInt32(dr["IdRol"]);
                             oUsuario.Nombre = dr["Nombre"].ToString();
                             oUsuario.Contraseña = dr["Contraseña"].ToString(); // en DB es 'Contraseña'
+                            oUsuario.Correo = dr["Correo"] != DBNull.Value ? dr["Correo"].ToString() : null;
                             oUsuario.Estado = dr["Estado"].ToString();
                         }
                     }
@@ -173,6 +176,41 @@ namespace ProyectoAeroline.Data
                 using (var conexion = new SqlConnection(conn.GetConnectionString()))
                 {
                     conexion.Open();
+                    
+                    // Primero eliminar registros relacionados en UsuariosExternalLogins
+                    // Esto es necesario para usuarios creados con Google
+                    using (var cmdDeleteExternal = new SqlCommand(@"
+                        DELETE FROM [dbo].[UsuariosExternalLogins] 
+                        WHERE [IdUsuario] = @IdUsuario
+                    ", conexion))
+                    {
+                        cmdDeleteExternal.Parameters.AddWithValue("@IdUsuario", IdUsuario);
+                        cmdDeleteExternal.ExecuteNonQuery();
+                    }
+                    
+                    // También eliminar tokens de GoogleLoginTokens si existen
+                    using (var cmdDeleteTokens = new SqlCommand(@"
+                        DELETE FROM [dbo].[GoogleLoginTokens] 
+                        WHERE [Email] IN (
+                            SELECT [Correo] FROM [dbo].[Usuarios] WHERE [IdUsuario] = @IdUsuario
+                        )
+                    ", conexion))
+                    {
+                        cmdDeleteTokens.Parameters.AddWithValue("@IdUsuario", IdUsuario);
+                        cmdDeleteTokens.ExecuteNonQuery();
+                    }
+                    
+                    // También eliminar tokens de PasswordResetTokens si existen
+                    using (var cmdDeletePasswordTokens = new SqlCommand(@"
+                        DELETE FROM [dbo].[PasswordResetTokens] 
+                        WHERE [IdUsuario] = @IdUsuario
+                    ", conexion))
+                    {
+                        cmdDeletePasswordTokens.Parameters.AddWithValue("@IdUsuario", IdUsuario);
+                        cmdDeletePasswordTokens.ExecuteNonQuery();
+                    }
+                    
+                    // Ahora eliminar el usuario
                     SqlCommand cmd = new SqlCommand("sp_UsuarioEliminar", conexion);
                     cmd.Parameters.AddWithValue("@IdUsuario", IdUsuario);
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -184,6 +222,8 @@ namespace ProyectoAeroline.Data
             catch (Exception ex)
             {
                 Console.WriteLine("Error al eliminar usuario: " + ex.Message);
+                System.Diagnostics.Debug.WriteLine($"Error completo: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
                 respuesta = false;
             }
 
@@ -249,25 +289,79 @@ namespace ProyectoAeroline.Data
         }
 
         // Crear usuario básico (para alta por Google/registro simple)
-        public async Task<int> CrearUsuarioBasicoAsync(string nombre, string correo, int rolId, string estado)
+        public async Task<int> CrearUsuarioBasicoAsync(string nombre, string correo, int rolId, string estado, string? passwordHash = null)
         {
-            var conn = new Conexion();
-            using var conexion = new SqlConnection(conn.GetConnectionString());
-            await conexion.OpenAsync();
-
-            using var cmd = new SqlCommand("usp_Usuarios_CrearBasico", conexion);
-            cmd.CommandType = CommandType.StoredProcedure;
-            cmd.Parameters.AddWithValue("@Nombre", nombre);
-            cmd.Parameters.AddWithValue("@Correo", correo);
-            cmd.Parameters.AddWithValue("@IdRol", rolId);
-            cmd.Parameters.AddWithValue("@Estado", estado);
-
-            using var dr = await cmd.ExecuteReaderAsync();
-            if (await dr.ReadAsync())
+            try
             {
-                return dr["IdUsuario"] != DBNull.Value ? Convert.ToInt32(dr["IdUsuario"]) : 0;
+                var conn = new Conexion();
+                using var conexion = new SqlConnection(conn.GetConnectionString());
+                await conexion.OpenAsync();
+
+                // Intentar usar el stored procedure primero
+                try
+                {
+                    using var cmd = new SqlCommand("usp_Usuarios_CrearBasico", conexion);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Nombre", nombre);
+                    cmd.Parameters.AddWithValue("@Correo", correo);
+                    cmd.Parameters.AddWithValue("@IdRol", rolId);
+                    cmd.Parameters.AddWithValue("@Estado", estado);
+                    // Si no hay passwordHash, se usa 'EXTERNAL_LOGIN' para usuarios de Google
+                    var passwordToSave = passwordHash ?? "EXTERNAL_LOGIN";
+                    cmd.Parameters.AddWithValue("@Contraseña", passwordToSave);
+
+                    using var dr = await cmd.ExecuteReaderAsync();
+                    if (await dr.ReadAsync())
+                    {
+                        return dr["IdUsuario"] != DBNull.Value ? Convert.ToInt32(dr["IdUsuario"]) : 0;
+                    }
+                }
+                catch (SqlException sqlEx)
+                {
+                    // Si el stored procedure no existe, hacer INSERT directo
+                    if (sqlEx.Number == 2812) // Object not found
+                    {
+                        // Fallback: INSERT directo si el SP no existe
+                        using var cmdInsert = new SqlCommand(@"
+                            IF NOT EXISTS (SELECT 1 FROM [dbo].[Usuarios] WHERE [Correo] = @Correo)
+                            BEGIN
+                                INSERT INTO [dbo].[Usuarios] ([IdRol], [Nombre], [Contraseña], [Estado], [Correo], [FechaCreacion])
+                                VALUES (@IdRol, @Nombre, @Contraseña, @Estado, @Correo, GETDATE());
+                                SELECT SCOPE_IDENTITY() AS IdUsuario;
+                            END
+                            ELSE
+                            BEGIN
+                                SELECT [IdUsuario] FROM [dbo].[Usuarios] WHERE [Correo] = @Correo;
+                            END
+                        ", conexion);
+                        
+                        cmdInsert.Parameters.AddWithValue("@Nombre", nombre);
+                        cmdInsert.Parameters.AddWithValue("@Correo", correo);
+                        cmdInsert.Parameters.AddWithValue("@IdRol", rolId);
+                        cmdInsert.Parameters.AddWithValue("@Estado", estado);
+                        var passwordToSave = passwordHash ?? "EXTERNAL_LOGIN";
+                        cmdInsert.Parameters.AddWithValue("@Contraseña", passwordToSave);
+                        
+                        var result = await cmdInsert.ExecuteScalarAsync();
+                        if (result != null && result != DBNull.Value)
+                        {
+                            return Convert.ToInt32(result);
+                        }
+                    }
+                    else
+                    {
+                        throw; // Re-lanzar si es otro error
+                    }
+                }
+                
+                return 0;
             }
-            return 0;
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error en CrearUsuarioBasicoAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+                return 0;
+            }
         }
 
         // Guardar mapping externo (proveedor→usuario)
@@ -330,7 +424,8 @@ namespace ProyectoAeroline.Data
         }
 
         // Consumir token de reset
-        public async Task<(bool ok, string code)> ConsumirTokenResetAsync(string token, string nuevaContrasena)
+        // Si yaVieneHasheada es true, se guarda directamente; si es false, el SP podría hashearla (depende de la implementación del SP)
+        public async Task<(bool ok, string code)> ConsumirTokenResetAsync(string token, string nuevaContrasena, bool yaVieneHasheada = false)
         {
             var conn = new Conexion();
             using var conexion = new SqlConnection(conn.GetConnectionString());
@@ -340,6 +435,8 @@ namespace ProyectoAeroline.Data
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.AddWithValue("@Token", token);
             cmd.Parameters.AddWithValue("@NuevaContrasena", nuevaContrasena);
+            // Si el SP necesita saber si ya viene hasheada, podríamos agregar otro parámetro
+            // Por ahora, asumimos que el SP acepta el valor directamente
 
             using var dr = await cmd.ExecuteReaderAsync();
             if (await dr.ReadAsync())
@@ -370,6 +467,102 @@ namespace ProyectoAeroline.Data
                 return (ok, code);
             }
             return (false, "ERROR_DESCONOCIDO");
+        }
+
+        // =================== GOOGLE LOGIN CONFIRMATION ===================
+
+        // Crear token de confirmación para login con Google
+        // Guarda temporalmente la información del usuario hasta que confirme
+        public async Task<string?> CrearTokenConfirmacionGoogleAsync(
+            string providerKey,
+            string email,
+            string displayName,
+            string? ip,
+            string? userAgent)
+        {
+            var conn = new Conexion();
+            using var conexion = new SqlConnection(conn.GetConnectionString());
+            await conexion.OpenAsync();
+
+            using var cmd = new SqlCommand("usp_GoogleLogin_CrearTokenConfirmacion", conexion);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@ProviderKey", providerKey);
+            cmd.Parameters.AddWithValue("@Email", email);
+            cmd.Parameters.AddWithValue("@DisplayName", displayName ?? email);
+            cmd.Parameters.AddWithValue("@MinutosValidez", 60); // 1 hora para confirmar
+            cmd.Parameters.AddWithValue("@IpSolicitud", (object?)ip ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@UserAgent", (object?)userAgent ?? DBNull.Value);
+
+            using var dr = await cmd.ExecuteReaderAsync();
+            if (await dr.ReadAsync())
+            {
+                return dr["Token"] != DBNull.Value ? dr["Token"].ToString() : null;
+            }
+            return null;
+        }
+
+        // Confirmar login con Google y crear el usuario
+        // Retorna los datos del usuario creado o null si falla
+        public async Task<UsuarioDto?> ConfirmarGoogleLoginAsync(string token)
+        {
+            try
+            {
+                var conn = new Conexion();
+                using var conexion = new SqlConnection(conn.GetConnectionString());
+                await conexion.OpenAsync();
+
+                using var cmd = new SqlCommand("usp_GoogleLogin_Confirmar", conexion);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@Token", token);
+
+                using var dr = await cmd.ExecuteReaderAsync();
+                
+                // Leer el resultset (ahora solo hay uno)
+                if (await dr.ReadAsync())
+                {
+                    bool ok = dr["Ok"] != DBNull.Value && Convert.ToInt32(dr["Ok"]) == 1;
+                    if (ok && dr["IdUsuario"] != DBNull.Value)
+                    {
+                        return new UsuarioDto
+                        {
+                            IdUsuario = Convert.ToInt32(dr["IdUsuario"]),
+                            IdRol = dr["IdRol"] != DBNull.Value ? Convert.ToInt32(dr["IdRol"]) : 2,
+                            Nombre = dr["Nombre"]?.ToString(),
+                            Correo = dr["Correo"]?.ToString(),
+                            Estado = dr["Estado"]?.ToString() ?? "Activo",
+                            NombreRol = dr.GetSchemaTable()?.Columns.Contains("NombreRol") == true ? dr["NombreRol"]?.ToString() : "Usuario"
+                        };
+                    }
+                }
+                
+                return null;
+            }
+            catch (Exception ex)
+            {
+                // Log del error para debugging
+                System.Diagnostics.Debug.WriteLine($"Error en ConfirmarGoogleLoginAsync: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+                return null;
+            }
+        }
+
+        // Verificar si un token de confirmación de Google es válido (sin consumirlo)
+        public async Task<bool> VerificarTokenConfirmacionGoogleAsync(string token)
+        {
+            var conn = new Conexion();
+            using var conexion = new SqlConnection(conn.GetConnectionString());
+            await conexion.OpenAsync();
+
+            using var cmd = new SqlCommand("usp_GoogleLogin_VerificarToken", conexion);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.AddWithValue("@Token", token);
+
+            using var dr = await cmd.ExecuteReaderAsync();
+            if (await dr.ReadAsync())
+            {
+                return dr["Valido"] != DBNull.Value && Convert.ToInt32(dr["Valido"]) == 1;
+            }
+            return false;
         }
     }
 }
