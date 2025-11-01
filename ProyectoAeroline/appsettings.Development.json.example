@@ -1,0 +1,21 @@
+{
+  "ConnectionStrings": {
+    "CadenaSQL": "Server=tcp:TU_SERVIDOR.database.windows.net,1433;Initial Catalog=TU_BASE_DE_DATOS;Persist Security Info=False;User ID=TU_USUARIO;Password=TU_CONTRASEÑA;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+  },
+  "Authentication": {
+    "Google": {
+      "ClientId": "TU_GOOGLE_CLIENT_ID.apps.googleusercontent.com",
+      "ClientSecret": "TU_GOOGLE_CLIENT_SECRET",
+      "CallbackPath": "/signin-google"
+    }
+  },
+  "Smtp": {
+    "Host": "smtp.gmail.com",
+    "Port": 587,
+    "User": "TU_EMAIL@gmail.com",
+    "Pass": "TU_CONTRASEÑA_DE_APLICACIÓN",
+    "FromEmail": "TU_EMAIL@gmail.com",
+    "FromName": "Proyecto Aerolínea"
+  }
+}
+
