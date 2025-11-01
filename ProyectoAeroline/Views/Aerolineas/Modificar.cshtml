@@ -1,0 +1,174 @@
+﻿@model ProyectoAeroline.Models.AerolineasModel
+
+@{
+    ViewData["Title"] = "Modificar Aerolínea";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="card shadow-lg border-0 rounded-4 mt-4 animate__animated animate__fadeInUp">
+    <div class="card-header bg-gradient text-white rounded-top-4 d-flex justify-content-between align-items-center header-glow">
+        <h4 class="mb-0 animate__animated animate__pulse animate__infinite">
+            ✈️ <i class="bi bi-pencil-square"></i> <span class="fw-bold">Modificar Aerolínea</span>
+        </h4>
+        <a href="/Aerolineas/Listar" class="btn btn-light btn-sm fw-bold fancy-btn-cancel">
+            <i class="bi bi-arrow-left-circle"></i> Regresar
+        </a>
+    </div>
+
+    <div class="card-body bg-light rounded-bottom-4" data-aos="zoom-in">
+        <form id="formModificar" asp-action="Modificar" method="post" class="needs-validation" novalidate>
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="IdAerolinea" class="form-label fw-bold">🆔 ID Aerolínea</label>
+                    <input asp-for="IdAerolinea" class="form-control" readonly />
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="IATA" class="form-label fw-bold">🌐 Código IATA</label>
+                    <input asp-for="IATA" class="form-control" />
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Nombre" class="form-label fw-bold">🏢 Nombre</label>
+                    <input asp-for="Nombre" class="form-control" />
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Pais" class="form-label fw-bold">🌍 País</label>
+                    <input asp-for="Pais" class="form-control" />
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Ciudad" class="form-label fw-bold">🏙️ Ciudad</label>
+                    <input asp-for="Ciudad" class="form-control" />
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Direccion" class="form-label fw-bold">📍 Dirección</label>
+                    <input asp-for="Direccion" class="form-control" />
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Telefono" class="form-label fw-bold">📞 Teléfono</label>
+                    <input asp-for="Telefono" class="form-control" type="number" />
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Estado" class="form-label fw-bold">⚙️ Estado</label>
+                    <select asp-for="Estado" class="form-select">
+                        <option value="">-- Seleccione Estado --</option>
+                        <option value="Activo">Activo</option>
+                        <option value="Inactivo">Inactivo</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-success px-4 fancy-btn">
+                    🧑‍✈️ <i class="bi bi-save"></i> Guardar cambios
+                </button>
+                <a href="/Aerolineas/Listar" class="btn btn-outline-secondary ms-2 px-4 fancy-btn-cancel">
+                    🙅‍♂️ <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+    <!-- AOS (efectos al hacer scroll) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        AOS.init();
+
+        (() => {
+            'use strict';
+            const form = document.getElementById('formModificar');
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Campos incompletos',
+                        text: 'Por favor completa todos los campos requeridos antes de continuar.',
+                        confirmButtonColor: '#0d6efd'
+                    });
+                } else {
+                    event.preventDefault();
+                    Swal.fire({
+                        icon: 'success',
+                        title: '✈️ ¡Aerolínea actualizada!',
+                        text: 'Los cambios se han guardado correctamente.',
+                        showConfirmButton: false,
+                        timer: 1400
+                    }).then(() => {
+                        form.submit();
+                    });
+                }
+                form.classList.add('was-validated');
+            }, false);
+        })();
+    </script>
+
+    <style>
+        .bg-gradient {
+            background: linear-gradient(135deg, #007bff, #00b4d8);
+        }
+
+        .header-glow {
+            box-shadow: 0 0 20px rgba(0, 174, 255, 0.6);
+        }
+
+        .fancy-btn {
+            border-radius: 30px;
+            font-weight: bold;
+            transition: 0.3s ease-in-out;
+        }
+
+            .fancy-btn:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(25, 135, 84, 0.6);
+            }
+
+        .fancy-btn-cancel {
+            border-radius: 30px;
+            transition: 0.3s ease-in-out;
+        }
+
+            .fancy-btn-cancel:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(108, 117, 125, 0.5);
+            }
+
+        .card {
+            border: none;
+            transition: 0.4s ease;
+        }
+
+            .card:hover {
+                transform: scale(1.02);
+                box-shadow: 0 0 25px rgba(0, 123, 255, 0.3);
+            }
+
+        .form-label {
+            color: #0d6efd;
+        }
+
+        input:focus, select:focus {
+            border-color: #00b4d8;
+            box-shadow: 0 0 6px rgba(0, 174, 255, 0.5);
+        }
+    </style>
+}

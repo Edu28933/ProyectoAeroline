@@ -21,48 +21,48 @@
                 ¿Seguro que deseas eliminar este avion?
             </h5>
 
-<form asp-action="Eliminar" method="post">
-    @Html.AntiForgeryToken()
+            <form asp-action="Eliminar" method="post">
+                @Html.AntiForgeryToken()
 
-    <!-- Campo oculto -->
-    <input type="hidden" asp-for="IdAvion" />
+                <!-- Campo oculto -->
+                <input type="hidden" asp-for="IdAvion" />
 
-    <div class="mb-3">
-        <label class="form-label">IdAvion</label>
-        <input class="form-control" value="@Model.IdAvion" readonly />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">IdAerolinea</label>
-        <input class="form-control" value="@Model.IdAerolinea" readonly />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Placa</label>
-        <input class="form-control" value="@Model.Placa" readonly />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Modelo</label>
-        <input class="form-control" value="@Model.Modelo" readonly />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Tipo</label>
-        <input class="form-control" value="@Model.Tipo" readonly />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Capacidad</label>
-        <input class="form-control" value="@Model.Capacidad" readonly />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Fecha Último Mantenimiento</label>
-        <input class="form-control" value="@Model.FechaUltimoMantenimiento" readonly />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Rango (Km)</label>
-        <input class="form-control" value="@Model.RangoKm" readonly />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Estado</label>
-        <input class="form-control" value="@Model.Estado" readonly />
-    </div>
+                <div class="mb-3">
+                    <label class="form-label">IdAvion</label>
+                    <input class="form-control" value="@Model.IdAvion" readonly />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">IdAerolinea</label>
+                    <input class="form-control" value="@Model.IdAerolinea" readonly />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Placa</label>
+                    <input class="form-control" value="@Model.Placa" readonly />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Modelo</label>
+                    <input class="form-control" value="@Model.Modelo" readonly />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Tipo</label>
+                    <input class="form-control" value="@Model.Tipo" readonly />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Capacidad</label>
+                    <input class="form-control" value="@Model.Capacidad" readonly />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Fecha Último Mantenimiento</label>
+                    <input class="form-control" value="@Model.FechaUltimoMantenimiento" readonly />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Rango (Km)</label>
+                    <input class="form-control" value="@Model.RangoKm" readonly />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Estado</label>
+                    <input class="form-control" value="@Model.Estado" readonly />
+                </div>
 
                 <div class="text-center mt-4">
                     <button type="submit" class="btn btn-danger px-4 me-2">
@@ -73,7 +73,7 @@
                     </a>
                 </div>
 
-</form>
+            </form>
         </div>
     </div>
-</div>
+</div> 

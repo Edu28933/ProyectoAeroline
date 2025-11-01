@@ -1,0 +1,153 @@
+@model IEnumerable<ProyectoAeroline.Models.RolesModel>
+
+@{
+    ViewData["Title"] = "Listar Roles";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 mt-4">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-primary text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center">
+            <h3 class="mb-0"><i class="bi bi-shield-check"></i> Lista de Roles</h3>
+            <a href="/Roles/Guardar" class="btn btn-light btn-sm fw-bold">
+                <i class="bi bi-plus-circle"></i> Agregar
+            </a>
+        </div>
+
+        <div class="card-body bg-light">
+            <!-- Barra de búsqueda -->
+            <div class="mb-3">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" id="buscarInputRoles" class="form-control" placeholder="Buscar por nombre o ID..." />
+                    <button class="btn btn-primary" type="button" id="btnBuscarRoles">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                    <button class="btn btn-outline-secondary" type="button" id="btnLimpiarRoles">
+                        <i class="bi bi-x-circle"></i> Limpiar
+                    </button>
+                </div>
+            </div>
+
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            <table id="tablaRoles" class="table table-hover align-middle text-center w-100">
+                <thead class="table-primary">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.IdRol</td>
+                                <td>@item.NombreRol</td>
+                                <td>-</td>
+                                <td>
+                                    <span class="badge @(item.Estado == "Activo" ? "bg-success" : "bg-danger")">
+                                        @item.Estado
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="@Url.Action("Modificar", "Roles", new { CodigoRol = item.IdRol })"
+                                           class="btn btn-outline-secondary btn-sm" title="Modificar">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <a href="@Url.Action("Eliminar", "Roles", new { CodigoRol = item.IdRol })"
+                                           class="btn btn-outline-danger btn-sm"
+                                           title="Eliminar"
+                                           onclick="return confirm('¿Seguro que deseas eliminar este rol?');">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted">No hay roles registrados</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            console.log('Inicializando DataTable para Roles...');
+            
+            // Inicializar DataTable
+            var table = $('#tablaRoles').DataTable({
+                language: { url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json' },
+                pageLength: 10,
+                lengthMenu: [5, 10, 25, 50],
+                responsive: true,
+                ordering: true,
+                columnDefs: [
+                    { orderable: false, targets: [4] } // acciones no ordenables
+                ]
+            });
+
+            console.log('DataTable inicializado:', table);
+
+            // Funcionalidad de búsqueda - Botón Buscar
+            $('#btnBuscarRoles').off('click').on('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var searchValue = $('#buscarInputRoles').val().trim();
+                console.log('Buscando:', searchValue);
+                table.search(searchValue).draw();
+                console.log('Búsqueda ejecutada');
+            });
+
+            // Funcionalidad de búsqueda - Botón Limpiar
+            $('#btnLimpiarRoles').off('click').on('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                $('#buscarInputRoles').val('');
+                table.search('').draw();
+                console.log('Búsqueda limpiada');
+            });
+
+            // Búsqueda al presionar Enter
+            $('#buscarInputRoles').off('keyup').on('keyup', function (e) {
+                if (e.key === 'Enter' || e.keyCode === 13) {
+                    e.preventDefault();
+                    var searchValue = $(this).val().trim();
+                    console.log('Buscando con Enter:', searchValue);
+                    table.search(searchValue).draw();
+                }
+            });
+
+            console.log('Eventos de búsqueda registrados');
+        });
+    </script>
+}

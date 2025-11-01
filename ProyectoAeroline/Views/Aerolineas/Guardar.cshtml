@@ -1,0 +1,158 @@
+﻿@model ProyectoAeroline.Models.AerolineasModel
+
+@{
+    ViewData["Title"] = "Registrar Aerolínea";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 mt-4 animate__animated animate__fadeInUp">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-gradient-success text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center header-glow-success">
+            <h3 class="mb-0">
+                🏢 <i class="bi bi-building-add"></i> Registrar Nueva Aerolínea
+            </h3>
+            <a href="/Aerolineas/Listar" class="btn btn-light btn-sm fw-bold fancy-btn-cancel">
+                🔙 <i class="bi bi-arrow-left-circle"></i> Regresar
+            </a>
+        </div>
+
+        <div class="card-body bg-light">
+            <form id="formRegistrar" asp-action="Guardar" method="post" class="needs-validation" novalidate>
+                @Html.AntiForgeryToken()
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="IATA" class="form-label fw-bold">🌐 Código IATA</label>
+                        <input asp-for="IATA" class="form-control" placeholder="Ej: AA" required />
+                        <span asp-validation-for="IATA" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Nombre" class="form-label fw-bold">🏢 Nombre</label>
+                        <input asp-for="Nombre" class="form-control" placeholder="Nombre de la aerolínea" required />
+                        <span asp-validation-for="Nombre" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Pais" class="form-label fw-bold">🌍 País</label>
+                        <input asp-for="Pais" class="form-control" placeholder="Ej: Guatemala" />
+                        <span asp-validation-for="Pais" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Ciudad" class="form-label fw-bold">🏙️ Ciudad</label>
+                        <input asp-for="Ciudad" class="form-control" placeholder="Ej: Ciudad de Guatemala" />
+                        <span asp-validation-for="Ciudad" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Direccion" class="form-label fw-bold">📍 Dirección</label>
+                        <input asp-for="Direccion" class="form-control" placeholder="Dirección de la sede" />
+                        <span asp-validation-for="Direccion" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Telefono" class="form-label fw-bold">📞 Teléfono</label>
+                        <input asp-for="Telefono" class="form-control" type="number" placeholder="Ej: 12345678" />
+                        <span asp-validation-for="Telefono" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Estado" class="form-label fw-bold">⚙️ Estado</label>
+                        <select asp-for="Estado" class="form-select" required>
+                            <option value="">Seleccione...</option>
+                            <option value="Activo">🟢 Activo</option>
+                            <option value="Inactivo">🔴 Inactivo</option>
+                        </select>
+                        <span asp-validation-for="Estado" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-success px-4 fancy-btn">
+                        💾 <i class="bi bi-save-fill"></i> Guardar
+                    </button>
+                    <a href="/Aerolineas/Listar" class="btn btn-outline-secondary px-4 fancy-btn-cancel">
+                        🙅‍♂️ <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // Validación y alerta bonita con SweetAlert2
+        (() => {
+            'use strict';
+            const form = document.getElementById('formRegistrar');
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Campos incompletos',
+                        text: 'Por favor completa todos los campos requeridos antes de continuar.',
+                        confirmButtonColor: '#198754'
+                    });
+                } else {
+                    event.preventDefault();
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Aerolínea registrada!',
+                        text: 'Los datos se han guardado correctamente.',
+                        showConfirmButton: false,
+                        timer: 1400
+                    }).then(() => {
+                        form.submit();
+                    });
+                }
+                form.classList.add('was-validated');
+            }, false);
+        })();
+    </script>
+
+    <style>
+        /* Gradiente y glow */
+        .bg-gradient-success {
+            background: linear-gradient(135deg, #28a745, #7bed9f);
+        }
+
+        .header-glow-success {
+            box-shadow: 0 0 25px rgba(40, 167, 69, 0.6);
+        }
+
+        /* Botones animados */
+        .fancy-btn:hover {
+            transform: scale(1.07);
+            transition: 0.25s ease-in-out;
+            box-shadow: 0 0 18px rgba(25, 135, 84, 0.6);
+        }
+
+        .fancy-btn-cancel:hover {
+            transform: scale(1.07);
+            transition: 0.25s ease-in-out;
+            box-shadow: 0 0 15px rgba(108, 117, 125, 0.5);
+        }
+
+        /* Card efecto hover */
+        .card:hover {
+            transform: scale(1.01);
+            transition: 0.3s ease-in-out;
+            box-shadow: 0 0 20px rgba(0, 123, 255, 0.3);
+        }
+
+        /* Etiquetas bold */
+        .form-label {
+            font-weight: 600;
+        }
+    </style>
+}

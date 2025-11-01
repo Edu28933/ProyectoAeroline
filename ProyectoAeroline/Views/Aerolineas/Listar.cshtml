@@ -1,0 +1,175 @@
+﻿@model IEnumerable<ProyectoAeroline.Models.AerolineasModel>
+
+@{
+    ViewData["Title"] = "Listar Aerolíneas";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 mt-4 animate__animated animate__fadeInUp">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-gradient text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center header-glow">
+            <h3 class="mb-0">
+                ✈️ <i class="bi bi-building"></i> <strong>Lista de Aerolíneas</strong>
+            </h3>
+            <a href="/Aerolineas/Guardar" class="btn btn-light btn-sm fw-bold fancy-btn">
+                🧑‍✈️ <i class="bi bi-plus-circle"></i> Agregar
+            </a>
+        </div>
+
+        <div class="card-body bg-light">
+            <table id="tablaAerolineas" class="table table-hover align-middle text-center w-100">
+                <thead class="table-primary">
+                    <tr>
+                        <th>🆔 ID</th>
+                        <th>👤 Empleado</th>
+                        <th>🌐 IATA</th>
+                        <th>🏢 Nombre</th>
+                        <th>🌍 País</th>
+                        <th>🏙️ Ciudad</th>
+                        <th>📍 Dirección</th>
+                        <th>📞 Teléfono</th>
+                        <th>⚙️ Estado</th>
+                        <th>🪄 Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.IdAerolinea</td>
+                            <td>@item.IdEmpleado</td>
+                            <td>@item.IATA</td>
+                            <td>@item.Nombre</td>
+                            <td>@item.Pais</td>
+                            <td>@item.Ciudad</td>
+                            <td>@item.Direccion</td>
+                            <td>@item.Telefono</td>
+                            <td>
+                                <span class="badge @(item.Estado == "Activo" ? "bg-success" : "bg-danger") px-3 py-2 rounded-pill shadow-sm">
+                                    @(item.Estado == "Activo" ? "🟢 Activo" : "🔴 Inactivo")
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="@Url.Action("Modificar", "Aerolineas", new { IdAerolinea = item.IdAerolinea })"
+                                       class="btn btn-outline-primary btn-sm fancy-action" title="Editar Aerolínea">
+                                        🛠️ <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <button type="button"
+                                            class="btn btn-outline-danger btn-sm fancy-action"
+                                            onclick="confirmarEliminacion('@item.IdAerolinea', '@item.Nombre')"
+                                            title="Eliminar Aerolínea">
+                                        🗑️ <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" />
+
+    <script>
+        $(document).ready(function () {
+            $('#tablaAerolineas').DataTable({
+                language: { url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json' },
+                pageLength: 10,
+                lengthMenu: [5, 10, 25, 50],
+                responsive: true,
+                ordering: true,
+                columnDefs: [
+                    { orderable: false, targets: [9] }
+                ]
+            });
+        });
+
+        // Confirmación bonita con SweetAlert2
+        function confirmarEliminacion(id, nombre) {
+            Swal.fire({
+                title: '¿Eliminar Aerolínea?',
+                html: `✈️ <b>${nombre}</b> será eliminada permanentemente.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                backdrop: `rgba(0,0,0,0.4)`
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = `/Aerolineas/Eliminar?IdAerolinea=${id}`;
+                }
+            });
+        }
+    </script>
+
+    <style>
+        /* Gradiente del encabezado */
+        .bg-gradient {
+            background: linear-gradient(135deg, #007bff, #00b4d8);
+        }
+
+        .header-glow {
+            box-shadow: 0 0 25px rgba(0, 174, 255, 0.6);
+        }
+
+        /* Botones con animación */
+        .fancy-btn, .fancy-action {
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+        }
+
+            .fancy-btn:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(0, 174, 255, 0.6);
+            }
+
+            .fancy-action:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            }
+
+        /* Tabla */
+        table thead {
+            background: linear-gradient(135deg, #90e0ef, #0077b6);
+            color: white;
+            text-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+
+        table tbody tr:hover {
+            background-color: #caf0f8 !important;
+            transform: scale(1.01);
+            transition: 0.2s ease-in-out;
+        }
+
+        /* Tarjeta */
+        .card {
+            transition: 0.4s ease;
+        }
+
+            .card:hover {
+                transform: scale(1.02);
+                box-shadow: 0 0 25px rgba(0, 123, 255, 0.3);
+            }
+
+        /* Badges */
+        .badge {
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+    </style>
+}

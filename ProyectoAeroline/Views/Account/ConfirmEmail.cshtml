@@ -1,4 +1,15 @@
-﻿@page
-@model ProyectoAeroline.Views.Account.ConfirmEmailModel
-@{
+﻿@{
+    ViewData["Title"] = "Confirmación de correo";
+    Layout = "~/Views/Shared/_AuthLayout.cshtml";
+    var ok = (bool?)ViewBag.Success == true;
+    var msg = (string?)ViewBag.Message ?? (ok ? "Correo verificado correctamente." : "No fue posible verificar su correo.");
 }
+<div class="container py-4" style="max-width: 520px;">
+    <div class="card shadow border-0 rounded-4">
+        <div class="card-body p-4 text-center">
+            <h2 class="mb-3">@ViewData["Title"]</h2>
+            <p class="lead @(ok ? "text-success" : "text-danger")">@msg</p>
+            <a asp-action="Login" asp-controller="Account" class="btn btn-primary mt-2">Ir al inicio de sesión</a>
+        </div>
+    </div>
+</div>

@@ -49,19 +49,23 @@
                         <label class="lg2-check">
                             <input asp-for="RememberMe" /> Recordar
                         </label>
-                        <a class="lg2-link" href="#">¿Olvidó su contraseña?</a>
+                        <!-- Enlace a ForgotPassword -->
+                        <a class="lg2-link" asp-controller="Account" asp-action="ForgotPassword">¿Olvidó su contraseña?</a>
                     </div>
 
                     <button type="submit" class="lg2-btn lg2-btn-primary">Log In</button>
 
-                    <button type="button" class="lg2-btn lg2-btn-google">
+                    <!-- Botón Google: navega a /Account/ExternalLogin?provider=Google&returnUrl=<...> -->
+                    <button type="button" id="btnGoogle" class="lg2-btn lg2-btn-google" data-return="@((string?)ViewData["ReturnUrl"] ?? "/")">
                         <img src="https://www.gstatic.com/images/branding/product/1x/gsa_64dp.png" alt="" class="gicon" />
                         Ingresar con Google
                     </button>
                 </form>
 
                 <p style="text-align:center; margin-top:18px; color:#7b8190;">
-                    ¿No tiene una cuenta? <a href="#" class="lg2-link">Registrar</a>
+                    ¿No tiene una cuenta?
+                    <!-- Enlace a Register -->
+                    <a asp-controller="Account" asp-action="Register" class="lg2-link">Registrar</a>
                 </p>
             </section>
         </main>
@@ -232,6 +236,49 @@
               alertBox.style.opacity = "0";
               setTimeout(() => alertBox.remove(), 400);
             }, 5000);
+          }
+
+          // === Botón Google: redirección a ExternalLogin con returnUrl ===
+          const btnGoogle = document.getElementById("btnGoogle");
+          if (btnGoogle) {
+            btnGoogle.addEventListener("click", () => {
+              const ret = btnGoogle.getAttribute("data-return") || "/";
+              
+              // Marcar que OAuth está en progreso para prevenir problemas con botón atrás
+              sessionStorage.setItem("oauth_in_progress", "true");
+              sessionStorage.setItem("oauth_start_time", Date.now().toString());
+              
+              // Limpiar cualquier estado previo
+              history.replaceState({ oauth: true }, "", window.location.href);
+              
+              const url = `/Account/ExternalLogin?provider=Google&returnUrl=${encodeURIComponent(ret)}`;
+              
+              // Usar replace en lugar de href para evitar que el botón atrás cause problemas
+              window.location.replace(url);
+            });
+          }
+
+          // Limpiar estado OAuth si la página se carga normalmente (no desde OAuth)
+          window.addEventListener("pageshow", (event) => {
+            // Si la página se carga desde cache (back/forward button)
+            if (event.persisted) {
+              const oauthInProgress = sessionStorage.getItem("oauth_in_progress");
+              const oauthStartTime = parseInt(sessionStorage.getItem("oauth_start_time") || "0");
+              const timeElapsed = Date.now() - oauthStartTime;
+              
+              // Si pasó más de 5 minutos, probablemente es una sesión vieja
+              if (timeElapsed > 300000 || !window.location.href.includes("signin-google")) {
+                sessionStorage.removeItem("oauth_in_progress");
+                sessionStorage.removeItem("oauth_start_time");
+              }
+            }
+          });
+
+          // Detectar si volvimos desde Google OAuth sin completar
+          if (window.location.search.includes("error=correlation_failed") || 
+              window.location.search.includes("error=oauth_failed")) {
+            sessionStorage.removeItem("oauth_in_progress");
+            sessionStorage.removeItem("oauth_start_time");
           }
         })();
     </script>

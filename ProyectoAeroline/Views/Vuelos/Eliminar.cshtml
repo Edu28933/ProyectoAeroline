@@ -1,0 +1,142 @@
+﻿@model ProyectoAeroline.Models.VuelosModel
+
+@{
+    ViewData["Title"] = "Eliminar Vuelo";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 mt-4 animate__animated animate__fadeInUp">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-gradient-danger text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center header-glow-danger">
+            <h3 class="mb-0">
+                🗑️ <i class="bi bi-airplane-engines"></i> <strong>Eliminar Vuelo</strong>
+            </h3>
+            <a href="/Vuelos/Listar" class="btn btn-light btn-sm fw-bold fancy-btn-cancel">
+                🔙 <i class="bi bi-arrow-left-circle"></i> Regresar
+            </a>
+        </div>
+
+        <div class="card-body bg-light text-center">
+            <h5 class="text-danger fw-bold mb-4 animate__animated animate__pulse animate__infinite">
+                ⚠️ ¿Estás seguro de que deseas eliminar este vuelo?
+            </h5>
+
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered shadow-sm align-middle">
+                    <tr><th>✈️ Aerolínea</th><td>@Model.Aerolinea</td></tr>
+                    <tr><th>🔢 Número de Vuelo</th><td>@Model.NumeroVuelo</td></tr>
+                    <tr><th>🛫 Origen</th><td>@Model.AeropuertoOrigen (@Model.CodigoIATAOrigen)</td></tr>
+                    <tr><th>🛬 Destino</th><td>@Model.AeropuertoDestino (@Model.CodigoIATADestino)</td></tr>
+                    <tr><th>🕒 Fecha Salida</th><td>@String.Format("{0:g}", Model.FechaHoraSalida)</td></tr>
+                    <tr><th>🕒 Fecha Llegada</th><td>@String.Format("{0:g}", Model.FechaHoraLlegada)</td></tr>
+                    <tr><th>💺 Clase</th><td>@Model.Clase</td></tr>
+                    <tr><th>🎫 Asientos Disponibles</th><td>@Model.AsientosDisponibles</td></tr>
+                    <tr><th>💲 Precio</th><td>@Model.Precio @Model.Moneda</td></tr>
+                    <tr>
+                        <th>⚙️ Estado</th>
+                        <td>
+                            <span class="badge @(Model.Estado == "Activo" ? "bg-success" : "bg-danger") px-3 py-2 rounded-pill shadow-sm">
+                                @(Model.Estado == "Activo" ? "🟢 Activo" : "🔴 Inactivo")
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <form id="formEliminarVuelo" asp-action="Eliminar" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="IdVuelo" />
+
+                <button type="button" class="btn btn-danger px-4 me-2 fancy-delete" onclick="confirmarEliminacion()">
+                    💣 <i class="bi bi-trash3-fill"></i> Eliminar
+                </button>
+                <a href="/Vuelos/Listar" class="btn btn-outline-secondary px-4 fancy-cancel">
+                    🙅‍♂️ <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function confirmarEliminacion() {
+            Swal.fire({
+                title: '¿Eliminar Vuelo?',
+                html: '✈️ <b>@Model.Aerolinea</b> - <b>@Model.NumeroVuelo</b> será eliminado permanentemente.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                backdrop: 'rgba(0,0,0,0.4)'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '✅ Eliminado correctamente',
+                        text: 'El vuelo ha sido eliminado del sistema.',
+                        showConfirmButton: false,
+                        timer: 1400
+                    }).then(() => {
+                        document.getElementById('formEliminarVuelo').submit();
+                    });
+                }
+            });
+        }
+    </script>
+
+    <style>
+        .bg-gradient-danger {
+            background: linear-gradient(135deg, #dc3545, #ff6b6b);
+        }
+
+        .header-glow-danger {
+            box-shadow: 0 0 25px rgba(255, 0, 0, 0.6);
+        }
+
+        .fancy-delete, .fancy-cancel {
+            border-radius: 30px;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+        }
+
+            .fancy-delete:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(220,53,69,0.6);
+            }
+
+            .fancy-cancel:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(108,117,125,0.5);
+            }
+
+        table th {
+            background-color: #f8d7da;
+            color: #721c24;
+            width: 30%;
+        }
+
+        table td {
+            background-color: #fff;
+        }
+
+        table tr:hover td {
+            background-color: #ffe6e6;
+            transition: 0.2s ease-in-out;
+        }
+
+        .card {
+            transition: 0.4s ease;
+        }
+
+            .card:hover {
+                transform: scale(1.02);
+                box-shadow: 0 0 25px rgba(255,0,0,0.3);
+            }
+    </style>
+}

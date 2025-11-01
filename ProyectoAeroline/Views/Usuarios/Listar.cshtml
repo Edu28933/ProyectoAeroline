@@ -1,78 +1,155 @@
 ﻿@model IEnumerable<ProyectoAeroline.Models.UsuariosModel>
 
 @{
-    ViewData["Title"] = "Listar";
+    ViewData["Title"] = "Listar Usuarios";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h1>Listar</h1>
+<div class="container-fluid px-4 mt-4">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-primary text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center">
+            <h3 class="mb-0"><i class="bi bi-people-fill"></i> Lista de Usuarios</h3>
+            <a href="/Usuarios/Guardar" class="btn btn-light btn-sm fw-bold">
+                <i class="bi bi-plus-circle"></i> Agregar
+            </a>
+        </div>
 
-<p>
-    <a href="/Usuarios/Guardar" class="btn btn-primary">
-        Agregar nuevo usuario
-    </a>
+        <div class="card-body bg-light">
+            <!-- Barra de búsqueda -->
+            <div class="mb-3">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" id="buscarInputUsuarios" class="form-control" placeholder="Buscar por nombre, correo, ID o rol..." />
+                    <button class="btn btn-primary" type="button" id="btnBuscarUsuarios">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                    <button class="btn btn-outline-secondary" type="button" id="btnLimpiarUsuarios">
+                        <i class="bi bi-x-circle"></i> Limpiar
+                    </button>
+                </div>
+            </div>
 
-</p>
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
 
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.IdUsuario)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdRol)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Nombre)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Contraseña)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Estado)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdUsuario)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdRol)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nombre)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Contraseña)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Estado)
-            </td>
-            <td>
-                    @Html.ActionLink(
-                    "Modificar",
-                                "Modificar",
-                                "Usuarios",
-                                new { CodigoUsuario = item.IdUsuario },
-                                new { @class = "btn btn-sm btn-warning" }
-                                )
-                |
-                @Html.ActionLink(
-                                "Eliminar",
-                                "Eliminar",                 // Acción en tu UsuariosController
-                                "Usuarios",                 // Controlador
-                                new { CodigoUsuario = item.IdUsuario }, // route values
-                                new { @class = "btn btn-sm btn-danger", onclick = "return confirm('¿Seguro que deseas eliminar este usuario?');" } // html attrs
-                                )
+            <table id="tablaUsuarios" class="table table-hover align-middle text-center w-100">
+                <thead class="table-primary">
+                    <tr>
+                        <th>ID</th>
+                        <th>Rol</th>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
 
-            </td>
-        </tr>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.IdUsuario</td>
+                                <td>@item.IdRol</td>
+                                <td>@item.Nombre</td>
+                                <td>@(item.Correo ?? "N/A")</td>
+                                <td>
+                                    <span class="badge @(item.Estado == "Activo" ? "bg-success" : "bg-danger")">
+                                        @item.Estado
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="@Url.Action("Modificar", "Usuarios", new { CodigoUsuario = item.IdUsuario })"
+                                           class="btn btn-outline-secondary btn-sm" title="Modificar">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <a href="@Url.Action("Eliminar", "Usuarios", new { CodigoUsuario = item.IdUsuario })"
+                                           class="btn btn-outline-danger btn-sm"
+                                           title="Eliminar"
+                                           onclick="return confirm('¿Seguro que deseas eliminar este usuario?');">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">No hay usuarios registrados</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            console.log('Inicializando DataTable para Usuarios...');
+            
+            // Inicializar DataTable
+            var table = $('#tablaUsuarios').DataTable({
+                language: { url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json' },
+                pageLength: 10,
+                lengthMenu: [5, 10, 25, 50],
+                responsive: true,
+                ordering: true,
+                columnDefs: [
+                    { orderable: false, targets: [5] } // acciones no ordenables
+                ]
+            });
+
+            console.log('DataTable inicializado:', table);
+
+            // Funcionalidad de búsqueda - Botón Buscar
+            $('#btnBuscarUsuarios').off('click').on('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var searchValue = $('#buscarInputUsuarios').val().trim();
+                console.log('Buscando:', searchValue);
+                table.search(searchValue).draw();
+                console.log('Búsqueda ejecutada');
+            });
+
+            // Funcionalidad de búsqueda - Botón Limpiar
+            $('#btnLimpiarUsuarios').off('click').on('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                $('#buscarInputUsuarios').val('');
+                table.search('').draw();
+                console.log('Búsqueda limpiada');
+            });
+
+            // Búsqueda al presionar Enter
+            $('#buscarInputUsuarios').off('keyup').on('keyup', function (e) {
+                if (e.key === 'Enter' || e.keyCode === 13) {
+                    e.preventDefault();
+                    var searchValue = $(this).val().trim();
+                    console.log('Buscando con Enter:', searchValue);
+                    table.search(searchValue).draw();
+                }
+            });
+
+            console.log('Eventos de búsqueda registrados');
+        });
+    </script>
 }
-    </tbody>
-</table>

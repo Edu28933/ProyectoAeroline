@@ -1,0 +1,228 @@
+﻿@model ProyectoAeroline.Models.VuelosModel
+
+@{
+    ViewData["Title"] = "Registrar Vuelo";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 mt-4 animate__animated animate__fadeInUp">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-gradient text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center header-glow">
+            <h3 class="mb-0">
+                🛫 <i class="bi bi-airplane"></i> <strong>Registrar Nuevo Vuelo</strong>
+            </h3>
+            <a asp-action="Listar" class="btn btn-light btn-sm fw-bold fancy-btn">
+                ⬅️ <i class="bi bi-arrow-left-circle"></i> Regresar
+            </a>
+        </div>
+
+        <div class="card-body bg-light">
+            <form asp-action="Guardar" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="row g-3">
+                    <!-- Aerolínea -->
+                    <div class="col-md-6">
+                        <label asp-for="Aerolinea" class="form-label fw-bold"></label>
+                        <input asp-for="Aerolinea" class="form-control rounded-3" maxlength="50" placeholder="Ejemplo: Avianca, Delta, etc." required />
+                        <span asp-validation-for="Aerolinea" class="text-danger"></span>
+                    </div>
+
+                    <!-- Número de vuelo -->
+                    <div class="col-md-6">
+                        <label asp-for="NumeroVuelo" class="form-label fw-bold"></label>
+                        <input asp-for="NumeroVuelo" class="form-control rounded-3" maxlength="10" placeholder="Ejemplo: AV123" required />
+                        <span asp-validation-for="NumeroVuelo" class="text-danger"></span>
+                    </div>
+
+                    <!-- Código Avión -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Código del Avión</label>
+                        <select asp-for="IdAvion" class="form-select rounded-3" asp-items="ViewBag.Aviones" required>
+                            <option value="">-- Selecciona un avión --</option>
+                        </select>
+                        <span asp-validation-for="IdAvion" class="text-danger"></span>
+                    </div>
+
+                    <!-- Aeropuerto Origen -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Aeropuerto Origen</label>
+                        <select asp-for="AeropuertoOrigen" class="form-select rounded-3" asp-items="ViewBag.Aeropuertos" id="origen" required>
+                            <option value="">-- Selecciona aeropuerto origen --</option>
+                        </select>
+                        <span asp-validation-for="AeropuertoOrigen" class="text-danger"></span>
+                    </div>
+
+                    <!-- Código IATA Origen -->
+                    <div class="col-md-6">
+                        <label asp-for="CodigoIATAOrigen" class="form-label fw-bold"></label>
+                        <input asp-for="CodigoIATAOrigen" class="form-control rounded-3" maxlength="3" placeholder="Ejemplo: GUA" required />
+                        <span asp-validation-for="CodigoIATAOrigen" class="text-danger"></span>
+                    </div>
+
+                    <!-- Aeropuerto Destino -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Aeropuerto Destino</label>
+                        <select asp-for="AeropuertoDestino" class="form-select rounded-3" asp-items="ViewBag.Aeropuertos" id="destino" required>
+                            <option value="">-- Selecciona aeropuerto destino --</option>
+                        </select>
+                        <span asp-validation-for="AeropuertoDestino" class="text-danger"></span>
+                    </div>
+
+                    <!-- Código IATA Destino -->
+                    <div class="col-md-6">
+                        <label asp-for="CodigoIATADestino" class="form-label fw-bold"></label>
+                        <input asp-for="CodigoIATADestino" class="form-control rounded-3" maxlength="3" placeholder="Ejemplo: JFK" required />
+                        <span asp-validation-for="CodigoIATADestino" class="text-danger"></span>
+                    </div>
+
+                    <!-- Clase -->
+                    <div class="col-md-6">
+                        <label asp-for="Clase" class="form-label fw-bold"></label>
+                        <select asp-for="Clase" class="form-select rounded-3" required>
+                            <option value="">-- Selecciona clase --</option>
+                            <option value="Económica">Económica</option>
+                            <option value="Ejecutiva">Ejecutiva</option>
+                            <option value="Primera">Primera Clase</option>
+                        </select>
+                        <span asp-validation-for="Clase" class="text-danger"></span>
+                    </div>
+
+                    <!-- Fecha y hora salida -->
+                    <div class="col-md-6">
+                        <label asp-for="FechaHoraSalida" class="form-label fw-bold"></label>
+                        <input asp-for="FechaHoraSalida" type="datetime-local" class="form-control rounded-3" id="fechaSalida" required />
+                        <span asp-validation-for="FechaHoraSalida" class="text-danger"></span>
+                    </div>
+
+                    <!-- Fecha y hora llegada -->
+                    <div class="col-md-6">
+                        <label asp-for="FechaHoraLlegada" class="form-label fw-bold"></label>
+                        <input asp-for="FechaHoraLlegada" type="datetime-local" class="form-control rounded-3" required />
+                        <span asp-validation-for="FechaHoraLlegada" class="text-danger"></span>
+                    </div>
+
+                    <!-- Asientos disponibles -->
+                    <div class="col-md-6">
+                        <label asp-for="AsientosDisponibles" class="form-label fw-bold"></label>
+                        <input asp-for="AsientosDisponibles" type="number" class="form-control rounded-3" min="0" required />
+                        <span asp-validation-for="AsientosDisponibles" class="text-danger"></span>
+                    </div>
+
+                    <!-- Precio -->
+                    <div class="col-md-6">
+                        <label asp-for="Precio" class="form-label fw-bold"></label>
+                        <input asp-for="Precio" type="number" step="0.01" class="form-control rounded-3" id="precio" readonly />
+                        <span asp-validation-for="Precio" class="text-danger"></span>
+                    </div>
+
+                    <!-- Moneda -->
+                    <div class="col-md-6">
+                        <label asp-for="Moneda" class="form-label fw-bold"></label>
+                        <input asp-for="Moneda" class="form-control rounded-3" maxlength="3" placeholder="USD, GTQ, etc." required />
+                        <span asp-validation-for="Moneda" class="text-danger"></span>
+                    </div>
+
+                    <!-- Estado -->
+                    <div class="col-md-6">
+                        <label asp-for="Estado" class="form-label fw-bold"></label>
+                        <select asp-for="Estado" class="form-select rounded-3" asp-items="ViewBag.Estados" required>
+                            <option value="">-- Selecciona estado --</option>
+                        </select>
+                        <span asp-validation-for="Estado" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group text-end mt-4">
+                    <button type="submit" class="btn btn-primary px-4 fancy-btn">
+                        💾 <i class="bi bi-save"></i> Guardar
+                    </button>
+                    <a asp-action="Listar" class="btn btn-secondary px-4 fancy-btn ms-2">
+                        ❌ <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+    <script>
+        // --- Fecha mínima (hora local del cliente) ---
+        const ahora = new Date();
+        const isoLocal = new Date(ahora.getTime() - ahora.getTimezoneOffset() * 60000)
+            .toISOString().slice(0, 16);
+        document.getElementById("fechaSalida").min = isoLocal;
+
+        // --- Calcular precio automáticamente ---
+        document.getElementById('origen').addEventListener('change', calcularPrecio);
+        document.getElementById('destino').addEventListener('change', calcularPrecio);
+
+        function calcularPrecio() {
+            const origen = document.getElementById('origen').value;
+            const destino = document.getElementById('destino').value;
+
+            if (origen && destino && origen !== destino) {
+                fetch(`/api/vuelos/precio?origen=${origen}&destino=${destino}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.precio) {
+                            document.getElementById('precio').value = data.precio.toFixed(2);
+                        }
+                    })
+                    .catch(() => document.getElementById('precio').value = 0);
+            } else {
+                document.getElementById('precio').value = 0;
+            }
+        }
+    </script>
+
+    <style>
+        .bg-gradient {
+            background: linear-gradient(135deg, #007bff, #00b4d8);
+        }
+
+        .header-glow {
+            box-shadow: 0 0 25px rgba(0, 174, 255, 0.6);
+        }
+
+        .fancy-btn {
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+        }
+
+            .fancy-btn:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(0, 174, 255, 0.6);
+            }
+
+        .form-control,
+        .form-select {
+            transition: 0.3s ease;
+        }
+
+            .form-control:focus,
+            .form-select:focus {
+                box-shadow: 0 0 10px rgba(0, 174, 255, 0.4);
+                border-color: #00b4d8;
+            }
+
+        .card {
+            transition: 0.4s ease;
+        }
+
+            .card:hover {
+                transform: scale(1.02);
+                box-shadow: 0 0 25px rgba(0, 123, 255, 0.3);
+            }
+
+        label {
+            color: #0077b6;
+        }
+    </style>
+}
