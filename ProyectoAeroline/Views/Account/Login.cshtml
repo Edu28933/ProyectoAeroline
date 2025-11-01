@@ -4,7 +4,6 @@
     Layout = "~/Views/Shared/_AuthLayout.cshtml";
 }
 
-<!-- Asegúrate que EXISTE /wwwroot/css/login.modern.css -->
 <link rel="stylesheet" href="~/css/login.modern.css" asp-append-version="true" />
 
 <div class="auth-shell">
@@ -16,299 +15,279 @@
             </div>
         </aside>
 
-        <!-- DERECHA -->
         <main class="lg2-right">
             <section class="lg2-card">
                 <div class="lg2-badge">✚</div>
-                <h1 class="lg2-title">Welcome back!</h1>
-                <p class="lg2-sub">Please enter your details</p>
+                <h1 class="lg2-title">Bienvenido!</h1>
+                <p class="lg2-sub">Por favor ingrese sus datos</p>
 
                 <form id="loginForm" asp-controller="Account" asp-action="Login" method="post">
                     @Html.AntiForgeryToken()
 
+                    @if ((ViewData["LoginError"] as string) is string le && !string.IsNullOrWhiteSpace(le))
+                    {
+                        <div id="server-alert" class="lg2-alert" role="alert">@le</div>
+                    }
+                    <input type="hidden" id="ServerLoginError" value="@(ViewData["LoginError"] ?? "")" />
+
                     <div class="lg2-field">
-                        <label for="Email">Email</label>
-                        <input asp-for="Email" id="Email" type="email" autocomplete="username" required />
+                        <label for="Email">Usuario o correo</label>
+                        <input asp-for="Email" id="Email" type="text" autocomplete="username" required />
                         <span class="lg2-underline"></span>
+                        <span asp-validation-for="Email" class="field-error"></span>
                     </div>
 
                     <div class="lg2-field">
-                        <label for="Password">Password</label>
+                        <label for="Password">Contraseña</label>
                         <input asp-for="Password" id="Password" type="password" autocomplete="current-password" required />
                         <button type="button" id="btnTogglePwd" class="lg2-eye">👁️</button>
                         <span class="lg2-underline"></span>
+                        <span asp-validation-for="Password" class="field-error"></span>
                     </div>
 
                     <div class="lg2-row">
                         <label class="lg2-check">
-                            <input asp-for="RememberMe" /> Remember for 30 days
+                            <input asp-for="RememberMe" /> Recordar
                         </label>
-                        <a class="lg2-link" href="#">Forgot password?</a>
+                        <!-- Enlace a ForgotPassword -->
+                        <a class="lg2-link" asp-controller="Account" asp-action="ForgotPassword">¿Olvidó su contraseña?</a>
                     </div>
 
                     <button type="submit" class="lg2-btn lg2-btn-primary">Log In</button>
 
-                    <button type="button" class="lg2-btn lg2-btn-google">
+                    <!-- Botón Google: navega a /Account/ExternalLogin?provider=Google&returnUrl=<...> -->
+                    <button type="button" id="btnGoogle" class="lg2-btn lg2-btn-google" data-return="@((string?)ViewData["ReturnUrl"] ?? "/")">
                         <img src="https://www.gstatic.com/images/branding/product/1x/gsa_64dp.png" alt="" class="gicon" />
-                        Log in with Google
+                        Ingresar con Google
                     </button>
                 </form>
 
                 <p style="text-align:center; margin-top:18px; color:#7b8190;">
-                    Don’t have an account? <a href="#" class="lg2-link">Sign Up</a>
+                    ¿No tiene una cuenta?
+                    <!-- Enlace a Register -->
+                    <a asp-controller="Account" asp-action="Register" class="lg2-link">Registrar</a>
                 </p>
             </section>
         </main>
-
     </div>
 </div>
 
 @section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
     <script>
         (() => {
-          const img   = document.getElementById("frame-seq");
-          const wrap  = document.getElementById("frameWrap");
+          const img = document.getElementById("frame-seq");
+          const wrap = document.getElementById("frameWrap");
           const email = document.getElementById("Email");
-          const pwd   = document.getElementById("Password");
-          const form  = document.getElementById("loginForm");
+          const pwd = document.getElementById("Password");
+          const form = document.getElementById("loginForm");
           const btnEye = document.getElementById("btnTogglePwd");
           if (!img) return;
 
-          // ==== CONFIG ====
           const PATH = "/img/frames/";
-          const FPS_IDLE  = 8;
-          const FPS_FOCUS = 10;
-          const FPS_ERROR = 10;
-          const FPS_EYE   = 10;
-          const IDLE_MIN  = 1,  IDLE_MAX  = 7;
-          const FOC_MIN   = 56, FOC_MAX   = 97;
-          const ERR_MIN   = 36, ERR_MAX   = 56;
+          const FPS_IDLE = 8, FPS_FOCUS = 10, FPS_ERROR = 10, FPS_EYE = 10;
+          const IDLE_MIN = 1, IDLE_MAX = 7;
+          const FOC_MIN = 56, FOC_MAX = 97;
+          const ERR_MIN = 36, ERR_MAX = 56;
+          const EYE_OPEN_MIN = 15, EYE_OPEN_MAX = 25, EYE_TURN_MAX = 35;
 
-          // ==== (SOLO CAMBIO PEDIDO) CONFIG OJO ====
-          const EYE_START = 35;   // inicia en 35
-          const EYE_MIN   = 15;   // baja hasta 15
-          const EYE_LIMIT = 25;   // rebota solo hasta 25
+          let loopTimer = null, frames = [], idx = 0, currentMode = "idle", isOneShot = false;
+          const anim = { id: null, token: 0 };
+          let eyeBusy = false; // 🔒 nuevo flag para bloquear otras animaciones
 
-          // ==== HELPERS ====
-          function setAspectFromImage(el){
-            const w = el.naturalWidth || el.width;
-            const h = el.naturalHeight || el.height;
+          const setAspectFromImage = (el) => {
+            const w = el.naturalWidth || el.width, h = el.naturalHeight || el.height;
             if (wrap && w && h) wrap.style.setProperty('--ar', `${w} / ${h}`);
-          }
-
-          function pingPong(min, max){
-            const up = [];
-            for (let i=min; i<=max; i++) up.push(i);
-            for (let i=max-1; i>=min+1; i--) up.push(i);
-            return up;
-          }
-
-          function pingPongCustom(min, max, limit){
+          };
+          const pingPong = (min, max) => {
             const seq = [];
-            for (let i=max; i>=min; i--) seq.push(i);
-            for (let i=min+1; i<=limit; i++) seq.push(i);
-            for (let i=limit-1; i>=min+1; i--) seq.push(i);
+            for (let i = min; i <= max; i++) seq.push(i);
+            for (let i = max - 1; i >= min + 1; i--) seq.push(i);
             return seq;
-          }
+          };
+          const preload = (arr) => arr.forEach(n => { const p = new Image(); p.src = `${PATH}${n}.png`; });
 
-          function preload(frames){
-            frames.forEach(n => { const p = new Image(); p.src = `${PATH}${n}.png`; });
-          }
-
-          // ==== VARIABLES DE CONTROL ====
-          let loopTimer = null;
-          let frames = [];
-          let idx = 0;
-          let currentMode = "idle";
-          let isOneShot = false;
-          let isEyeLoop = false;
-
-          // ==== FUNCIONES BASE ====
-          function stopLoop(){
-            if (loopTimer){ clearInterval(loopTimer); loopTimer = null; }
-          }
-
-          function startLoop(newFrames, fps, mode){
-            if (isOneShot || isEyeLoop) return; // no interrumpir el bucle del ojo ni el error
+          const stopLoop = () => { if (loopTimer) { clearInterval(loopTimer); loopTimer = null; } };
+          const startLoop = (newFrames, fps, mode) => {
+            if (eyeBusy) return; // 🚫 bloquea loops si el ojo está activo
+            if (isOneShot || anim.id) return;
             if (currentMode === mode && loopTimer) return;
-            currentMode = mode;
-
-            stopLoop();
-            frames = newFrames.slice();
-            idx = 0;
-
-            img.addEventListener('load', function onFirstLoad(){
-              setAspectFromImage(img);
-              img.removeEventListener('load', onFirstLoad);
-            }, { once:true });
+            currentMode = mode; stopLoop(); frames = newFrames.slice(); idx = 0;
+            img.addEventListener('load', function onFirstLoad() {
+              setAspectFromImage(img); img.removeEventListener('load', onFirstLoad);
+            }, { once: true });
             img.src = `${PATH}${frames[idx]}.png`;
-
             loopTimer = setInterval(() => {
               idx = (idx + 1) % frames.length;
               img.src = `${PATH}${frames[idx]}.png`;
             }, 1000 / fps);
+          };
+
+          const idleSeq = pingPong(IDLE_MIN, IDLE_MAX);
+          const focusSeq = pingPong(FOC_MIN, FOC_MAX);
+          preload(idleSeq); preload(focusSeq);
+          startLoop(idleSeq, FPS_IDLE, "idle");
+
+          const onFocus = () => { if (!eyeBusy) startLoop(focusSeq, FPS_FOCUS, "focus"); };
+          const onBlur = () => setTimeout(() => {
+            if (eyeBusy) return; // 🚫 evita regresar al idle si ojo activo
+            if (!email.matches(":focus") && !pwd.matches(":focus"))
+              startLoop(idleSeq, FPS_IDLE, "idle");
+          }, 100);
+          email?.addEventListener('focus', onFocus);
+          pwd?.addEventListener('focus', onFocus);
+          email?.addEventListener('blur', onBlur);
+          pwd?.addEventListener('blur', onBlur);
+
+          // === Controlador de animación del ojo ===
+          const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+          const stopAnim = () => { if (anim.id) clearInterval(anim.id); anim.id = null; anim.token++; };
+          const currentFrame = () => parseInt(img.src.match(/(\d+)\.png$/)?.[1] || 16);
+
+          async function playFrames(seq, fps) {
+            const my = ++anim.token;
+            stopLoop();
+            for (let f of seq) {
+              if (my !== anim.token) return;
+              img.src = `${PATH}${f}.png`;
+              await sleep(1000 / fps);
+            }
+          }
+          function startPingPong(min, max, fps) {
+            stopAnim();
+            const my = ++anim.token;
+            const seq = pingPong(min, max);
+            let k = 0; img.src = `${PATH}${seq[k]}.png`;
+            anim.id = setInterval(() => {
+              if (my !== anim.token) { clearInterval(anim.id); return; }
+              k = (k + 1) % seq.length;
+              img.src = `${PATH}${seq[k]}.png`;
+            }, 1000 / fps);
+          }
+          const resumeLoop = () => {
+            stopAnim();
+            if (email.matches(":focus") || pwd.matches(":focus"))
+              startLoop(focusSeq, FPS_FOCUS, "focus");
+            else startLoop(idleSeq, FPS_IDLE, "idle");
+          };
+
+          if (btnEye && pwd) {
+            btnEye.addEventListener("click", async () => {
+              const willShow = pwd.type === "password";
+              pwd.type = willShow ? "text" : "password";
+              btnEye.textContent = willShow ? "🙈" : "👁️";
+
+              if (willShow) {
+                // Mostrar → 35→15 luego ping-pong 15↔25
+                eyeBusy = true; // 🔒 activa bloqueo
+                const seq = [];
+                for (let i = EYE_TURN_MAX; i >= EYE_OPEN_MIN; i--) seq.push(i);
+                await playFrames(seq, FPS_EYE);
+                startPingPong(EYE_OPEN_MIN, EYE_OPEN_MAX, FPS_EYE);
+              } else {
+                // Ocultar → actual→35 luego idle/focus
+                const start = Math.max(currentFrame(), EYE_OPEN_MIN);
+                const seq = [];
+                for (let i = start; i <= EYE_TURN_MAX; i++) seq.push(i);
+                await playFrames(seq, FPS_EYE);
+                eyeBusy = false; // 🔓 libera bloqueo al terminar cierre
+                resumeLoop();
+              }
+            });
           }
 
-          // ==== ANIMACIÓN DE ERROR ====
-          function playErrorOneShot(){
+          // === Error animation ===
+          function playErrorOneShot() {
+            if (eyeBusy) return; // 🚫 no hacer error si el ojo activo
             if (isOneShot) return;
             isOneShot = true;
             stopLoop();
-
+            stopAnim();
             const seq = [];
             for (let i = ERR_MAX; i >= ERR_MIN; i--) seq.push(i);
             for (let i = ERR_MIN + 1; i <= ERR_MAX; i++) seq.push(i);
             preload(seq);
-
-            let k = 0;
-            const end = seq.length;
-            img.src = `${PATH}${seq[k]}.png`;
-
+            let k = 0; img.src = `${PATH}${seq[k]}.png`;
             const t = setInterval(() => {
               k++;
-              if (k >= end){
-                clearInterval(t);
-                isOneShot = false;
-                if (email.matches(":focus") || pwd.matches(":focus")){
-                  startLoop(focusSeq, FPS_FOCUS, "focus");
-                } else {
-                  startLoop(idleSeq, FPS_IDLE, "idle");
-                }
+              if (k >= seq.length) {
+                clearInterval(t); isOneShot = false;
+                resumeLoop();
                 return;
               }
               img.src = `${PATH}${seq[k]}.png`;
             }, 1000 / FPS_ERROR);
           }
 
-          // ==== (SOLO CAMBIO PEDIDO) ANIMACIÓN DEL OJO ====
-          function playEyeLoop(){
-            if (isEyeLoop) return;
-            isEyeLoop = true;
-            stopLoop();
+          [email, pwd].forEach(el => el?.addEventListener('invalid', () => playErrorOneShot(), true));
+          form?.addEventListener('submit', (e) => {
+            if (!form.checkValidity()) { e.preventDefault(); playErrorOneShot(); }
+          });
 
-            // 1) primera pasada 35 → 15 (una sola vez)
-            const firstSeq = [];
-            for (let i = EYE_START; i >= EYE_MIN; i--) firstSeq.push(i);
+          const serverErr = document.getElementById("ServerLoginError")?.value?.trim();
+          const alertBox = document.getElementById("server-alert");
+          if (serverErr) {
+            document.getElementById("loginForm")?.scrollIntoView({ behavior: "smooth", block: "center" });
+            playErrorOneShot();
+            setTimeout(() => {
+              if (!alertBox) return;
+              alertBox.style.transition = "opacity .4s ease";
+              alertBox.style.opacity = "0";
+              setTimeout(() => alertBox.remove(), 400);
+            }, 5000);
+          }
 
-            // 2) bucle continuo 15 ↔ 25 (sin volver a 35)
-            const bounceSeq = [];
-            for (let i = EYE_MIN; i <= EYE_LIMIT; i++) bounceSeq.push(i);
-            for (let i = EYE_LIMIT - 1; i >= EYE_MIN + 1; i--) bounceSeq.push(i);
-
-            preload(firstSeq);
-            preload(bounceSeq);
-
-            const playSeqOnce = (seq, fps, done) => {
-              let k = 0;
-              img.src = `${PATH}${seq[k]}.png`;
-              const t = setInterval(() => {
-                k++;
-                if (k >= seq.length){
-                  clearInterval(t);
-                  done && done();
-                  return;
-                }
-                img.src = `${PATH}${seq[k]}.png`;
-              }, 1000 / fps);
-            };
-
-            playSeqOnce(firstSeq, FPS_EYE, () => {
-              let j = 0;
-              loopTimer = setInterval(() => {
-                j = (j + 1) % bounceSeq.length;
-                img.src = `${PATH}${bounceSeq[j]}.png`;
-              }, 1000 / FPS_EYE);
+          // === Botón Google: redirección a ExternalLogin con returnUrl ===
+          const btnGoogle = document.getElementById("btnGoogle");
+          if (btnGoogle) {
+            btnGoogle.addEventListener("click", () => {
+              const ret = btnGoogle.getAttribute("data-return") || "/";
+              
+              // Marcar que OAuth está en progreso para prevenir problemas con botón atrás
+              sessionStorage.setItem("oauth_in_progress", "true");
+              sessionStorage.setItem("oauth_start_time", Date.now().toString());
+              
+              // Limpiar cualquier estado previo
+              history.replaceState({ oauth: true }, "", window.location.href);
+              
+              const url = `/Account/ExternalLogin?provider=Google&returnUrl=${encodeURIComponent(ret)}`;
+              
+              // Usar replace en lugar de href para evitar que el botón atrás cause problemas
+              window.location.replace(url);
             });
           }
 
-          function playEyeCloseTransition(){
-            if (!isEyeLoop) return;
-            isEyeLoop = false;
-            stopLoop();
-
-            // Calcula desde la imagen actual hacia 12
-            const currentNumber = parseInt(img.src.match(/(\d+)\.png$/)?.[1] || 16);
-            const seq = [];
-            for (let i = currentNumber; i >= 12; i--) seq.push(i);
-            preload(seq);
-
-            let k = 0;
-            const end = seq.length;
-            img.src = `${PATH}${seq[k]}.png`;
-
-            const t = setInterval(() => {
-              k++;
-              if (k >= end){
-                clearInterval(t);
-                // vuelve al estado normal (focus o idle)
-                if (email.matches(":focus") || pwd.matches(":focus")){
-                  startLoop(focusSeq, FPS_FOCUS, "focus");
-                } else {
-                  startLoop(idleSeq, FPS_IDLE, "idle");
-                }
-                return;
+          // Limpiar estado OAuth si la página se carga normalmente (no desde OAuth)
+          window.addEventListener("pageshow", (event) => {
+            // Si la página se carga desde cache (back/forward button)
+            if (event.persisted) {
+              const oauthInProgress = sessionStorage.getItem("oauth_in_progress");
+              const oauthStartTime = parseInt(sessionStorage.getItem("oauth_start_time") || "0");
+              const timeElapsed = Date.now() - oauthStartTime;
+              
+              // Si pasó más de 5 minutos, probablemente es una sesión vieja
+              if (timeElapsed > 300000 || !window.location.href.includes("signin-google")) {
+                sessionStorage.removeItem("oauth_in_progress");
+                sessionStorage.removeItem("oauth_start_time");
               }
-              img.src = `${PATH}${seq[k]}.png`;
-            }, 1000 / FPS_EYE);
-          }
-
-          // ==== SECUENCIAS ====
-          const idleSeq  = pingPong(IDLE_MIN, IDLE_MAX);
-          const focusSeq = pingPong(FOC_MIN, FOC_MAX);
-          preload(idleSeq);
-          preload(focusSeq);
-
-          // Arranque inicial
-          startLoop(idleSeq, FPS_IDLE, "idle");
-
-          // ==== FOCUS Y BLUR ====
-          function onFocus() {
-            startLoop(focusSeq, FPS_FOCUS, "focus");
-          }
-
-          function onBlur() {
-            setTimeout(() => {
-              if (!email.matches(":focus") && !pwd.matches(":focus")) {
-                startLoop(idleSeq, FPS_IDLE, "idle");
-              }
-            }, 100);
-          }
-
-          email?.addEventListener('focus', onFocus);
-          pwd?.addEventListener('focus', onFocus);
-          email?.addEventListener('blur', onBlur);
-          pwd?.addEventListener('blur', onBlur);
-
-          // ==== ERRORES ====
-          [email, pwd].forEach(el => el?.addEventListener('invalid', () => {
-            playErrorOneShot();
-          }, true));
-
-          form?.addEventListener('submit', (e) => {
-            if (!form.checkValidity()){
-              e.preventDefault();
-              playErrorOneShot();
             }
           });
 
-          // ==== MOSTRAR / OCULTAR CONTRASEÑA ====
-          if (btnEye && pwd) {
-            btnEye.addEventListener("click", () => {
-              const isHidden = pwd.type === "password";
-              pwd.type = isHidden ? "text" : "password";
-              btnEye.textContent = isHidden ? "🙈" : "👁️";
-
-              // Activar ojo → bucle del ojo (35→15 y luego 15↔25)
-              if (isHidden) {
-                playEyeLoop();
-              }
-              // Desactivar ojo → transición hacia 12
-              else {
-                playEyeCloseTransition();
-              }
-            });
+          // Detectar si volvimos desde Google OAuth sin completar
+          if (window.location.search.includes("error=correlation_failed") || 
+              window.location.search.includes("error=oauth_failed")) {
+            sessionStorage.removeItem("oauth_in_progress");
+            sessionStorage.removeItem("oauth_start_time");
           }
-
         })();
     </script>
 }
+
+<script>
+    (function () {
+      history.pushState(null, "", location.href);
+      window.addEventListener("popstate", () => history.pushState(null, "", location.href));
+      window.addEventListener("pageshow", (ev) => { if (ev.persisted) location.reload(); });
+    })();
+</script>

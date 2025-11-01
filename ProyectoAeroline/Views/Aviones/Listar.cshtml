@@ -13,6 +13,21 @@
                 <i class="bi bi-plus-circle"></i> Agregar
             </a>
         </div>
+        @if (TempData["Mensaje"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["Mensaje"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
 
         <div class="card-body bg-light">
             <table id="tablaAviones" class="table table-hover align-middle text-center w-100">
@@ -40,7 +55,9 @@
                             <td>@item.Modelo</td>
                             <td>@item.Tipo</td>
                             <td>@item.Capacidad</td>
-                            <td>@item.FechaUltimoMantenimiento.ToString("dd/MM/yyyy")</td>
+                            <td>@(item.FechaUltimoMantenimiento.HasValue
+                            ? item.FechaUltimoMantenimiento.Value.ToString("dd/MM/yyyy"): "-")
+                            </td>
                             <td>@item.RangoKm</td>
                             <td>
                                 <span class="badge @(item.Estado == "Activo" ? "bg-success" : "bg-danger")">

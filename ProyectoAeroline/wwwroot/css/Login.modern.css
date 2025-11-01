@@ -270,3 +270,219 @@ body {
     }
 
 
+
+
+.lg2-alert {
+    display: block;
+    margin: 8px 0 14px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: #fff2f2;
+    border: 1px solid #ffcccc;
+    color: #b00020;
+    font-size: .95rem;
+}
+
+.lg2-alert-success {
+    background: #f0f9f4;
+    border-color: #c8e6d0;
+    color: #2e7d32;
+}
+
+.field-error {
+    display: block;
+    margin-top: 6px;
+    font-size: .85rem;
+    color: #b00020;
+}
+
+/* === ESTILOS ADICIONALES PARA RECUPERAR CONTRASEÑA === */
+
+/* Icono circular superior */
+.lg2-icon-wrapper {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.lg2-icon-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+    margin: 0 auto;
+}
+
+.lg2-icon-circle svg {
+    width: 42px;
+    height: 42px;
+}
+
+/* Caja informativa */
+.lg2-info-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px;
+    margin: 0 0 24px;
+    background: #f8f9fa;
+    border-left: 4px solid #667eea;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.lg2-info-icon {
+    font-size: 28px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.lg2-info-text {
+    flex: 1;
+}
+
+.lg2-info-text strong {
+    display: block;
+    color: #333;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.lg2-info-text p {
+    margin: 0;
+    color: #666;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+/* Separador */
+.lg2-separator {
+    display: flex;
+    align-items: center;
+    margin: 24px 0 18px;
+    text-align: center;
+}
+
+.lg2-separator::before,
+.lg2-separator::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e0e0e0;
+}
+
+.lg2-separator span {
+    padding: 0 16px;
+    color: #999;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* Texto de ayuda */
+.lg2-help-text {
+    text-align: center;
+    margin: 0;
+    color: #7b8190;
+    font-size: 14px;
+}
+
+/* Nota de seguridad */
+.lg2-security-note {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 12px;
+    background: #f0f7ff;
+    border: 1px solid #cfe2ff;
+    border-radius: 8px;
+    color: #084298;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.lg2-security-note svg {
+    flex-shrink: 0;
+    color: #084298;
+}
+
+/* Botón mejorado */
+.lg2-btn-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 24px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+}
+
+.lg2-btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.35);
+}
+
+.lg2-btn-submit:active {
+    transform: translateY(0);
+}
+
+/* Ajuste para card de forgot password */
+.lg2-card-forgot {
+    padding-top: 32px;
+}
+
+.lg2-card-forgot .lg2-title {
+    margin-top: 0;
+}
+
+.lg2-card-forgot .lg2-sub {
+    margin-bottom: 28px;
+}
+
+/* Variante del icono para registro */
+.lg2-icon-circle-register {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    box-shadow: 0 8px 16px rgba(245, 87, 108, 0.3);
+}
+
+/* Ajuste para card de registro */
+.lg2-card-register {
+    padding-top: 32px;
+    min-height: var(--panel-h);
+    height: auto;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.lg2-card-register .lg2-title {
+    margin-top: 0;
+}
+
+.lg2-card-register .lg2-sub {
+    margin-bottom: 28px;
+}
+
+/* Permitir scroll suave en el card de registro */
+.lg2-card-register::-webkit-scrollbar {
+    width: 6px;
+}
+
+.lg2-card-register::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.lg2-card-register::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.lg2-card-register::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

@@ -1,63 +1,84 @@
-﻿@page 
+﻿@page
 @model IndexModel
+@using System.Security.Claims
 @{
     ViewData["Title"] = "Inicio";
 
+    // Nombre del usuario autenticado (claims → session → identity)
+    var nombre =
+        User.FindFirst(ClaimTypes.Name)?.Value
+        ?? User.FindFirst("Nombre")?.Value
+        ?? HttpContext.Session?.GetString("Nombre")     // ✅ aquí usamos HttpContext
+        ?? User.Identity?.Name
+        ?? "Usuario";
+
+    // ⬇️ ID del usuario actual para armar la ruta a Usuarios/Modificar
+    var idUsuario =
+        User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+        ?? HttpContext.Session.GetInt32("IdUsuario")?.ToString();
+
     // Obtiene la ruta actual para marcar el enlace activo
-    var path = Request.Path.Value ?? "";
+    var path = HttpContext.Request.Path.Value ?? "";     // ✅ también aquí usamos HttpContext
     bool isHome = path.Equals("/", StringComparison.OrdinalIgnoreCase) || path.StartsWith("/Index", StringComparison.OrdinalIgnoreCase);
     bool isEmpleados = path.StartsWith("/Empleados", StringComparison.OrdinalIgnoreCase);
     bool isUsuarios = path.StartsWith("/Usuarios", StringComparison.OrdinalIgnoreCase);
+    bool isRoles = path.StartsWith("/Roles", StringComparison.OrdinalIgnoreCase);
+    bool isPantallas = path.StartsWith("/Pantallas", StringComparison.OrdinalIgnoreCase);
     bool isAeropuertos = path.StartsWith("/Aeropuertos", StringComparison.OrdinalIgnoreCase);
     bool isAviones = path.StartsWith("/Aviones", StringComparison.OrdinalIgnoreCase);
     bool isMantenimientos = path.StartsWith("/Mantenimientos", StringComparison.OrdinalIgnoreCase); 
     bool isAerolineas = path.StartsWith("/Aerolineas", StringComparison.OrdinalIgnoreCase); 
     bool isVuelos = path.StartsWith("/Vuelos", StringComparison.OrdinalIgnoreCase);
+    bool isMantenimientos = path.StartsWith("/Mantenimientos", StringComparison.OrdinalIgnoreCase);
+    bool isBoletos = path.StartsWith("/Boletos", StringComparison.OrdinalIgnoreCase);
+    bool isRolPantallaOpcion = path.StartsWith("/RolPantallaOpcion", StringComparison.OrdinalIgnoreCase);
 }
+
 
 <!-- Sidebar fijo + contenido desplazado -->
 <aside id="sidebar" class="sb-sidebar text-bg-dark">
     <div class="sb-brand px-3 py-3 d-flex align-items-center">
         <i class="bi bi-bootstrap-fill fs-4 me-2"></i>
-        <span class="sb-brand-text">Sidebar</span>
+        <span class="sb-brand-text">Aerolinea</span>
     </div>
 
     <hr class="m-0 opacity-25">
 
     <nav class="sb-nav py-3">
         <!-- Home (Razor Page) -->
-        <a class="sb-link @(isHome ? "active" : "")"
-           asp-page="/Index">
+        <a class="sb-link @(isHome ? "active" : "")" asp-page="/Index">
             <i class="bi bi-house"></i><span>Home</span>
         </a>
 
-        <a class="sb-link @(isEmpleados ? "active" : "")"
-           asp-controller="Empleados" asp-action="Listar">
+        <a class="sb-link @(isEmpleados ? "active" : "")" asp-controller="Empleados" asp-action="Listar">
             <i class="bi bi-speedometer2"></i><span>Empleados</span>
         </a>
 
-
-        <!-- Usuarios -->
-        <a class="sb-link @(isUsuarios ? "active" : "")"
-           asp-controller="Usuarios" asp-action="Listar">
+        <a class="sb-link @(isUsuarios ? "active" : "")" asp-controller="Usuarios" asp-action="Listar">
             <i class="bi bi-receipt"></i><span>Usuarios</span>
         </a>
 
-        <!-- Aeropuertos -->
-        <a class="sb-link @(isAeropuertos ? "active" : "")"
-           asp-controller="Aeropuertos" asp-action="Listar">
+        <a class="sb-link @(isRoles ? "active" : "")" asp-controller="Roles" asp-action="Listar">
+            <i class="bi bi-shield-check"></i><span>Roles</span>
+        </a>
+
+        <a class="sb-link @(isPantallas ? "active" : "")" asp-controller="Pantallas" asp-action="Listar">
+            <i class="bi bi-window"></i><span>Pantallas</span>
+        </a>
+
+        <a class="sb-link @(isRolPantallaOpcion ? "active" : "")" asp-controller="RolPantallaOpcion" asp-action="Listar">
+            <i class="bi bi-key-fill"></i><span>Permisos</span>
+        </a>
+
+        <a class="sb-link @(isAeropuertos ? "active" : "")" asp-controller="Aeropuertos" asp-action="Listar">
             <i class="bi bi-box-seam"></i><span>Aeropuertos</span>
         </a>
 
-        <!-- Aviones -->
-        <a class="sb-link @(isAviones ? "active" : "")"
-           asp-controller="Aviones" asp-action="Listar">
+        <a class="sb-link @(isAviones ? "active" : "")" asp-controller="Aviones" asp-action="Listar">
             <i class="bi bi-people"></i><span>Aviones</span>
         </a>
 
-        <!-- Mantenimientos -->
-        <a class="sb-link @(isMantenimientos ? "active" : "")"
-           asp-controller="Mantenimientos" asp-action="Listar">
+        <a class="sb-link @(isMantenimientos ? "active" : "")" asp-controller="Mantenimientos" asp-action="Listar">
             <i class="bi bi-people"></i><span>Mantenimientos</span>
         </a>
 
@@ -74,22 +95,41 @@
            asp-controller="Vuelos" asp-action="Listar">
             <i class="bi bi-people"></i><span>Vuelos</span>
         </a>
+
+        <!-- Boletos -->
+        <a class="sb-link @(isBoletos ? "active" : "")"
+           asp-controller="Boletos" asp-action="Listar">
+            <i class="bi bi-people"></i><span>Boletos</span>
+        </a>
     </nav>
 
     <div class="sb-footer mt-auto px-3 py-3">
         <div class="dropdown">
-            <a class="d-flex align-items-center text-decoration-none text-white dropdown-toggle"
-               href="#" data-bs-toggle="dropdown">
-                <img src="https://avatars.githubusercontent.com/u/1?v=4"
-                     alt="mdo" class="rounded-circle me-2"
-                     width="32" height="32">
-                <strong class="sb-user">mdo</strong>
+            <a class="d-flex align-items-center text-decoration-none text-white dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                <img src="https://avatars.githubusercontent.com/u/1?v=4" alt="Usuario" class="rounded-circle me-2" width="32" height="32">
+                <strong class="sb-user">@nombre</strong>
             </a>
             <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                <li><a class="dropdown-item" href="#">Settings</a></li>
-                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li>
+                    <a class="dropdown-item"
+                       asp-controller="Usuarios"
+                       asp-action="Modificar"
+                       asp-route-id="@idUsuario"
+                       asp-route-IdUsuario="@idUsuario">
+                        Configuracion
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item"
+                       asp-controller="Usuarios"
+                       asp-action="Modificar"
+                       asp-route-id="@idUsuario"
+                       asp-route-IdUsuario="@idUsuario">
+                        Perfil
+                    </a>
+                </li>
                 <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#">Sign out</a></li>
+                <li><a class="dropdown-item" href="/Account/Logout">Cerrar sesión</a></li>
             </ul>
         </div>
     </div>
@@ -106,7 +146,6 @@
             </div>
         </div>
 
-        <!-- Ejemplo de lista -->
         <ul class="list-group">
             <li class="list-group-item active">
                 <div class="d-flex justify-content-between">
@@ -121,3 +160,132 @@
         </ul>
     </div>
 </main>
+
+@section Scripts {
+    <script>
+        (() => {
+          // Detectar si viene de Google login mediante el parámetro URL
+          const urlParams = new URLSearchParams(window.location.search);
+          const fromGoogle = urlParams.get('from') === 'google';
+          
+          // Si viene de Google login, limpiar el historial OAuth completamente
+          if (fromGoogle) {
+            // Remover el parámetro de la URL sin recargar
+            const cleanUrl = window.location.pathname;
+            
+            // Reemplazar el estado actual para limpiar el parámetro
+            window.history.replaceState({ page: 'index', authenticated: true }, '', cleanUrl);
+            
+            // Guardar en sessionStorage que viene de Google
+            sessionStorage.setItem('fromGoogleLogin', 'true');
+            
+            // NO manipular el historial de forma agresiva aquí
+            // En su lugar, interceptaremos popstate para redirigir a Logout si detecta OAuth
+          }
+          
+          // Interceptar el botón atrás de forma MÁS AGRESIVA
+          // Esto evita que el usuario regrese a las páginas OAuth de Google
+          let isHandlingBack = false;
+          
+          window.addEventListener("popstate", (event) => {
+            // Si ya estamos manejando el evento, evitar loops
+            if (isHandlingBack) {
+              return;
+            }
+            
+            isHandlingBack = true;
+            
+            // Cuando se presiona atrás, la URL ya cambió
+            const newPath = window.location.pathname;
+            const newUrl = window.location.href.toLowerCase();
+            
+            // Verificar si viene de Google login
+            const fromGoogleLogin = sessionStorage.getItem('fromGoogleLogin') === 'true';
+            
+            // SIEMPRE interceptar si detectamos páginas OAuth, Google, o callback
+            if (newPath.includes("/signin-google") ||
+                newPath.includes("/Account/ExternalLogin") ||
+                newPath.includes("/Account/ExternalLoginCallback") ||
+                newPath.includes("/Account/ConfirmGoogleLogin") ||
+                newUrl.includes("accounts.google.com") ||
+                newUrl.includes("google.com/o/oauth2") ||
+                newUrl.includes("oauthchooseaccount") ||
+                newUrl.includes("google.com/accounts")) {
+              
+              // Redirigir inmediatamente al Login y cerrar sesión
+              // Esto previene que puedan usar el botón avanzar para entrar sin autenticarse
+              window.location.replace("/Account/Logout");
+              return;
+            }
+            
+            // Si venimos de Google login y presionaron atrás desde Index
+            if (fromGoogleLogin && (newPath.includes("/Index") || newPath === "/")) {
+              // Redirigir al Login (no logout, solo login)
+              window.location.replace("/Account/Login");
+              return;
+            }
+            
+            // Si ya estamos en Login, está bien (permitir navegación normal)
+            if (newPath.includes("/Account/Login")) {
+              // Limpiar la bandera de Google login cuando llegamos al Login
+              sessionStorage.removeItem('fromGoogleLogin');
+              isHandlingBack = false;
+              return;
+            }
+            
+            // Para cualquier otro caso cuando viene de Google, redirigir al Login
+            if (fromGoogleLogin) {
+              window.location.replace("/Account/Login");
+              return;
+            }
+            
+            // Resetear la bandera si no es un caso especial
+            isHandlingBack = false;
+          });
+
+          // Interceptar ANTES de que el navegador navegue (más agresivo)
+          // Esto previene la navegación a Google antes de que suceda
+          window.addEventListener("beforeunload", (event) => {
+            // No prevenir la navegación, solo marcar que estamos navegando
+            const fromGoogleLogin = sessionStorage.getItem('fromGoogleLogin') === 'true';
+            if (fromGoogleLogin) {
+              // No prevenir, solo asegurar que la bandera está activa
+            }
+          });
+
+          // Prevenir navegación hacia atrás usando teclado (Alt+Left)
+          document.addEventListener("keydown", (e) => {
+            const target = e.target || e.srcElement;
+            const isInput = ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName) || 
+                           (target.isContentEditable === true);
+            
+            // Solo interceptar si no está en un campo de entrada
+            if (!isInput && e.altKey && e.key === "ArrowLeft") {
+              const fromGoogleLogin = sessionStorage.getItem('fromGoogleLogin') === 'true';
+              if (fromGoogleLogin) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.stopImmediatePropagation();
+                window.location.replace("/Account/Login");
+              }
+            }
+          });
+
+          // Evitar cache del navegador para contenido autenticado
+          window.addEventListener("pageshow", (e) => {
+            if (e.persisted) {
+              // Si la página se carga desde cache, verificar si es una página OAuth
+              const currentUrl = window.location.href.toLowerCase();
+              if (currentUrl.includes("accounts.google.com") ||
+                  currentUrl.includes("google.com/o/oauth2") ||
+                  currentUrl.includes("oauthchooseaccount")) {
+                // Si es una página OAuth en cache, redirigir al logout inmediatamente
+                window.location.replace("/Account/Logout");
+              } else {
+                window.location.reload();
+              }
+            }
+          });
+        })();
+    </script>
+}

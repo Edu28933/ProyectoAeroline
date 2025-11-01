@@ -18,10 +18,9 @@
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
             <div class="row g-3">
-
                 <div class="col-md-6">
                     <label asp-for="IdAerolinea" class="form-label fw-bold">Aerolínea</label>
-                    <select asp-for="IdAerolinea" class="form-select" asp-items="ViewBag.Aerolineas">
+                    <select asp-for="IdAerolinea" class="form-select" asp-items="ViewBag.Aerolineas!">
                         <option value="">-- Seleccione Aerolínea --</option>
                     </select>
                     <span asp-validation-for="IdAerolinea" class="text-danger"></span>
@@ -33,31 +32,40 @@
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label fw-bold">Modelo</label>
-                    <select asp-for="Modelo" class="form-select" asp-items="ViewBag.Modelos" id="modeloSelect"></select>
+                    <label asp-for="Modelo" class="form-label fw-bold">Modelo</label>
+                    <select asp-for="Modelo" class="form-select" asp-items="ViewBag.Modelos!" id="modeloSelect">
+                        <option value="">-- Seleccione modelo --</option>
+                    </select>
+                    <span asp-validation-for="Modelo" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label fw-bold">Tipo</label>
-                    <select asp-for="Tipo" class="form-select" asp-items="ViewBag.Tipos"></select>
+                    <label asp-for="Tipo" class="form-label fw-bold">Tipo</label>
+                    <select asp-for="Tipo" class="form-select" asp-items="ViewBag.Tipos!">
+                        <option value="">-- Seleccione tipo --</option>
+                    </select>
+                    <span asp-validation-for="Tipo" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label fw-bold">Capacidad</label>
-                    <select asp-for="Capacidad" class="form-select" asp-items="ViewBag.Capacidades"></select>
+                    <label asp-for="Capacidad" class="form-label fw-bold">Capacidad</label>
+                    <select asp-for="Capacidad" class="form-select" asp-items="ViewBag.Capacidades!">
+                        <option value="">-- Seleccione capacidad --</option>
+                    </select>
+                    <span asp-validation-for="Capacidad" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6">
                     <label asp-for="FechaUltimoMantenimiento" class="form-label fw-bold">Fecha último mantenimiento</label>
-                    <input asp-for="FechaUltimoMantenimiento" type="date" class="form-control" />
-                    <span asp-validation-for="FechaUltimoMantenimiento" class="text-danger"></span>
+                    <input asp-for="FechaUltimoMantenimiento" type="date" class="form-control" readonly />
                 </div>
-
 
                 <div class="col-md-6">
-                    <label class="form-label fw-bold">Rango (Km)</label>
+                    <label asp-for="RangoKm" class="form-label fw-bold">Rango (Km)</label>
                     <input asp-for="RangoKm" class="form-control" id="rangoKm" />
+                    <span asp-validation-for="RangoKm" class="text-danger"></span>
                 </div>
+
 
                 <div class="col-md-6">
                     <label class="form-label fw-bold">Estado</label>
@@ -91,6 +99,8 @@
             const rangoInput = document.getElementById("rangoKm");
             if (rangosPorModelo[modelo]) {
                 rangoInput.value = rangosPorModelo[modelo];
+            } else {
+                rangoInput.value = ''; // Limpia si no hay modelo válido
             }
         });
     </script>

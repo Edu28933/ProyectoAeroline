@@ -1,0 +1,93 @@
+@model ProyectoAeroline.Models.RolPantallaOpcionModel
+@{
+    ViewData["Title"] = "Eliminar Permiso";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 mt-4">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-danger text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">
+                <i class="bi bi-key-x"></i> Eliminar Permiso
+            </h3>
+            <a href="/RolPantallaOpcion/Listar" class="btn btn-light btn-sm fw-bold">
+                <i class="bi bi-arrow-left-circle"></i> Regresar
+            </a>
+        </div>
+
+        <div class="card-body bg-light">
+            <h5 class="text-center mb-4 text-danger fw-semibold">
+                ¿Seguro que deseas eliminar este permiso?
+            </h5>
+
+            <form asp-action="Eliminar" method="post">
+                @Html.AntiForgeryToken()
+
+                <!-- Campo oculto: ESTE ES CLAVE -->
+                <input type="hidden" asp-for="IdRolPantallaOpcion" />
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">ID Permiso</label>
+                        <input class="form-control" value="@Model.IdRolPantallaOpcion" readonly />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Rol</label>
+                        <input class="form-control" value="@(Model.NombreRol ?? $"Rol {Model.IdRol}")" readonly />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Pantalla</label>
+                        <input class="form-control" value="@(Model.NombrePantalla ?? $"Pantalla {Model.IdPantalla}")" readonly />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Estado</label>
+                        <input class="form-control" value="@Model.Estado" readonly />
+                    </div>
+
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold">Permisos</label>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <strong>Ver:</strong> 
+                                <span class="badge @(Model.Ver ? "bg-success" : "bg-secondary")">
+                                    @(Model.Ver ? "Sí" : "No")
+                                </span>
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Crear:</strong> 
+                                <span class="badge @(Model.Crear ? "bg-success" : "bg-secondary")">
+                                    @(Model.Crear ? "Sí" : "No")
+                                </span>
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Editar:</strong> 
+                                <span class="badge @(Model.Editar ? "bg-success" : "bg-secondary")">
+                                    @(Model.Editar ? "Sí" : "No")
+                                </span>
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Eliminar:</strong> 
+                                <span class="badge @(Model.Eliminar ? "bg-success" : "bg-secondary")">
+                                    @(Model.Eliminar ? "Sí" : "No")
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-danger px-4 me-2">
+                        <i class="bi bi-trash3-fill"></i> Eliminar definitivamente
+                    </button>
+                    <a href="/RolPantallaOpcion/Listar" class="btn btn-outline-secondary px-4">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+

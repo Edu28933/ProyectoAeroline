@@ -4,39 +4,64 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<h2>Eliminar</h2>
-<h5>¿Seguro que deseas eliminar este usuario?</h5>
-<hr />
+<div class="container-fluid px-4 mt-4">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-danger text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">
+                <i class="bi bi-person-x-fill"></i> Eliminar Usuario
+            </h3>
+            <a href="/Usuarios/Listar" class="btn btn-light btn-sm fw-bold">
+                <i class="bi bi-arrow-left-circle"></i> Regresar
+            </a>
+        </div>
 
-<form asp-action="Eliminar" method="post">
-    @Html.AntiForgeryToken()
+        <div class="card-body bg-light">
+            <h5 class="text-center mb-4 text-danger fw-semibold">
+                ¿Seguro que deseas eliminar este usuario?
+            </h5>
 
-    <!-- Campo oculto: ESTE ES CLAVE -->
-    <input type="hidden" asp-for="IdUsuario" />
+            <form asp-action="Eliminar" method="post">
+                @Html.AntiForgeryToken()
 
-    <div class="mb-3">
-        <label class="form-label">IdUsuario</label>
-        <input class="form-control" value="@Model.IdUsuario" readonly />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">IdRol</label>
-        <input class="form-control" value="@Model.IdRol" readonly />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Nombre</label>
-        <input class="form-control" value="@Model.Nombre" readonly />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Contraseña</label>
-        <input class="form-control" value="@Model.Contraseña" readonly />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Estado</label>
-        <input class="form-control" value="@Model.Estado" readonly />
-    </div>
+                <!-- Campo oculto: ESTE ES CLAVE -->
+                <input type="hidden" asp-for="IdUsuario" />
 
-    <div class="d-flex gap-2">
-        <button type="submit" class="btn btn-danger">Eliminar</button>
-        <a href="/Usuarios/Listar" class="btn btn-secondary">Cancelar</a>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">ID Usuario</label>
+                        <input class="form-control" value="@Model.IdUsuario" readonly />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Rol</label>
+                        <input class="form-control" value="@Model.IdRol" readonly />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Nombre</label>
+                        <input class="form-control" value="@Model.Nombre" readonly />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Correo</label>
+                        <input class="form-control" value="@(Model.Correo ?? "N/A")" readonly />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Estado</label>
+                        <input class="form-control" value="@Model.Estado" readonly />
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-danger px-4 me-2">
+                        <i class="bi bi-trash3-fill"></i> Eliminar definitivamente
+                    </button>
+                    <a href="/Usuarios/Listar" class="btn btn-outline-secondary px-4">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
-</form>
+</div>

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Confirmar ingreso con Google</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: Segoe UI,Arial,sans-serif;
+            background: #f6f7fb;
+            margin: 0;
+            padding: 0
+        }
+
+        .card {
+            max-width: 620px;
+            margin: 24px auto;
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 6px 24px rgba(0,0,0,.08)
+        }
+
+        .btn {
+            display: inline-block;
+            background: #0d6efd;
+            color: #fff;
+            padding: 12px 18px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 500;
+            margin: 16px 0;
+        }
+
+        .btn:hover {
+            background: #0b5ed7;
+        }
+
+        .muted {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            margin: 16px 0;
+            border-radius: 4px;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #0d6efd;
+            padding: 12px;
+            margin: 16px 0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Confirma tu ingreso con Google</h2>
+        
+        <p>Hola <strong>{{nombre}}</strong>,</p>
+        
+        <p>Has intentado iniciar sesión en nuestro sistema usando tu cuenta de Google con el correo <strong>{{email}}</strong>.</p>
+        
+        <div class="info-box">
+            <strong>📧 Correo:</strong> {{email}}
+        </div>
+
+        <p>Para completar el proceso y crear tu cuenta en el sistema, haz clic en el siguiente botón:</p>
+        
+        <p style="margin:22px 0; text-align: center;">
+            <a class="btn" href="{{link}}">✅ Aceptar y crear cuenta</a>
+        </p>
+
+        <div class="highlight">
+            <strong>⏰ Importante:</strong> Este enlace expira en <strong>60 minutos</strong>. Si no lo usas antes de ese tiempo, deberás iniciar sesión con Google nuevamente.
+        </div>
+
+        <p class="muted">
+            Si no solicitaste crear una cuenta con Google, puedes ignorar este mensaje de forma segura.
+        </p>
+
+        <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;">
+
+        <p class="muted" style="font-size: 12px;">
+            Este es un correo automático, por favor no respondas a este mensaje.
+        </p>
+    </div>
+</body>
+</html>
+

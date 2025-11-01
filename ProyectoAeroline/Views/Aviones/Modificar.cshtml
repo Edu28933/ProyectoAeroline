@@ -21,47 +21,43 @@
                 <div class="col-md-6">
                     <label asp-for="IdAvion" class="control-label"></label>
                     <input asp-for="IdAvion" class="form-control" readonly />
-                    <span asp-validation-for="IdAvion" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6">
                     <label asp-for="IdAerolinea" class="form-label fw-bold">Aerolínea</label>
-                    <select asp-for="IdAerolinea" class="form-select" asp-items="ViewBag.Aerolineas">
+                    <select asp-for="IdAerolinea" class="form-select" asp-items="ViewBag.Aerolineas!">
                         <option value="">-- Seleccione Aerolínea --</option>
                     </select>
-                    <span asp-validation-for="IdAerolinea" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6">
                     <label asp-for="Placa" class="control-label"></label>
-                    <input asp-for="Placa" class="form-control" />
-                    <span asp-validation-for="Placa" class="text-danger"></span>
+                    <input asp-for="Placa" class="form-control" readonly />
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <label asp-for="Modelo" class="form-label fw-bold">Modelo</label>
-                    <select asp-for="Modelo" class="form-select" asp-items="ViewBag.Modelos" id="modeloSelect">
+                    <select asp-for="Modelo" class="form-select" asp-items="ViewBag.Modelos!" id="modeloSelect">
                         <option value="">-- Seleccione modelo --</option>
                     </select>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <label asp-for="Tipo" class="form-label fw-bold">Tipo</label>
-                    <select asp-for="Tipo" class="form-select" asp-items="ViewBag.Tipos"></select>
-                </div>
-
-                <div class="col-md-4">
-                    <label asp-for="Capacidad" class="form-label fw-bold">Capacidad</label>
-                    <select asp-for="Capacidad" class="form-select" asp-items="ViewBag.Capacidades"></select>
+                    <select asp-for="Tipo" class="form-select" asp-items="ViewBag.Tipos!"></select>
                 </div>
 
                 <div class="col-md-6">
-                    <label asp-for="FechaUltimoMantenimiento" class="control-label"></label>
-                    <input asp-for="FechaUltimoMantenimiento" class="form-control" type="date" />
-                    <span asp-validation-for="FechaUltimoMantenimiento" class="text-danger"></span>
+                    <label asp-for="Capacidad" class="form-label fw-bold">Capacidad</label>
+                    <select asp-for="Capacidad" class="form-select" asp-items="ViewBag.Capacidades!"></select>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-6">
+                    <label asp-for="FechaUltimoMantenimiento" class="form-label fw-bold">Último mantenimiento</label>
+                    <input asp-for="FechaUltimoMantenimiento" class="form-control" readonly />
+                </div>
+
+                <div class="col-md-6">
                     <label asp-for="RangoKm" class="form-label fw-bold">Rango (Km)</label>
                     <input asp-for="RangoKm" class="form-control" id="rangoKm" />
                 </div>
@@ -85,7 +81,8 @@
 </div>
 
 @section Scripts {
-    <script>
+   <script>
+        // Valores recomendados de rango por modelo
         const rangosPorModelo = {
             "Boeing 737": 5600,
             "Airbus A320": 6100,
@@ -93,9 +90,11 @@
             "Embraer E190": 4500
         };
 
-        document.getElementById("modeloSelect").addEventListener("change", function () {
+        const modeloSelect = document.getElementById("modeloSelect");
+        const rangoInput = document.getElementById("rangoKm");
+
+        modeloSelect.addEventListener("change", function () {
             const modelo = this.value;
-            const rangoInput = document.getElementById("rangoKm");
             if (rangosPorModelo[modelo]) {
                 rangoInput.value = rangosPorModelo[modelo];
             }

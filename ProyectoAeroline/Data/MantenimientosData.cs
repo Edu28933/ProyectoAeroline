@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using ProyectoAeroline.Models;
 using System.Data;
 
@@ -194,5 +195,60 @@ namespace ProyectoAeroline.Data
 
             return respuesta;
         }
+
+        // --- LISTAR AVIONES ACTIVOS ---
+        public List<SelectListItem> MtdListarAvionesActivos()
+        {
+            var lista = new List<SelectListItem>();
+            var conn = new Conexion();
+
+            using (var conexion = new SqlConnection(conn.GetConnectionString()))
+            {
+                conexion.Open();
+                SqlCommand cmd = new SqlCommand("usp_ListarAvionesActivos", conexion);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                using (var dr = cmd.ExecuteReader())
+                {
+                    while (dr.Read())
+                    {
+                        lista.Add(new SelectListItem
+                        {
+                            Value = dr["IdAvion"].ToString(),
+                            Text = $"{dr["IdAvion"]} - {dr["Placa"]}"
+                        });
+                    }
+                }
+            }
+            return lista;
+        }
+
+        // --- LISTAR EMPLEADOS ACTIVOS ---
+        public List<SelectListItem> MtdListarEmpleadosActivos()
+        {
+            var lista = new List<SelectListItem>();
+            var conn = new Conexion();
+
+            using (var conexion = new SqlConnection(conn.GetConnectionString()))
+            {
+                conexion.Open();
+                SqlCommand cmd = new SqlCommand("usp_ListarEmpleadosActivos", conexion);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                using (var dr = cmd.ExecuteReader())
+                {
+                    while (dr.Read())
+                    {
+                        lista.Add(new SelectListItem
+                        {
+                            Value = dr["IdEmpleado"].ToString(),
+                            Text = $"{dr["IdEmpleado"]} - {dr["Nombre"]}"
+                        });
+                    }
+                }
+            }
+            return lista;
+        }
+
     }
 }
