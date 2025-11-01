@@ -1,0 +1,157 @@
+﻿@model ProyectoAeroline.Models.BoletosModel
+
+@{
+    ViewData["Title"] = "Modificar";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="card shadow-lg border-0 rounded-4 mt-4">
+    <div class="card-header bg-primary text-white rounded-top-4 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0"><i class="bi bi-pencil-square"></i> Modificar boleto</h4>
+        <a href="/Boletos/Listar" class="btn btn-light btn-sm fw-bold">
+            <i class="bi bi-arrow-left-circle"></i> Regresar
+        </a>
+    </div>
+
+    <div class="card-body bg-light rounded-bottom-4">
+        <form asp-action="Modificar" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+                    <label asp-for="IdBoleto" class="form-label fw-bold">ID Boleto</label>
+                    <input asp-for="IdBoleto" class="form-control" readonly />
+                    <span asp-validation-for="IdBoleto" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Vuelo</label>
+                    <select asp-for="IdVuelo" asp-items="ViewBag.Vuelos" class="form-select"></select>
+                    <span asp-validation-for="IdVuelo" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Pasajero</label>
+                    <select asp-for="IdPasajero" asp-items="ViewBag.Pasajeros" class="form-select"></select>
+                    <span asp-validation-for="IdPasajero" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="NumeroAsiento" class="form-label fw-bold">Número de asiento</label>
+                    <input asp-for="NumeroAsiento" class="form-control" />
+                    <span asp-validation-for="NumeroAsiento" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Clase" class="form-label fw-bold">Clase</label>
+                    <select asp-for="Clase" asp-items="ViewBag.Clases" class="form-select" id="Clase"></select>
+                    <span asp-validation-for="Clase" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Precio" class="form-label fw-bold">Precio</label>
+                    <input asp-for="Precio" id="Precio" class="form-control" readonly />
+                    <span asp-validation-for="Precio" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Cantidad" class="form-label fw-bold">Cantidad</label>
+                    <input asp-for="Cantidad" id="Cantidad" class="form-control" />
+                    <span asp-validation-for="Cantidad" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Descuento" class="form-label fw-bold">Descuento</label>
+                    <input asp-for="Descuento" id="Descuento" class="form-control" />
+                    <span asp-validation-for="Descuento" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Impuesto" class="form-label fw-bold">Impuesto</label>
+                    <input asp-for="Impuesto" id="Impuesto" class="form-control" />
+                    <span asp-validation-for="Impuesto" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Total" class="form-label fw-bold">Total</label>
+                    <input asp-for="Total" id="Total" class="form-control" readonly />
+                    <span asp-validation-for="Total" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Reembolso" class="form-label fw-bold">Reembolso</label>
+                    <select asp-for="Reembolso" asp-items="ViewBag.Reembolsos" class="form-select"></select>
+                    <span asp-validation-for="Reembolso" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Estado" class="form-label fw-bold">Estado</label>
+                    <select asp-for="Estado" asp-items="ViewBag.Estados" class="form-select"></select>
+                    <span asp-validation-for="Estado" class="text-danger"></span>
+                </div>
+
+            </div>
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-success px-4">
+                    <i class="bi bi-save"></i> Guardar cambios
+                </button>
+                <a href="/Boletos/Listar" class="btn btn-outline-secondary ms-2 px-4">
+                    <i class="bi bi-x-circle"></i> Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Asignar precio automáticamente según la clase del boleto
+        const clase = document.getElementById("Clase");
+        const precio = document.getElementById("Precio");
+        const cantidad = document.getElementById("Cantidad");
+        const descuento = document.getElementById("Descuento");
+        const impuesto = document.getElementById("Impuesto");
+        const total = document.getElementById("Total");
+
+        function actualizarPrecio() {
+            switch (clase.value) {
+                case "Económica":
+                    precio.value = 500;
+                    break;
+                case "Ejecutiva":
+                    precio.value = 1200;
+                    break;
+                case "Primera Clase":
+                    precio.value = 2500;
+                    break;
+                default:
+                    precio.value = "";
+                    break;
+            }
+            calcularTotal();
+        }
+
+        function calcularTotal() {
+            const p = parseFloat(precio.value) || 0;
+            const c = parseInt(cantidad.value) || 1;
+            const d = parseFloat(descuento.value) || 0;
+            const i = parseFloat(impuesto.value) || 0;
+
+            const subtotal = p * c;
+            const totalFinal = subtotal - d + i;
+            total.value = totalFinal.toFixed(2);
+        }
+
+        clase.addEventListener("change", actualizarPrecio);
+        cantidad.addEventListener("input", calcularTotal);
+        descuento.addEventListener("input", calcularTotal);
+        impuesto.addEventListener("input", calcularTotal);
+
+        actualizarPrecio(); // Inicializa el precio y total al cargar
+
+    </script>
+
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

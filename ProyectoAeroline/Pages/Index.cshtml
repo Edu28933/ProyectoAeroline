@@ -25,6 +25,7 @@
     bool isAeropuertos = path.StartsWith("/Aeropuertos", StringComparison.OrdinalIgnoreCase);
     bool isAviones = path.StartsWith("/Aviones", StringComparison.OrdinalIgnoreCase);
     bool isMantenimientos = path.StartsWith("/Mantenimientos", StringComparison.OrdinalIgnoreCase);
+    bool isBoletos = path.StartsWith("/Boletos", StringComparison.OrdinalIgnoreCase);
 }
 
 
@@ -61,6 +62,12 @@
 
         <a class="sb-link @(isMantenimientos ? "active" : "")" asp-controller="Mantenimientos" asp-action="Listar">
             <i class="bi bi-people"></i><span>Mantenimientos</span>
+        </a>
+
+        <!-- Boletos -->
+        <a class="sb-link @(isBoletos ? "active" : "")"
+           asp-controller="Boletos" asp-action="Listar">
+            <i class="bi bi-people"></i><span>Boletos</span>
         </a>
     </nav>
 

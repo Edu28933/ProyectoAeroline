@@ -170,9 +170,8 @@ namespace ProyectoAeroline.Data
         }
 
         // Método que elimina un avión
-        public bool MtdEliminarAvion(int IdAvion)
+        public string MtdEliminarAvion(int IdAvion)
         {
-            bool respuesta = false;
             var conn = new Conexion();
 
             try
@@ -186,16 +185,27 @@ namespace ProyectoAeroline.Data
                     cmd.ExecuteNonQuery();
                 }
 
-                respuesta = true;
+                return "OK"; // Se eliminó correctamente
+            }
+            catch (SqlException ex)
+            {
+                // Si el error viene por restricción de llave foránea
+                if (ex.Message.Contains("FK_Mantenimi_IdAvion"))
+                {
+                    return "No se puede eliminar este avión porque tiene mantenimientos asociados.";
+                }
+
+                // Otros errores SQL
+                return "Error al eliminar el avión: " + ex.Message;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                respuesta = false;
+                // Cualquier otro error inesperado
+                return "Error inesperado: " + ex.Message;
             }
-
-            return respuesta;
         }
+
+
 
         //MÉTODO QUE BUSCA Y LISTA LOS ID PARA AGREGAR
         public List<AerolineasModel> MtdObtenerAerolineas()

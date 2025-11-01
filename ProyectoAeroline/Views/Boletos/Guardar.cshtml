@@ -1,0 +1,156 @@
+﻿@model ProyectoAeroline.Models.BoletosModel
+
+@{
+    ViewData["Title"] = "Guardar Boleto";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="card shadow-lg border-0 rounded-4 mt-4">
+    <div class="card-header bg-dark text-white rounded-top-4 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0"><i class="bi bi-ticket-perforated"></i> Registrar nuevo boleto</h4>
+        <a href="/Boletos/Listar" class="btn btn-outline-light btn-sm">
+            <i class="bi bi-arrow-left"></i> Regresar
+        </a>
+    </div>
+
+    <div class="card-body bg-light rounded-bottom-4">
+        <form asp-action="Guardar" method="post" class="needs-validation" novalidate>
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Vuelo</label>
+                    <select asp-for="IdVuelo" asp-items="ViewBag.Vuelos" class="form-select">
+                        <option value="">-- Seleccione el vuelo --</option>
+                    </select>
+                    <span asp-validation-for="IdVuelo" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Pasajero</label>
+                    <select asp-for="IdPasajero" asp-items="ViewBag.Pasajeros" class="form-select">
+                        <option value="">-- Seleccione el pasajero --</option>
+                    </select>
+                    <span asp-validation-for="IdPasajero" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="NumeroAsiento" class="form-label fw-bold">Número de Asiento</label>
+                    <input asp-for="NumeroAsiento" class="form-control" placeholder="Ej: 12A" />
+                    <span asp-validation-for="NumeroAsiento" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Clase" class="form-label fw-bold">Clase</label>
+                    <select asp-for="Clase" asp-items="ViewBag.Clases" class="form-select" id="Clase">
+                        <option value="">-- Seleccione la clase --</option>
+                    </select>
+                    <span asp-validation-for="Clase" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Precio" class="form-label fw-bold">Precio</label>
+                    <input asp-for="Precio" id="Precio" class="form-control" readonly />
+                    <span asp-validation-for="Precio" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Cantidad" class="form-label fw-bold">Cantidad</label>
+                    <input asp-for="Cantidad" class="form-control" id="Cantidad" />
+                    <span asp-validation-for="Cantidad" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Descuento" class="form-label fw-bold">Descuento</label>
+                    <input asp-for="Descuento" id="Descuento" class="form-control" readonly />
+                    <span asp-validation-for="Descuento" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Impuesto" class="form-label fw-bold">Impuesto</label>
+                    <input asp-for="Impuesto" id="Impuesto" class="form-control" readonly />
+                    <span asp-validation-for="Impuesto" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Total" class="form-label fw-bold">Total</label>
+                    <input asp-for="Total" id="Total" class="form-control" readonly />
+                    <span asp-validation-for="Total" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Reembolso" class="form-label fw-bold">Reembolso</label>
+                    <input asp-for="Reembolso" class="form-control" placeholder="Ej: No aplica / Parcial / Completo" />
+                    <span asp-validation-for="Reembolso" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="FechaCompra" class="form-label fw-bold">Fecha de Compra</label>
+                    <input asp-for="FechaCompra" type="date" class="form-control" min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                    <span asp-validation-for="FechaCompra" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Estado" class="form-label fw-bold">Estado</label>
+                    <select asp-for="Estado" asp-items="ViewBag.Estados" class="form-select">
+                        <option value="">-- Seleccione el estado --</option>
+                    </select>
+                    <span asp-validation-for="Estado" class="text-danger"></span>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-success px-4">
+                        <i class="bi bi-save"></i> Guardar
+                    </button>
+                    <a href="/Boletos/Listar" class="btn btn-outline-secondary ms-2 px-4">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Al cambiar vuelo, obtener el precio de ese vuelo
+        document.getElementById("IdVuelo").addEventListener("change", async function () {
+            const idVuelo = this.value;
+            if (!idVuelo) return;
+
+            const response = await fetch(`/Boletos/ObtenerPrecioVuelo?idVuelo=${idVuelo}`);
+            const data = await response.json();
+
+            document.getElementById("Precio").value = data.precio.toFixed(2);
+            calcularTotales();
+        });
+
+        // Recalcular al cambiar cantidad
+        document.getElementById("Cantidad").addEventListener("input", calcularTotales);
+
+        function calcularTotales() {
+            const precio = parseFloat(document.getElementById("Precio").value) || 0;
+            const cantidad = parseInt(document.getElementById("Cantidad").value) || 0;
+
+            if (precio < 0 || cantidad < 0) {
+                alert("No se permiten valores negativos.");
+                return;
+            }
+
+            const subtotal = precio * cantidad;
+
+            // Descuento automático
+            let descuento = 0;
+            if (cantidad >= 5 && cantidad <= 9) descuento = subtotal * 0.05;
+            else if (cantidad >= 10 && cantidad <= 14) descuento = subtotal * 0.10;
+            else if (cantidad >= 15) descuento = subtotal * 0.15;
+
+            const impuesto = subtotal * 0.12;
+            const total = subtotal - descuento + impuesto;
+
+            document.getElementById("Descuento").value = descuento.toFixed(2);
+            document.getElementById("Impuesto").value = impuesto.toFixed(2);
+            document.getElementById("Total").value = total.toFixed(2);
+        }
+    </script>
+}
