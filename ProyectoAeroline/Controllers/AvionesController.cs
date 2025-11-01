@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis.Options;
+using Microsoft.Data.SqlClient;
 using ProyectoAeroline.Data;
 using ProyectoAeroline.Models;
 
@@ -137,12 +138,32 @@ namespace ProyectoAeroline.Controllers
         [HttpPost]
         public IActionResult Eliminar(AvionesModel oAvion)
         {
-            var respuesta = _AvionesData.MtdEliminarAvion(oAvion.IdAvion);
+            try
+            {
+                var respuesta = _AvionesData.MtdEliminarAvion(oAvion.IdAvion);
 
-            if (respuesta)
-                return RedirectToAction("Listar");
-            else
-                return View();
+                if (respuesta == "OK")
+                {
+                    TempData["Mensaje"] = "Avión eliminado correctamente.";
+                }
+                else if (respuesta.Contains("mantenimientos"))
+                {
+                    TempData["Error"] = respuesta; // Muestra el mensaje del método Data
+                }
+                else if (respuesta.Contains("Error"))
+                {
+                    TempData["Error"] = respuesta; // Otros errores SQL o inesperados
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Ocurrió un error inesperado: " + ex.Message;
+            }
+
+            return RedirectToAction("Listar");
         }
+
+
+
     }
 }
