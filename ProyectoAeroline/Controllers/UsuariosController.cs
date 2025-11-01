@@ -1,87 +1,43 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ProyectoAeroline.Models;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ProyectoAeroline.Data;
+using ProyectoAeroline.Models;
+using System.Security.Claims;
 
 namespace ProyectoAeroline.Controllers
 {
     public class UsuariosController : Controller
     {
+        // Instancia de la clase con la conexión y stored procedures
+        private readonly UsuariosData _UsuariosData = new UsuariosData();
 
-        // Instancia de la clase con la conexion y stored procedures
-        UsuariosData _UsuariosData = new UsuariosData();
-
-
-
-        // Muestra el formulario principal con la lista de datos
-
+        // --------------------------------------------------------------
+        // LISTAR
+        // --------------------------------------------------------------
+        [Authorize]
         public IActionResult Listar()
         {
-
             var oListaUsuarios = _UsuariosData.MtdConsultarUsuarios();
             return View(oListaUsuarios);
         }
 
-
-
-        // Muestra el formulario llamador Guardar
+        // --------------------------------------------------------------
+        // GUARDAR (GET)
+        // --------------------------------------------------------------
+        [Authorize]
         public IActionResult Guardar()
         {
             return View();
         }
 
-        // Almacena los datos del formulario Guardar
+        // --------------------------------------------------------------
+        // GUARDAR (POST)
+        // --------------------------------------------------------------
         [HttpPost]
+        [Authorize]
         public IActionResult Guardar(UsuariosModel oUsuario)
         {
             var respuesta = _UsuariosData.MtdAgregarUsuario(oUsuario);
-
-            if (respuesta == true)
-            {
-                return RedirectToAction("Listar");
-            }
-            else
-            {
-                return View();
-            }
-        }
-
-
-        // Muestra el formulario llamador Modificar
-        public IActionResult Modificar(int CodigoUsuario)
-        {
-            var oUsuario = _UsuariosData.MtdBuscarUsuario(CodigoUsuario);
-            return View(oUsuario);
-        }
-
-        // Almacena los datos del formulario Editar
-        [HttpPost]
-        public IActionResult Modificar(UsuariosModel oUsuario)
-        {
-            var respuesta = _UsuariosData.MtdEditarUsuario(oUsuario);
-
-            if (respuesta == true)
-            {
-                return RedirectToAction("Listar");
-            }
-            else
-            {
-                return View();
-            }
-        }
-
-        // Muestra el formulario llamador Eliminar
-        // GET: Usuarios/Eliminar/5
-        public IActionResult Eliminar(int CodigoUsuario)
-        {
-            var oUsuario = _UsuariosData.MtdBuscarUsuario(CodigoUsuario);
-            return View(oUsuario);
-        }
-
-        // POST: Usuarios/Eliminar
-        [HttpPost]
-        public IActionResult Eliminar(UsuariosModel oUsuario)
-        {
-            var respuesta = _UsuariosData.MtdEliminarUsuario(oUsuario.IdUsuario);
 
             if (respuesta)
                 return RedirectToAction("Listar");
@@ -89,7 +45,97 @@ namespace ProyectoAeroline.Controllers
                 return View();
         }
 
+        // --------------------------------------------------------------
+        // MODIFICAR (GET)
+        // --------------------------------------------------------------
+        [Authorize]
+        public IActionResult Modificar(int? CodigoUsuario = null)
+        {
+            int idUsuario = CodigoUsuario ?? 0;
 
+            // 🔹 Si no viene el parámetro, obtenemos el ID del usuario logueado desde los claims
+            if (idUsuario == 0)
+            {
+                var claimId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (int.TryParse(claimId, out int parsedId))
+                    idUsuario = parsedId;
+            }
 
+            if (idUsuario == 0)
+            {
+                TempData["Error"] = "No se pudo determinar el usuario a modificar.";
+                return RedirectToAction("Listar");
+            }
+
+            var oUsuario = _UsuariosData.MtdBuscarUsuario(idUsuario);
+
+            if (oUsuario == null)
+            {
+                TempData["Error"] = "Usuario no encontrado.";
+                return RedirectToAction("Listar");
+            }
+
+            return View(oUsuario);
+        }
+
+        // --------------------------------------------------------------
+        // MODIFICAR (POST)
+        // --------------------------------------------------------------
+        [HttpPost]
+        [Authorize]
+        public IActionResult Modificar(UsuariosModel oUsuario)
+        {
+            var respuesta = _UsuariosData.MtdEditarUsuario(oUsuario);
+
+            if (respuesta)
+                return RedirectToAction("Listar");
+            else
+                return View(oUsuario);
+        }
+
+        // --------------------------------------------------------------
+        // ELIMINAR (GET)
+        // --------------------------------------------------------------
+        [Authorize]
+        public IActionResult Eliminar(int CodigoUsuario)
+        {
+            var oUsuario = _UsuariosData.MtdBuscarUsuario(CodigoUsuario);
+            return View(oUsuario);
+        }
+
+        // --------------------------------------------------------------
+        // ELIMINAR (POST)
+        // --------------------------------------------------------------
+        [HttpPost]
+        [Authorize]
+        public IActionResult Eliminar(UsuariosModel oUsuario)
+        {
+            var respuesta = _UsuariosData.MtdEliminarUsuario(oUsuario.IdUsuario);
+
+            if (respuesta)
+                return RedirectToAction("Listar");
+            else
+                return View(oUsuario);
+        }
+
+        // --------------------------------------------------------------
+        // PERFIL DIRECTO (opcional)
+        // --------------------------------------------------------------
+        [Authorize]
+        public IActionResult MiPerfil()
+        {
+            // 🔹 Acción directa para acceder al perfil del usuario logueado
+            var claimId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(claimId, out int idUsuario))
+                return RedirectToAction("Listar");
+
+            var oUsuario = _UsuariosData.MtdBuscarUsuario(idUsuario);
+
+            if (oUsuario == null)
+                return RedirectToAction("Listar");
+
+            // Reutiliza la vista Modificar
+            return View("Modificar", oUsuario);
+        }
     }
 }

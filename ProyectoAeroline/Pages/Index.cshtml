@@ -1,10 +1,24 @@
-﻿@page 
+﻿@page
 @model IndexModel
+@using System.Security.Claims
 @{
     ViewData["Title"] = "Inicio";
 
+    // Nombre del usuario autenticado (claims → session → identity)
+    var nombre =
+        User.FindFirst(ClaimTypes.Name)?.Value
+        ?? User.FindFirst("Nombre")?.Value
+        ?? HttpContext.Session?.GetString("Nombre")     // ✅ aquí usamos HttpContext
+        ?? User.Identity?.Name
+        ?? "Usuario";
+
+    // ⬇️ ID del usuario actual para armar la ruta a Usuarios/Modificar
+    var idUsuario =
+        User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+        ?? HttpContext.Session.GetInt32("IdUsuario")?.ToString();
+
     // Obtiene la ruta actual para marcar el enlace activo
-    var path = Request.Path.Value ?? "";
+    var path = HttpContext.Request.Path.Value ?? "";     // ✅ también aquí usamos HttpContext
     bool isHome = path.Equals("/", StringComparison.OrdinalIgnoreCase) || path.StartsWith("/Index", StringComparison.OrdinalIgnoreCase);
     bool isEmpleados = path.StartsWith("/Empleados", StringComparison.OrdinalIgnoreCase);
     bool isUsuarios = path.StartsWith("/Usuarios", StringComparison.OrdinalIgnoreCase);
@@ -14,49 +28,39 @@
     bool isBoletos = path.StartsWith("/Boletos", StringComparison.OrdinalIgnoreCase);
 }
 
+
 <!-- Sidebar fijo + contenido desplazado -->
 <aside id="sidebar" class="sb-sidebar text-bg-dark">
     <div class="sb-brand px-3 py-3 d-flex align-items-center">
         <i class="bi bi-bootstrap-fill fs-4 me-2"></i>
-        <span class="sb-brand-text">Sidebar</span>
+        <span class="sb-brand-text">Aerolinea</span>
     </div>
 
     <hr class="m-0 opacity-25">
 
     <nav class="sb-nav py-3">
         <!-- Home (Razor Page) -->
-        <a class="sb-link @(isHome ? "active" : "")"
-           asp-page="/Index">
+        <a class="sb-link @(isHome ? "active" : "")" asp-page="/Index">
             <i class="bi bi-house"></i><span>Home</span>
         </a>
 
-        <a class="sb-link @(isEmpleados ? "active" : "")"
-           asp-controller="Empleados" asp-action="Listar">
+        <a class="sb-link @(isEmpleados ? "active" : "")" asp-controller="Empleados" asp-action="Listar">
             <i class="bi bi-speedometer2"></i><span>Empleados</span>
         </a>
 
-
-        <!-- Usuarios -->
-        <a class="sb-link @(isUsuarios ? "active" : "")"
-           asp-controller="Usuarios" asp-action="Listar">
+        <a class="sb-link @(isUsuarios ? "active" : "")" asp-controller="Usuarios" asp-action="Listar">
             <i class="bi bi-receipt"></i><span>Usuarios</span>
         </a>
 
-        <!-- Aeropuertos -->
-        <a class="sb-link @(isAeropuertos ? "active" : "")"
-           asp-controller="Aeropuertos" asp-action="Listar">
+        <a class="sb-link @(isAeropuertos ? "active" : "")" asp-controller="Aeropuertos" asp-action="Listar">
             <i class="bi bi-box-seam"></i><span>Aeropuertos</span>
         </a>
 
-        <!-- Aviones -->
-        <a class="sb-link @(isAviones ? "active" : "")"
-           asp-controller="Aviones" asp-action="Listar">
+        <a class="sb-link @(isAviones ? "active" : "")" asp-controller="Aviones" asp-action="Listar">
             <i class="bi bi-people"></i><span>Aviones</span>
         </a>
 
-        <!-- Mantenimientos -->
-        <a class="sb-link @(isMantenimientos ? "active" : "")"
-           asp-controller="Mantenimientos" asp-action="Listar">
+        <a class="sb-link @(isMantenimientos ? "active" : "")" asp-controller="Mantenimientos" asp-action="Listar">
             <i class="bi bi-people"></i><span>Mantenimientos</span>
         </a>
 
@@ -69,18 +73,31 @@
 
     <div class="sb-footer mt-auto px-3 py-3">
         <div class="dropdown">
-            <a class="d-flex align-items-center text-decoration-none text-white dropdown-toggle"
-               href="#" data-bs-toggle="dropdown">
-                <img src="https://avatars.githubusercontent.com/u/1?v=4"
-                     alt="mdo" class="rounded-circle me-2"
-                     width="32" height="32">
-                <strong class="sb-user">mdo</strong>
+            <a class="d-flex align-items-center text-decoration-none text-white dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                <img src="https://avatars.githubusercontent.com/u/1?v=4" alt="Usuario" class="rounded-circle me-2" width="32" height="32">
+                <strong class="sb-user">@nombre</strong>
             </a>
             <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                <li><a class="dropdown-item" href="#">Settings</a></li>
-                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li>
+                    <a class="dropdown-item"
+                       asp-controller="Usuarios"
+                       asp-action="Modificar"
+                       asp-route-id="@idUsuario"
+                       asp-route-IdUsuario="@idUsuario">
+                        Configuracion
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item"
+                       asp-controller="Usuarios"
+                       asp-action="Modificar"
+                       asp-route-id="@idUsuario"
+                       asp-route-IdUsuario="@idUsuario">
+                        Perfil
+                    </a>
+                </li>
                 <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="#">Sign out</a></li>
+                <li><a class="dropdown-item" href="/Account/Logout">Cerrar sesión</a></li>
             </ul>
         </div>
     </div>
@@ -97,7 +114,6 @@
             </div>
         </div>
 
-        <!-- Ejemplo de lista -->
         <ul class="list-group">
             <li class="list-group-item active">
                 <div class="d-flex justify-content-between">
@@ -112,3 +128,31 @@
         </ul>
     </div>
 </main>
+
+@section Scripts {
+    <script>
+        (() => {
+          const LOGOUT_URL = "/Account/Logout";
+
+          // Detectar si el usuario presiona atrás (popstate)
+          window.addEventListener("popstate", () => {
+            // Cerrar sesión automáticamente al retroceder
+            fetch(LOGOUT_URL, { method: "GET", credentials: "include" })
+              .then(() => {
+                // Luego ir al login
+                window.location.href = "/Account/Login";
+              })
+              .catch(() => {
+                window.location.href = "/Account/Login";
+              });
+          });
+
+          // Evitar que vuelva al Index con "Avanzar" después del logout
+          window.addEventListener("pageshow", (e) => {
+            if (e.persisted) {
+              window.location.reload();
+            }
+          });
+        })();
+    </script>
+}
