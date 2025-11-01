@@ -17,9 +17,10 @@ namespace ProyectoAeroline.Data
                 try
                 {
                     conexion.Open();
-                    SqlCommand cmd = new SqlCommand("SELECT [IdRol], [NombreRol], [Descripcion], [Estado] FROM [dbo].[Roles] WHERE [Estado] != 'Eliminado' OR [Estado] IS NULL ORDER BY [IdRol]", conexion)
+                    // Usar stored procedure
+                    SqlCommand cmd = new SqlCommand("sp_RolesSeleccionar", conexion)
                     {
-                        CommandType = CommandType.Text
+                        CommandType = CommandType.StoredProcedure
                     };
 
                     using (var dr = cmd.ExecuteReader())
@@ -30,8 +31,8 @@ namespace ProyectoAeroline.Data
                             {
                                 IdRol = Convert.ToInt32(dr["IdRol"]),
                                 NombreRol = dr["NombreRol"]?.ToString() ?? "",
-                                Descripcion = dr["Descripcion"] != DBNull.Value ? dr["Descripcion"].ToString() : null,
-                                Estado = dr["Estado"] != DBNull.Value ? dr["Estado"].ToString() : "Activo"
+                                Descripcion = null, // La tabla no tiene este campo
+                                Estado = dr["FechaEliminacion"] == DBNull.Value ? "Activo" : "Eliminado" // Usar eliminación lógica
                             });
                         }
                     }
@@ -57,14 +58,10 @@ namespace ProyectoAeroline.Data
                 using (var conexion = new SqlConnection(conn.GetConnectionString()))
                 {
                     conexion.Open();
-                    SqlCommand cmd = new SqlCommand(@"
-                        INSERT INTO [dbo].[Roles] ([NombreRol], [Descripcion], [Estado])
-                        VALUES (@NombreRol, @Descripcion, @Estado)
-                    ", conexion);
+                    SqlCommand cmd = new SqlCommand("sp_RolAgregar", conexion);
                     cmd.Parameters.AddWithValue("@NombreRol", oRol.NombreRol);
-                    cmd.Parameters.AddWithValue("@Descripcion", (object?)oRol.Descripcion ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("@Estado", (object?)oRol.Estado ?? "Activo");
-                    cmd.CommandType = CommandType.Text;
+                    cmd.Parameters.AddWithValue("@UsuarioCreacion", DBNull.Value); // Puedes obtenerlo del contexto si lo necesitas
+                    cmd.CommandType = CommandType.StoredProcedure;
                     cmd.ExecuteNonQuery();
                 }
 
@@ -89,9 +86,9 @@ namespace ProyectoAeroline.Data
                 using (var conexion = new SqlConnection(conn.GetConnectionString()))
                 {
                     conexion.Open();
-                    SqlCommand cmd = new SqlCommand("SELECT [IdRol], [NombreRol], [Descripcion], [Estado] FROM [dbo].[Roles] WHERE [IdRol] = @IdRol", conexion);
+                    SqlCommand cmd = new SqlCommand("sp_RolBuscar", conexion);
                     cmd.Parameters.AddWithValue("@IdRol", IdRol);
-                    cmd.CommandType = CommandType.Text;
+                    cmd.CommandType = CommandType.StoredProcedure;
 
                     using (var dr = cmd.ExecuteReader())
                     {
@@ -99,8 +96,8 @@ namespace ProyectoAeroline.Data
                         {
                             oRol.IdRol = Convert.ToInt32(dr["IdRol"]);
                             oRol.NombreRol = dr["NombreRol"]?.ToString() ?? "";
-                            oRol.Descripcion = dr["Descripcion"] != DBNull.Value ? dr["Descripcion"].ToString() : null;
-                            oRol.Estado = dr["Estado"] != DBNull.Value ? dr["Estado"].ToString() : "Activo";
+                            oRol.Descripcion = null; // La tabla no tiene este campo
+                            oRol.Estado = dr["FechaEliminacion"] == DBNull.Value ? "Activo" : "Eliminado"; // Usar eliminación lógica
                         }
                     }
                 }
@@ -125,18 +122,11 @@ namespace ProyectoAeroline.Data
                 using (var conexion = new SqlConnection(conn.GetConnectionString()))
                 {
                     conexion.Open();
-                    SqlCommand cmd = new SqlCommand(@"
-                        UPDATE [dbo].[Roles]
-                        SET [NombreRol] = @NombreRol,
-                            [Descripcion] = @Descripcion,
-                            [Estado] = @Estado
-                        WHERE [IdRol] = @IdRol
-                    ", conexion);
+                    SqlCommand cmd = new SqlCommand("sp_RolModificar", conexion);
                     cmd.Parameters.AddWithValue("@IdRol", oRol.IdRol);
                     cmd.Parameters.AddWithValue("@NombreRol", oRol.NombreRol);
-                    cmd.Parameters.AddWithValue("@Descripcion", (object?)oRol.Descripcion ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("@Estado", (object?)oRol.Estado ?? "Activo");
-                    cmd.CommandType = CommandType.Text;
+                    cmd.Parameters.AddWithValue("@UsuarioActualizacion", DBNull.Value); // Puedes obtenerlo del contexto si lo necesitas
+                    cmd.CommandType = CommandType.StoredProcedure;
                     cmd.ExecuteNonQuery();
                 }
 
@@ -161,34 +151,10 @@ namespace ProyectoAeroline.Data
                 using (var conexion = new SqlConnection(conn.GetConnectionString()))
                 {
                     conexion.Open();
-                    
-                    // Verificar si hay usuarios usando este rol
-                    using (var cmdCheck = new SqlCommand("SELECT COUNT(*) FROM [dbo].[Usuarios] WHERE [IdRol] = @IdRol", conexion))
-                    {
-                        cmdCheck.Parameters.AddWithValue("@IdRol", IdRol);
-                        var count = (int)cmdCheck.ExecuteScalar();
-                        
-                        if (count > 0)
-                        {
-                            // Si hay usuarios, solo cambiar el estado
-                            SqlCommand cmd = new SqlCommand(@"
-                                UPDATE [dbo].[Roles]
-                                SET [Estado] = 'Inactivo'
-                                WHERE [IdRol] = @IdRol
-                            ", conexion);
-                            cmd.Parameters.AddWithValue("@IdRol", IdRol);
-                            cmd.CommandType = CommandType.Text;
-                            cmd.ExecuteNonQuery();
-                        }
-                        else
-                        {
-                            // Si no hay usuarios, eliminar físicamente
-                            SqlCommand cmd = new SqlCommand("DELETE FROM [dbo].[Roles] WHERE [IdRol] = @IdRol", conexion);
-                            cmd.Parameters.AddWithValue("@IdRol", IdRol);
-                            cmd.CommandType = CommandType.Text;
-                            cmd.ExecuteNonQuery();
-                        }
-                    }
+                    SqlCommand cmd = new SqlCommand("sp_RolEliminar", conexion);
+                    cmd.Parameters.AddWithValue("@IdRol", IdRol);
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.ExecuteNonQuery();
                 }
 
                 respuesta = true;

@@ -1,0 +1,116 @@
+@model ProyectoAeroline.Models.RolPantallaOpcionModel
+@using ProyectoAeroline.Data
+
+@{
+    ViewData["Title"] = "Guardar";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+    
+    // Obtener listas de Roles y Pantallas para los dropdowns
+    var rolesData = new RolesData();
+    var pantallasData = new PantallasData();
+    var roles = rolesData.MtdConsultarRoles();
+    var pantallas = pantallasData.MtdConsultarPantallas();
+}
+
+<div class="card shadow-lg border-0 rounded-4 mt-4">
+    <div class="card-header bg-dark text-white rounded-top-4 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0"><i class="bi bi-key-plus"></i> Registrar nuevo permiso</h4>
+        <a href="/RolPantallaOpcion/Listar" class="btn btn-outline-light btn-sm">
+            <i class="bi bi-arrow-left"></i> Regresar
+        </a>
+    </div>
+
+    <div class="card-body p-4">
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger">@ViewBag.Error</div>
+        }
+
+        <div class="card-body bg-light rounded-bottom-4">
+            <form asp-action="Guardar" method="post" class="needs-validation" novalidate>
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="IdRol" class="form-label fw-bold">Rol <span class="text-danger">*</span></label>
+                        <select asp-for="IdRol" class="form-select" required>
+                            <option value="">Seleccione un rol</option>
+                            @foreach (var rol in roles)
+                            {
+                                <option value="@rol.IdRol">@rol.NombreRol</option>
+                            }
+                        </select>
+                        <span asp-validation-for="IdRol" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="IdPantalla" class="form-label fw-bold">Pantalla <span class="text-danger">*</span></label>
+                        <select asp-for="IdPantalla" class="form-select" required>
+                            <option value="">Seleccione una pantalla</option>
+                            @foreach (var pantalla in pantallas)
+                            {
+                                <option value="@pantalla.IdPantalla">@pantalla.NombrePantalla</option>
+                            }
+                        </select>
+                        <span asp-validation-for="IdPantalla" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold">Permisos</label>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" asp-for="Ver" id="Ver" />
+                                    <label class="form-check-label" for="Ver">Ver</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" asp-for="Crear" id="Crear" />
+                                    <label class="form-check-label" for="Crear">Crear</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" asp-for="Editar" id="Editar" />
+                                    <label class="form-check-label" for="Editar">Editar</label>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" asp-for="Eliminar" id="Eliminar" />
+                                    <label class="form-check-label" for="Eliminar">Eliminar</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Estado" class="form-label fw-bold">Estado</label>
+                        <select asp-for="Estado" class="form-select">
+                            <option value="Activo">Activo</option>
+                            <option value="Inactivo">Inactivo</option>
+                        </select>
+                        <span asp-validation-for="Estado" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-success px-4">
+                        <i class="bi bi-save"></i> Guardar
+                    </button>
+                    <a href="/RolPantallaOpcion/Listar" class="btn btn-outline-secondary ms-2 px-4">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+

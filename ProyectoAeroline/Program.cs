@@ -132,12 +132,6 @@ app.UseCookiePolicy(new CookiePolicyOptions
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-// ------- CookiePolicy (antes de Routing/Auth) -------
-app.UseCookiePolicy(new CookiePolicyOptions
-{
-    MinimumSameSitePolicy = SameSiteMode.Lax
-});
-
 app.UseRouting();
 
 app.UseAuthentication();   // Autenticación primero
@@ -147,13 +141,14 @@ app.UseSession();          // Sesión después de Auth
 // Evita cachear contenido autenticado (Back/Forward cache)
 app.Use(async (ctx, next) =>
 {
-    await next();
-    if (ctx.User?.Identity?.IsAuthenticated == true)
+    // Establecer headers ANTES de que la respuesta comience
+    if (ctx.User?.Identity?.IsAuthenticated == true && !ctx.Response.HasStarted)
     {
         ctx.Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0";
         ctx.Response.Headers["Pragma"] = "no-cache";
         ctx.Response.Headers["Expires"] = "0";
     }
+    await next();
 });
 
 // Redirige "/" al Login

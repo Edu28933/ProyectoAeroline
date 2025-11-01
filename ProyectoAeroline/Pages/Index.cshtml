@@ -22,10 +22,13 @@
     bool isHome = path.Equals("/", StringComparison.OrdinalIgnoreCase) || path.StartsWith("/Index", StringComparison.OrdinalIgnoreCase);
     bool isEmpleados = path.StartsWith("/Empleados", StringComparison.OrdinalIgnoreCase);
     bool isUsuarios = path.StartsWith("/Usuarios", StringComparison.OrdinalIgnoreCase);
+    bool isRoles = path.StartsWith("/Roles", StringComparison.OrdinalIgnoreCase);
+    bool isPantallas = path.StartsWith("/Pantallas", StringComparison.OrdinalIgnoreCase);
     bool isAeropuertos = path.StartsWith("/Aeropuertos", StringComparison.OrdinalIgnoreCase);
     bool isAviones = path.StartsWith("/Aviones", StringComparison.OrdinalIgnoreCase);
     bool isMantenimientos = path.StartsWith("/Mantenimientos", StringComparison.OrdinalIgnoreCase);
     bool isBoletos = path.StartsWith("/Boletos", StringComparison.OrdinalIgnoreCase);
+    bool isRolPantallaOpcion = path.StartsWith("/RolPantallaOpcion", StringComparison.OrdinalIgnoreCase);
 }
 
 
@@ -50,6 +53,18 @@
 
         <a class="sb-link @(isUsuarios ? "active" : "")" asp-controller="Usuarios" asp-action="Listar">
             <i class="bi bi-receipt"></i><span>Usuarios</span>
+        </a>
+
+        <a class="sb-link @(isRoles ? "active" : "")" asp-controller="Roles" asp-action="Listar">
+            <i class="bi bi-shield-check"></i><span>Roles</span>
+        </a>
+
+        <a class="sb-link @(isPantallas ? "active" : "")" asp-controller="Pantallas" asp-action="Listar">
+            <i class="bi bi-window"></i><span>Pantallas</span>
+        </a>
+
+        <a class="sb-link @(isRolPantallaOpcion ? "active" : "")" asp-controller="RolPantallaOpcion" asp-action="Listar">
+            <i class="bi bi-key-fill"></i><span>Permisos</span>
         </a>
 
         <a class="sb-link @(isAeropuertos ? "active" : "")" asp-controller="Aeropuertos" asp-action="Listar">

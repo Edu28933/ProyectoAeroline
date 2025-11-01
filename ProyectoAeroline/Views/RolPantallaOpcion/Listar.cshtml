@@ -1,15 +1,15 @@
-@model IEnumerable<ProyectoAeroline.Models.PantallasModel>
+@model IEnumerable<ProyectoAeroline.Models.RolPantallaOpcionModel>
 
 @{
-    ViewData["Title"] = "Listar Pantallas";
+    ViewData["Title"] = "Listar Permisos";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
 <div class="container-fluid px-4 mt-4">
     <div class="card shadow-lg border-0 rounded-4">
         <div class="card-header bg-primary text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center">
-            <h3 class="mb-0"><i class="bi bi-window"></i> Lista de Pantallas</h3>
-            <a href="/Pantallas/Guardar" class="btn btn-light btn-sm fw-bold">
+            <h3 class="mb-0"><i class="bi bi-key-fill"></i> Lista de Permisos (Rol-Pantalla-Opción)</h3>
+            <a href="/RolPantallaOpcion/Guardar" class="btn btn-light btn-sm fw-bold">
                 <i class="bi bi-plus-circle"></i> Agregar
             </a>
         </div>
@@ -19,11 +19,11 @@
             <div class="mb-3">
                 <div class="input-group">
                     <span class="input-group-text"><i class="bi bi-search"></i></span>
-                    <input type="text" id="buscarInputPantallas" class="form-control" placeholder="Buscar por nombre o ID..." />
-                    <button class="btn btn-primary" type="button" id="btnBuscarPantallas">
+                    <input type="text" id="buscarInputPermisos" class="form-control" placeholder="Buscar por rol, pantalla, ID o estado..." />
+                    <button class="btn btn-primary" type="button" id="btnBuscarPermisos">
                         <i class="bi bi-search"></i> Buscar
                     </button>
-                    <button class="btn btn-outline-secondary" type="button" id="btnLimpiarPantallas">
+                    <button class="btn btn-outline-secondary" type="button" id="btnLimpiarPermisos">
                         <i class="bi bi-x-circle"></i> Limpiar
                     </button>
                 </div>
@@ -45,11 +45,16 @@
                 </div>
             }
 
-            <table id="tablaPantallas" class="table table-hover align-middle text-center w-100">
+            <table id="tablaRolPantallaOpcion" class="table table-hover align-middle text-center w-100">
                 <thead class="table-primary">
                     <tr>
                         <th>ID</th>
-                        <th>Nombre</th>
+                        <th>Rol</th>
+                        <th>Pantalla</th>
+                        <th>Ver</th>
+                        <th>Crear</th>
+                        <th>Editar</th>
+                        <th>Eliminar</th>
                         <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
@@ -61,8 +66,51 @@
                         @foreach (var item in Model)
                         {
                             <tr>
-                                <td>@item.IdPantalla</td>
-                                <td>@item.NombrePantalla</td>
+                                <td>@item.IdRolPantallaOpcion</td>
+                                <td>
+                                    <span class="badge bg-info">@(item.NombreRol ?? $"Rol {item.IdRol}")</span>
+                                </td>
+                                <td>@(item.NombrePantalla ?? $"Pantalla {item.IdPantalla}")</td>
+                                <td>
+                                    @if (item.Ver)
+                                    {
+                                        <span class="badge bg-success"><i class="bi bi-check-circle"></i> Sí</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary"><i class="bi bi-x-circle"></i> No</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.Crear)
+                                    {
+                                        <span class="badge bg-success"><i class="bi bi-check-circle"></i> Sí</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary"><i class="bi bi-x-circle"></i> No</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.Editar)
+                                    {
+                                        <span class="badge bg-success"><i class="bi bi-check-circle"></i> Sí</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary"><i class="bi bi-x-circle"></i> No</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.Eliminar)
+                                    {
+                                        <span class="badge bg-success"><i class="bi bi-check-circle"></i> Sí</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary"><i class="bi bi-x-circle"></i> No</span>
+                                    }
+                                </td>
                                 <td>
                                     <span class="badge @(item.Estado == "Activo" ? "bg-success" : "bg-danger")">
                                         @item.Estado
@@ -70,14 +118,14 @@
                                 </td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="@Url.Action("Modificar", "Pantallas", new { CodigoPantalla = item.IdPantalla })"
+                                        <a href="@Url.Action("Modificar", "RolPantallaOpcion", new { CodigoRolPantallaOpcion = item.IdRolPantallaOpcion })"
                                            class="btn btn-outline-secondary btn-sm" title="Modificar">
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
-                                        <a href="@Url.Action("Eliminar", "Pantallas", new { CodigoPantalla = item.IdPantalla })"
+                                        <a href="@Url.Action("Eliminar", "RolPantallaOpcion", new { CodigoRolPantallaOpcion = item.IdRolPantallaOpcion })"
                                            class="btn btn-outline-danger btn-sm"
                                            title="Eliminar"
-                                           onclick="return confirm('¿Seguro que deseas eliminar esta pantalla?');">
+                                           onclick="return confirm('¿Seguro que deseas eliminar este permiso?');">
                                             <i class="bi bi-trash"></i>
                                         </a>
                                     </div>
@@ -88,7 +136,7 @@
                     else
                     {
                         <tr>
-                            <td colspan="4" class="text-center text-muted">No hay pantallas registradas</td>
+                            <td colspan="9" class="text-center text-muted">No hay permisos registrados</td>
                         </tr>
                     }
                 </tbody>
@@ -100,43 +148,43 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            console.log('Inicializando DataTable para Pantallas...');
+            console.log('Inicializando DataTable para Permisos...');
             
             // Inicializar DataTable
-            var table = $('#tablaPantallas').DataTable({
+            var table = $('#tablaRolPantallaOpcion').DataTable({
                 language: { url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json' },
                 pageLength: 10,
                 lengthMenu: [5, 10, 25, 50],
                 responsive: true,
                 ordering: true,
                 columnDefs: [
-                    { orderable: false, targets: [3] } // acciones no ordenables
+                    { orderable: false, targets: [8] } // acciones no ordenables
                 ]
             });
 
             console.log('DataTable inicializado:', table);
 
             // Funcionalidad de búsqueda - Botón Buscar
-            $('#btnBuscarPantallas').off('click').on('click', function (e) {
+            $('#btnBuscarPermisos').off('click').on('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
-                var searchValue = $('#buscarInputPantallas').val().trim();
+                var searchValue = $('#buscarInputPermisos').val().trim();
                 console.log('Buscando:', searchValue);
                 table.search(searchValue).draw();
                 console.log('Búsqueda ejecutada');
             });
 
             // Funcionalidad de búsqueda - Botón Limpiar
-            $('#btnLimpiarPantallas').off('click').on('click', function (e) {
+            $('#btnLimpiarPermisos').off('click').on('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
-                $('#buscarInputPantallas').val('');
+                $('#buscarInputPermisos').val('');
                 table.search('').draw();
                 console.log('Búsqueda limpiada');
             });
 
             // Búsqueda al presionar Enter
-            $('#buscarInputPantallas').off('keyup').on('keyup', function (e) {
+            $('#buscarInputPermisos').off('keyup').on('keyup', function (e) {
                 if (e.key === 'Enter' || e.keyCode === 13) {
                     e.preventDefault();
                     var searchValue = $(this).val().trim();
