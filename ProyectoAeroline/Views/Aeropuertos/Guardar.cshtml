@@ -93,7 +93,6 @@
 
 
 @section Scripts {
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
             $('#ddlPais').change(function () {
@@ -101,7 +100,7 @@
                 $('#ddlCiudad').html('<option>-- Cargando ciudades --</option>');
 
                 if (pais) {
-                    $.getJSON('/Aeropuertos/ObtenerCiudades', { pais: pais }, function (data) {
+                    $.getJSON('@Url.Action("ObtenerCiudades", "Aeropuertos")', { pais: pais }, function (data) {
                         var options = '<option value="">-- Seleccione Ciudad --</option>';
                         $.each(data, function (i, ciudad) {
                             options += '<option value="' + ciudad + '">' + ciudad + '</option>';

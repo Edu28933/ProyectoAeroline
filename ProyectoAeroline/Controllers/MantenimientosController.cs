@@ -38,8 +38,8 @@ namespace ProyectoAeroline.Controllers
                 new SelectListItem { Value = "Inspección", Text = "Inspección" }
             };
 
-                    // Estados posibles
-                    ViewBag.Estados = new List<SelectListItem>
+            // Estados posibles
+            ViewBag.Estados = new List<SelectListItem>
             {
                 new SelectListItem { Value = "Pendiente", Text = "Pendiente" },
                 new SelectListItem { Value = "En proceso", Text = "En proceso" },
@@ -83,7 +83,7 @@ namespace ProyectoAeroline.Controllers
                 new SelectListItem { Value = "Inspección", Text = "Inspección" }
             };
 
-                    ViewBag.Estados = new List<SelectListItem>
+            ViewBag.Estados = new List<SelectListItem>
             {
                 new SelectListItem { Value = "Pendiente", Text = "Pendiente" },
                 new SelectListItem { Value = "En proceso", Text = "En proceso" },
@@ -91,7 +91,7 @@ namespace ProyectoAeroline.Controllers
             };
 
             return View(oMantenimiento);
-            
+
         }
 
         // Almacena los datos del formulario Editar

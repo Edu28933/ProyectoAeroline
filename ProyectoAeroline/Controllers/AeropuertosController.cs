@@ -86,6 +86,7 @@ namespace ProyectoAeroline.Controllers
         [HttpPost]
         public IActionResult Modificar(AeropuertosModel oAeropuerto)
         {
+
             var respuesta = _AeropuertosData.MtdEditarAeropuerto(oAeropuerto);
 
             if (respuesta)
