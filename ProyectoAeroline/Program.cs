@@ -165,7 +165,7 @@ app.MapGet("/", ctx =>
         ctx.Response.Redirect("/Account/Login");
     return Task.CompletedTask;
 });
-
+    
 
 
 // ------- ENDPOINTS protegidos por defecto -------
