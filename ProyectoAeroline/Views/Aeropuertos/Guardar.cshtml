@@ -100,7 +100,8 @@
                 $('#ddlCiudad').html('<option>-- Cargando ciudades --</option>');
 
                 if (pais) {
-                    $.getJSON('@Url.Action("ObtenerCiudades", "Aeropuertos")', { pais: pais }, function (data) {
+                    $.getJSON('/Aeropuertos/ObtenerCiudades', { pais: pais }, function (data) {
+
                         var options = '<option value="">-- Seleccione Ciudad --</option>';
                         $.each(data, function (i, ciudad) {
                             options += '<option value="' + ciudad + '">' + ciudad + '</option>';

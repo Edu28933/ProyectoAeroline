@@ -88,15 +88,19 @@ app.UseAuthorization();    // Luego autorización
 app.UseSession();          // Sesión después de Auth
 
 // Evita cachear contenido autenticado (Back/Forward cache)
+// IMPORTANTE: Establecer headers ANTES de await next() para evitar el error "Headers are read-only"
 app.Use(async (ctx, next) =>
 {
-    await next();
-    if (ctx.User?.Identity?.IsAuthenticated == true)
+    // Establecer headers ANTES de procesar la respuesta
+    // Los headers deben establecerse antes de que cualquier middleware escriba en el response
+    if (!ctx.Response.HasStarted && ctx.User?.Identity?.IsAuthenticated == true)
     {
         ctx.Response.Headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0";
         ctx.Response.Headers["Pragma"] = "no-cache";
         ctx.Response.Headers["Expires"] = "0";
     }
+    
+    await next();
 });
 
 // Redirige "/" al Login

@@ -70,8 +70,8 @@ namespace ProyectoAeroline.Data
                     cmd.Parameters.AddWithValue("@Tipo", oAvion.Tipo);
                     cmd.Parameters.AddWithValue("@Capacidad", oAvion.Capacidad);
 
-                    //No se envía el campo por qué el trigger lo manejará
-                    //cmd.Parameters.AddWithValue("@FechaUltimoMantenimiento", (object?)oAvion.FechaUltimoMantenimiento ?? DBNull.Value);
+                    // Se envía el parámetro requerido por el SP, incluso si es NULL (el trigger puede manejarlo)
+                    cmd.Parameters.AddWithValue("@FechaUltimoMantenimiento", (object?)oAvion.FechaUltimoMantenimiento ?? DBNull.Value);
                     
                     cmd.Parameters.AddWithValue("@RangoKm", oAvion.RangoKm);
                     cmd.Parameters.AddWithValue("@Estado", oAvion.Estado);
@@ -109,8 +109,8 @@ namespace ProyectoAeroline.Data
                     cmd.Parameters.AddWithValue("@Modelo", oAvion.Modelo);
                     cmd.Parameters.AddWithValue("@Tipo", oAvion.Tipo);
                     cmd.Parameters.AddWithValue("@Capacidad", oAvion.Capacidad);
-                    //No se envía el campo por qué el trigger lo manejará
-                    //cmd.Parameters.AddWithValue("@FechaUltimoMantenimiento", (object?)oAvion.FechaUltimoMantenimiento ?? DBNull.Value);
+                    // Se envía el parámetro requerido por el SP, incluso si es NULL (el trigger puede manejarlo)
+                    cmd.Parameters.AddWithValue("@FechaUltimoMantenimiento", (object?)oAvion.FechaUltimoMantenimiento ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@RangoKm", oAvion.RangoKm);
                     cmd.Parameters.AddWithValue("@Estado", oAvion.Estado);
                     cmd.CommandType = CommandType.StoredProcedure;
@@ -170,6 +170,7 @@ namespace ProyectoAeroline.Data
         }
 
         // Método que elimina un avión
+        // Método que elimina un avión
         public string MtdEliminarAvion(int IdAvion)
         {
             var conn = new Conexion();
@@ -189,10 +190,10 @@ namespace ProyectoAeroline.Data
             }
             catch (SqlException ex)
             {
-                // Si el error viene por restricción de llave foránea
-                if (ex.Message.Contains("FK_Mantenimi_IdAvion"))
+                // Si el error viene por una restricción de clave foránea
+                if (ex.Message.Contains("REFERENCE constraint"))
                 {
-                    return "No se puede eliminar este avión porque tiene mantenimientos asociados.";
+                    return "No se puede eliminar el avión porque tiene mantenimientos asociados.";
                 }
 
                 // Otros errores SQL
@@ -204,6 +205,7 @@ namespace ProyectoAeroline.Data
                 return "Error inesperado: " + ex.Message;
             }
         }
+
 
 
 

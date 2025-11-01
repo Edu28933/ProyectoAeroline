@@ -138,8 +138,7 @@ namespace ProyectoAeroline.Controllers
         [HttpPost]
         public IActionResult Eliminar(AvionesModel oAvion)
         {
-            try
-            {
+            
                 var respuesta = _AvionesData.MtdEliminarAvion(oAvion.IdAvion);
 
                 if (respuesta == "OK")
@@ -154,11 +153,7 @@ namespace ProyectoAeroline.Controllers
                 {
                     TempData["Error"] = respuesta; // Otros errores SQL o inesperados
                 }
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = "Ocurrió un error inesperado: " + ex.Message;
-            }
+            
 
             return RedirectToAction("Listar");
         }
