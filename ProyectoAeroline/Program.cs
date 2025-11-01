@@ -2,11 +2,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.AspNetCore.Http;               // <- necesario para CookieSecurePolicy / SameSiteMode
+using Microsoft.AspNetCore.Authentication;     // <-- NUEVO (para AddGoogle)
 using ProyectoAeroline.Data;
+using ProyectoAeroline.Services;               // <-- NUEVO (servicio de email)
 
 var builder = WebApplication.CreateBuilder(args);
-
-
 
 // ------- Session -------
 builder.Services.AddDistributedMemoryCache();
@@ -17,7 +17,6 @@ builder.Services.AddSession(opt =>
     opt.Cookie.IsEssential = true;
     opt.Cookie.Name = ".ProyectoAeroline.Session";
 });
-
 
 // ------- MVC + filtro global [Authorize] -------
 builder.Services.AddControllersWithViews(options =>
@@ -41,6 +40,11 @@ builder.Services.AddRazorPages(options =>
 // DI para tu clase de acceso al SP
 builder.Services.AddScoped<LoginData>();
 
+// ==== NUEVO: servicios requeridos por las nuevas funciones ====
+builder.Services.AddScoped<IEmailService, EmailService>(); // envío de correos (reset/verificación)
+// Si vas a usar UsuariosData para los SP nuevos, puedes registrarlo aquí también:
+// builder.Services.AddScoped<UsuariosData>();
+
 // Cookies de autenticación
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(opt =>
@@ -50,6 +54,15 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         opt.AccessDeniedPath = "/Account/Login";
         opt.SlidingExpiration = true;
         opt.ExpireTimeSpan = TimeSpan.FromHours(8);
+    })
+    // ==== NUEVO: proveedor Google (OAuth2) ====
+    .AddGoogle("Google", opt =>
+    {
+        opt.ClientId = builder.Configuration["Authentication:Google:ClientId"]!;
+        opt.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]!;
+        var cb = builder.Configuration["Authentication:Google:CallbackPath"];
+        if (!string.IsNullOrWhiteSpace(cb)) opt.CallbackPath = cb!;
+        // Scopes por defecto incluyen email e identidad básica (suficiente para el login)
     });
 
 // ------- Política GLOBAL por si algo se escapa -------

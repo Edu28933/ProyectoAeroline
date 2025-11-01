@@ -15,6 +15,10 @@
 <body class="auth">
     @* IMPORTANTE: clase auth para el fondo oscuro *@
     @RenderBody()
+
+    <!-- jQuery base: requerido por jquery.validate y unobtrusive -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
     @RenderSection("Scripts", required: false)
 </body>
 </html>

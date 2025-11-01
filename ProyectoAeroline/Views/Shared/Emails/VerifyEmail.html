@@ -1,10 +1,48 @@
-﻿<!DOCTYPE html>
-<html>
+﻿<!doctype html>
+<html lang="es">
 <head>
-    <meta charset="utf-8" />
-    <title></title>
+    <meta charset="utf-8">
+    <title>Verificar correo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: Segoe UI,Arial,sans-serif;
+            background: #f6f7fb;
+            margin: 0;
+            padding: 0
+        }
+
+        .card {
+            max-width: 620px;
+            margin: 24px auto;
+            background: #fff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 6px 24px rgba(0,0,0,.08)
+        }
+
+        .btn {
+            display: inline-block;
+            background: #0d6efd;
+            color: #fff;
+            padding: 12px 18px;
+            border-radius: 10px;
+            text-decoration: none
+        }
+
+        .muted {
+            color: #666
+        }
+    </style>
 </head>
 <body>
-
+    <div class="card">
+        <h2>Confirme su correo</h2>
+        <p>Hola <strong>{{nombre}}</strong>, para activar su cuenta haga clic en el botón:</p>
+        <p style="margin:22px 0">
+            <a class="btn" href="{{link}}">Confirmar correo</a>
+        </p>
+        <p class="muted">Si usted no creó una cuenta, ignore este mensaje.</p>
+    </div>
 </body>
 </html>

@@ -49,19 +49,23 @@
                         <label class="lg2-check">
                             <input asp-for="RememberMe" /> Recordar
                         </label>
-                        <a class="lg2-link" href="#">¿Olvidó su contraseña?</a>
+                        <!-- Enlace a ForgotPassword -->
+                        <a class="lg2-link" asp-controller="Account" asp-action="ForgotPassword">¿Olvidó su contraseña?</a>
                     </div>
 
                     <button type="submit" class="lg2-btn lg2-btn-primary">Log In</button>
 
-                    <button type="button" class="lg2-btn lg2-btn-google">
+                    <!-- Botón Google: navega a /Account/ExternalLogin?provider=Google&returnUrl=<...> -->
+                    <button type="button" id="btnGoogle" class="lg2-btn lg2-btn-google" data-return="@((string?)ViewData["ReturnUrl"] ?? "/")">
                         <img src="https://www.gstatic.com/images/branding/product/1x/gsa_64dp.png" alt="" class="gicon" />
                         Ingresar con Google
                     </button>
                 </form>
 
                 <p style="text-align:center; margin-top:18px; color:#7b8190;">
-                    ¿No tiene una cuenta? <a href="#" class="lg2-link">Registrar</a>
+                    ¿No tiene una cuenta?
+                    <!-- Enlace a Register -->
+                    <a asp-controller="Account" asp-action="Register" class="lg2-link">Registrar</a>
                 </p>
             </section>
         </main>
@@ -232,6 +236,16 @@
               alertBox.style.opacity = "0";
               setTimeout(() => alertBox.remove(), 400);
             }, 5000);
+          }
+
+          // === Botón Google: redirección a ExternalLogin con returnUrl ===
+          const btnGoogle = document.getElementById("btnGoogle");
+          if (btnGoogle) {
+            btnGoogle.addEventListener("click", () => {
+              const ret = btnGoogle.getAttribute("data-return") || "/";
+              const url = `/Account/ExternalLogin?provider=Google&returnUrl=${encodeURIComponent(ret)}`;
+              window.location.href = url;
+            });
           }
         })();
     </script>

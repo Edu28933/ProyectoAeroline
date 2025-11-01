@@ -13,25 +13,37 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
+      "launchUrl": "Account/Login",
       "applicationUrl": "http://localhost:5244",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "Authentication:Google:ClientId": "245203969003-ebid39croi0e6iuvu5fv756c2t5q0sdj.apps.googleusercontent.com",
+        "Authentication:Google:ClientSecret": "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",
+        "Authentication:Google:CallbackPath": "/signin-google"
       }
     },
     "https": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
+      "launchUrl": "Account/Login",
       "applicationUrl": "https://localhost:7014;http://localhost:5244",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "Authentication:Google:ClientId": "245203969003-ebid39croi0e6iuvu5fv756c2t5q0sdj.apps.googleusercontent.com",
+        "Authentication:Google:ClientSecret": "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",
+        "Authentication:Google:CallbackPath": "/signin-google"
       }
     },
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
+      "launchUrl": "Account/Login",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "Authentication:Google:ClientId": "245203969003-ebid39croi0e6iuvu5fv756c2t5q0sdj.apps.googleusercontent.com",
+        "Authentication:Google:ClientSecret": "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",
+        "Authentication:Google:CallbackPath": "/signin-google"
       }
     }
   }
