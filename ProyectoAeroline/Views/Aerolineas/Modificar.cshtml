@@ -27,33 +27,47 @@
                 </div>
 
                 <div class="col-md-6">
-                    <label asp-for="IATA" class="form-label fw-bold">🌐 Código IATA</label>
-                    <input asp-for="IATA" class="form-control" />
-                </div>
-
-                <div class="col-md-6">
                     <label asp-for="Nombre" class="form-label fw-bold">🏢 Nombre</label>
                     <input asp-for="Nombre" class="form-control" />
                 </div>
 
                 <div class="col-md-6">
                     <label asp-for="Pais" class="form-label fw-bold">🌍 País</label>
-                    <input asp-for="Pais" class="form-control" />
+                    @Html.DropDownListFor(model => model.Pais,
+                        new SelectList(ViewBag.Paises as List<string> ?? new List<string>(), Model.Pais),
+                        "-- Seleccione País --",
+                        new { @class = "form-select", id = "ddlPais" })
+                    <span asp-validation-for="Pais" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="IATA" class="form-label fw-bold">🌐 Código IATA</label>
+                    <input asp-for="IATA" class="form-control" id="txtIATA" readonly placeholder="Se actualizará automáticamente según el país" />
+                    <small class="text-muted">Se actualiza automáticamente al cambiar el país</small>
+                    <span asp-validation-for="IATA" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6">
                     <label asp-for="Ciudad" class="form-label fw-bold">🏙️ Ciudad</label>
-                    <input asp-for="Ciudad" class="form-control" />
+                    @Html.DropDownListFor(model => model.Ciudad,
+                        new SelectList(ViewBag.Ciudades as List<string> ?? new List<string>(), Model.Ciudad),
+                        "-- Seleccione Ciudad --",
+                        new { @class = "form-select", id = "ddlCiudad" })
+                    <span asp-validation-for="Ciudad" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6">
                     <label asp-for="Direccion" class="form-label fw-bold">📍 Dirección</label>
-                    <input asp-for="Direccion" class="form-control" />
+                    <input asp-for="Direccion" class="form-control" id="txtDireccion" readonly placeholder="Se actualizará automáticamente según país y ciudad" />
+                    <small class="text-muted">Se actualiza automáticamente al cambiar el país o ciudad</small>
+                    <span asp-validation-for="Direccion" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6">
                     <label asp-for="Telefono" class="form-label fw-bold">📞 Teléfono</label>
-                    <input asp-for="Telefono" class="form-control" type="number" />
+                    <input asp-for="Telefono" class="form-control" id="txtTelefono" type="number" readonly placeholder="Se actualizará automáticamente según el país" />
+                    <small class="text-muted">Se actualiza automáticamente al cambiar el país</small>
+                    <span asp-validation-for="Telefono" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6">
@@ -91,6 +105,62 @@
 
     <script>
         AOS.init();
+
+        $(document).ready(function() {
+            $('#ddlPais').change(function () {
+                var pais = $(this).val();
+                
+                // Limpiar campos dependientes
+                $('#ddlCiudad').html('<option value="">-- Seleccione Ciudad --</option>');
+
+                if (pais) {
+                    // Obtener código IATA según el país
+                    $.getJSON('@Url.Action("ObtenerCodigoIATA", "Aerolineas")', { pais: pais }, function (data) {
+                        if (data.iata) {
+                            $('#txtIATA').val(data.iata);
+                        }
+                    });
+
+                    // Obtener teléfono según el país
+                    $.getJSON('@Url.Action("ObtenerTelefono", "Aerolineas")', { pais: pais }, function (data) {
+                        if (data.telefono) {
+                            $('#txtTelefono').val(data.telefono);
+                        }
+                    });
+
+                    // Obtener ciudades del país
+                    $('#ddlCiudad').html('<option>-- Cargando ciudades --</option>');
+                    $.getJSON('@Url.Action("ObtenerCiudades", "Aerolineas")', { pais: pais }, function (data) {
+                        var options = '<option value="">-- Seleccione Ciudad --</option>';
+                        $.each(data, function (i, ciudad) {
+                            options += '<option value="' + ciudad + '">' + ciudad + '</option>';
+                        });
+                        $('#ddlCiudad').html(options);
+                    });
+                } else {
+                    $('#ddlCiudad').html('<option value="">-- Seleccione Ciudad --</option>');
+                    $('#txtIATA').val('');
+                    $('#txtDireccion').val('');
+                    $('#txtTelefono').val('');
+                }
+            });
+
+            // Cuando se selecciona una ciudad, actualizar dirección
+            $('#ddlCiudad').change(function () {
+                var pais = $('#ddlPais').val();
+                var ciudad = $(this).val();
+                
+                if (pais && ciudad) {
+                    $.getJSON('@Url.Action("ObtenerDireccion", "Aerolineas")', { pais: pais, ciudad: ciudad }, function (data) {
+                        if (data.direccion) {
+                            $('#txtDireccion').val(data.direccion);
+                        }
+                    });
+                } else {
+                    $('#txtDireccion').val('');
+                }
+            });
+        });
 
         (() => {
             'use strict';

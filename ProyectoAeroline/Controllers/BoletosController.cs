@@ -29,15 +29,17 @@ namespace ProyectoAeroline.Controllers
             {
                 new SelectListItem { Value = "Económica", Text = "Económica" },
                 new SelectListItem { Value = "Ejecutiva", Text = "Ejecutiva" },
-                new SelectListItem { Value = "Primera Clase", Text = "Primera Clase" }
+                new SelectListItem { Value = "Primera", Text = "Primera Clase" }
             };
 
             // Estados posibles
             ViewBag.Estados = new List<SelectListItem>
             {
-                new SelectListItem { Value = "Activo", Text = "Activo" },
-                new SelectListItem { Value = "Cancelado", Text = "Cancelado" },
-                new SelectListItem { Value = "Reembolsado", Text = "Reembolsado" }
+                new SelectListItem { Value = "Pendiente", Text = "Pendiente" },
+                new SelectListItem { Value = "Confirmado", Text = "Confirmado" },
+                new SelectListItem { Value = "Utilizado", Text = "Utilizado" },
+                new SelectListItem { Value = "Reembolsado", Text = "Reembolsado" },
+                new SelectListItem { Value = "Anulado", Text = "Anulado" }
             };
 
             return View();
@@ -62,14 +64,16 @@ namespace ProyectoAeroline.Controllers
             {
                 new SelectListItem { Value = "Económica", Text = "Económica" },
                 new SelectListItem { Value = "Ejecutiva", Text = "Ejecutiva" },
-                new SelectListItem { Value = "Primera Clase", Text = "Primera Clase" }
+                new SelectListItem { Value = "Primera", Text = "Primera Clase" }
             };
 
             ViewBag.Estados = new List<SelectListItem>
             {
-                new SelectListItem { Value = "Activo", Text = "Activo" },
-                new SelectListItem { Value = "Cancelado", Text = "Cancelado" },
-                new SelectListItem { Value = "Reembolsado", Text = "Reembolsado" }
+                new SelectListItem { Value = "Pendiente", Text = "Pendiente" },
+                new SelectListItem { Value = "Confirmado", Text = "Confirmado" },
+                new SelectListItem { Value = "Utilizado", Text = "Utilizado" },
+                new SelectListItem { Value = "Reembolsado", Text = "Reembolsado" },
+                new SelectListItem { Value = "Anulado", Text = "Anulado" }
             };
 
             return View(oBoleto);
@@ -87,14 +91,16 @@ namespace ProyectoAeroline.Controllers
             {
                 new SelectListItem { Value = "Económica", Text = "Económica" },
                 new SelectListItem { Value = "Ejecutiva", Text = "Ejecutiva" },
-                new SelectListItem { Value = "Primera Clase", Text = "Primera Clase" }
+                new SelectListItem { Value = "Primera", Text = "Primera Clase" }
             };
 
             ViewBag.Estados = new List<SelectListItem>
             {
-                new SelectListItem { Value = "Activo", Text = "Activo" },
-                new SelectListItem { Value = "Cancelado", Text = "Cancelado" },
-                new SelectListItem { Value = "Reembolsado", Text = "Reembolsado" }
+                new SelectListItem { Value = "Pendiente", Text = "Pendiente" },
+                new SelectListItem { Value = "Confirmado", Text = "Confirmado" },
+                new SelectListItem { Value = "Utilizado", Text = "Utilizado" },
+                new SelectListItem { Value = "Reembolsado", Text = "Reembolsado" },
+                new SelectListItem { Value = "Anulado", Text = "Anulado" }
             };
 
             return View(oBoleto);
@@ -158,13 +164,73 @@ namespace ProyectoAeroline.Controllers
         }
 
         [HttpGet]
-        public JsonResult ObtenerPrecioVuelo(int idVuelo)
+        public JsonResult ObtenerPrecioVuelo(int idVuelo, string? clase = null)
         {
             var vuelo = _BoletosData.MtdBuscarVuelo(idVuelo);
-            if (vuelo == null)
-                return Json(new { precio = 0 });
+            if (vuelo == null || !vuelo.Precio.HasValue)
+                return Json(new { precio = 0, precioBase = 0 });
 
-            return Json(new { precio = vuelo.Precio });
+            decimal precioBase = vuelo.Precio.Value;
+            decimal precioFinal = precioBase;
+
+            // Aplicar ajustes según la clase
+            if (!string.IsNullOrEmpty(clase))
+            {
+                if (clase == "Ejecutiva")
+                {
+                    precioFinal = precioBase * 1.30m; // +30%
+                }
+                else if (clase == "Primera")
+                {
+                    precioFinal = precioBase * 1.50m; // +50%
+                }
+                // Económica se queda con el precio base
+            }
+
+            return Json(new { precio = precioFinal, precioBase = precioBase });
+        }
+
+        [HttpGet]
+        public JsonResult ObtenerTipoPasajero(int idPasajero)
+        {
+            var tipoPasajero = _BoletosData.MtdObtenerTipoPasajero(idPasajero);
+            return Json(new { tipoPasajero = tipoPasajero ?? "" });
+        }
+
+        [HttpGet]
+        public JsonResult ObtenerCapacidadAvion(int idVuelo)
+        {
+            var capacidad = _BoletosData.MtdObtenerCapacidadAvionPorVuelo(idVuelo);
+            return Json(new { capacidad = capacidad });
+        }
+
+        [HttpGet]
+        public JsonResult ObtenerAsientosOcupados(int idVuelo, int? idBoletoExcluir = null)
+        {
+            var asientosOcupados = _BoletosData.MtdObtenerAsientosOcupados(idVuelo, idBoletoExcluir);
+            return Json(new { asientosOcupados = asientosOcupados });
+        }
+
+        [HttpGet]
+        public JsonResult ObtenerInfoVuelo(int idVuelo)
+        {
+            var vuelo = _BoletosData.MtdObtenerInfoVuelo(idVuelo);
+            if (vuelo == null)
+            {
+                return Json(new { 
+                    fechaSalida = (DateTime?)null, 
+                    fechaLlegada = (DateTime?)null,
+                    aeropuertoOrigen = "",
+                    aeropuertoDestino = ""
+                });
+            }
+
+            return Json(new { 
+                fechaSalida = vuelo.FechaHoraSalida,
+                fechaLlegada = vuelo.FechaHoraLlegada,
+                aeropuertoOrigen = vuelo.AeropuertoOrigen ?? "",
+                aeropuertoDestino = vuelo.AeropuertoDestino ?? ""
+            });
         }
 
     }

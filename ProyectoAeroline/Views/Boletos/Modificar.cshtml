@@ -1,20 +1,20 @@
 ﻿@model ProyectoAeroline.Models.BoletosModel
 
 @{
-    ViewData["Title"] = "Modificar";
+    ViewData["Title"] = "Modificar Boleto";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
 <div class="card shadow-lg border-0 rounded-4 mt-4">
-    <div class="card-header bg-primary text-white rounded-top-4 d-flex justify-content-between align-items-center">
-        <h4 class="mb-0"><i class="bi bi-pencil-square"></i> Modificar boleto</h4>
-        <a href="/Boletos/Listar" class="btn btn-light btn-sm fw-bold">
-            <i class="bi bi-arrow-left-circle"></i> Regresar
+    <div class="card-header bg-dark text-white rounded-top-4 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0"><i class="bi bi-ticket-perforated"></i> Modificar boleto</h4>
+        <a href="/Boletos/Listar" class="btn btn-outline-light btn-sm">
+            <i class="bi bi-arrow-left"></i> Regresar
         </a>
     </div>
 
     <div class="card-body bg-light rounded-bottom-4">
-        <form asp-action="Modificar" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+        <form asp-action="Modificar" method="post" class="needs-validation" novalidate>
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
             <div class="row g-3">
@@ -27,26 +27,71 @@
 
                 <div class="col-md-6">
                     <label class="form-label fw-bold">Vuelo</label>
-                    <select asp-for="IdVuelo" asp-items="ViewBag.Vuelos" class="form-select"></select>
+                    <select asp-for="IdVuelo" asp-items="ViewBag.Vuelos" class="form-select" id="IdVuelo">
+                        <option value="">-- Seleccione el vuelo --</option>
+                    </select>
                     <span asp-validation-for="IdVuelo" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label fw-bold">Pasajero</label>
-                    <select asp-for="IdPasajero" asp-items="ViewBag.Pasajeros" class="form-select"></select>
+                    <select asp-for="IdPasajero" asp-items="ViewBag.Pasajeros" class="form-select" id="IdPasajero">
+                        <option value="">-- Seleccione el pasajero --</option>
+                    </select>
                     <span asp-validation-for="IdPasajero" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6">
-                    <label asp-for="NumeroAsiento" class="form-label fw-bold">Número de asiento</label>
-                    <input asp-for="NumeroAsiento" class="form-control" />
-                    <span asp-validation-for="NumeroAsiento" class="text-danger"></span>
+                    <label asp-for="Clase" class="form-label fw-bold">Clase</label>
+                    <select asp-for="Clase" asp-items="ViewBag.Clases" class="form-select" id="Clase">
+                        <option value="">-- Seleccione la clase --</option>
+                    </select>
+                    <span asp-validation-for="Clase" class="text-danger"></span>
+                    <small class="text-muted">Seleccione una clase para habilitar la selección de asientos</small>
                 </div>
 
                 <div class="col-md-6">
-                    <label asp-for="Clase" class="form-label fw-bold">Clase</label>
-                    <select asp-for="Clase" asp-items="ViewBag.Clases" class="form-select" id="Clase"></select>
-                    <span asp-validation-for="Clase" class="text-danger"></span>
+                    <label asp-for="NumeroAsiento" class="form-label fw-bold">Número de Asiento</label>
+                    <input asp-for="NumeroAsiento" id="NumeroAsiento" class="form-control" placeholder="Seleccione un asiento en el mapa" readonly />
+                    <span asp-validation-for="NumeroAsiento" class="text-danger"></span>
+                </div>
+
+                <!-- Visualizador de Asientos -->
+                <div class="col-12 mt-4">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="bi bi-airplane"></i> Mapa de Asientos del Avión</h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="seatMapContainer" class="seat-map-container" style="display: none;">
+                                <div class="airplane-body">
+                                    <div class="left-wing"></div>
+                                    <div class="right-wing"></div>
+                                    <div class="tail-fin"></div>
+                                    <div class="window-decoration">
+                                        <span></span>
+                                        <span></span>
+                                        <span></span>
+                                    </div>
+                                    <div class="seat-map-section">
+                                        <h6 class="text-center mb-3" style="color: #2d3748; font-weight: bold; text-shadow: 0 1px 2px rgba(255,255,255,0.8);">
+                                            <span class="badge bg-success">Económica (50%)</span>
+                                            <span class="badge bg-warning text-dark ms-2">Ejecutiva (30%)</span>
+                                            <span class="badge bg-primary ms-2">Primera Clase (20%)</span>
+                                        </h6>
+                                        <div id="seatMap" class="seat-map"></div>
+                                    </div>
+                                </div>
+                                <div id="seatSelectionInfo" class="seat-selection-info" style="display: none;">
+                                    <strong id="seatSelectionText"></strong>
+                                </div>
+                            </div>
+                            <div id="noSeatsMessage" class="text-center text-muted py-5">
+                                <i class="bi bi-info-circle fs-1"></i>
+                                <p class="mt-3">Por favor, seleccione un vuelo para visualizar los asientos disponibles.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="col-md-6">
@@ -57,19 +102,19 @@
 
                 <div class="col-md-6">
                     <label asp-for="Cantidad" class="form-label fw-bold">Cantidad</label>
-                    <input asp-for="Cantidad" id="Cantidad" class="form-control" />
+                    <input asp-for="Cantidad" class="form-control" id="Cantidad" />
                     <span asp-validation-for="Cantidad" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6">
                     <label asp-for="Descuento" class="form-label fw-bold">Descuento</label>
-                    <input asp-for="Descuento" id="Descuento" class="form-control" />
+                    <input asp-for="Descuento" id="Descuento" class="form-control" readonly />
                     <span asp-validation-for="Descuento" class="text-danger"></span>
                 </div>
 
                 <div class="col-md-6">
                     <label asp-for="Impuesto" class="form-label fw-bold">Impuesto</label>
-                    <input asp-for="Impuesto" id="Impuesto" class="form-control" />
+                    <input asp-for="Impuesto" id="Impuesto" class="form-control" readonly />
                     <span asp-validation-for="Impuesto" class="text-danger"></span>
                 </div>
 
@@ -81,77 +126,903 @@
 
                 <div class="col-md-6">
                     <label asp-for="Reembolso" class="form-label fw-bold">Reembolso</label>
-                    <select asp-for="Reembolso" asp-items="ViewBag.Reembolsos" class="form-select"></select>
+                    <input asp-for="Reembolso" id="Reembolso" class="form-control" readonly />
                     <span asp-validation-for="Reembolso" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="FechaCompra" class="form-label fw-bold">Fecha de Compra</label>
+                    <input asp-for="FechaCompra" type="datetime-local" class="form-control" id="FechaCompra" value="@(Model?.FechaCompra != null ? Model.FechaCompra.ToString("yyyy-MM-ddTHH:mm") : "")" />
+                    <span asp-validation-for="FechaCompra" class="text-danger"></span>
+                    <div id="fechaCompraValidation" class="text-danger small mt-1" style="display: none;"></div>
+                    <div id="vueloInfo" class="alert alert-info mt-2 small" style="display: none;">
+                        <strong>📅 Información del Vuelo:</strong><br>
+                        <span id="vueloInfoText"></span>
+                    </div>
                 </div>
 
                 <div class="col-md-6">
                     <label asp-for="Estado" class="form-label fw-bold">Estado</label>
-                    <select asp-for="Estado" asp-items="ViewBag.Estados" class="form-select"></select>
+                    <select asp-for="Estado" asp-items="ViewBag.Estados" class="form-select">
+                        <option value="">-- Seleccione el estado --</option>
+                    </select>
                     <span asp-validation-for="Estado" class="text-danger"></span>
                 </div>
 
-            </div>
-
-            <div class="text-center mt-4">
-                <button type="submit" class="btn btn-success px-4">
-                    <i class="bi bi-save"></i> Guardar cambios
-                </button>
-                <a href="/Boletos/Listar" class="btn btn-outline-secondary ms-2 px-4">
-                    <i class="bi bi-x-circle"></i> Cancelar
-                </a>
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-success px-4" id="btnGuardar">
+                        <i class="bi bi-save"></i> Guardar cambios
+                    </button>
+                    <a href="/Boletos/Listar" class="btn btn-outline-secondary ms-2 px-4">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
             </div>
         </form>
     </div>
 </div>
 
+<style>
+    .seat-map-container {
+        padding: 40px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 12px;
+        position: relative;
+        overflow-x: auto;
+        overflow-y: hidden;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 400px;
+    }
+
+    .airplane-body {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        min-width: 900px;
+    }
+
+    /* Ocultar todas las formas blancas del avión */
+    .airplane-body::before,
+    .airplane-body::after,
+    .airplane-body .left-wing,
+    .airplane-body .right-wing,
+    .airplane-body .tail-fin,
+    .airplane-body .window-decoration {
+        display: none;
+    }
+
+    .seat-map {
+        display: flex;
+        flex-direction: row;
+        gap: 12px;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+        padding: 15px 20px;
+    }
+
+    .seat-column {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        align-items: center;
+    }
+
+    .column-label {
+        font-weight: bold;
+        font-size: 12px;
+        color: #495057;
+        margin-bottom: 5px;
+        min-width: 40px;
+        text-align: center;
+    }
+
+    .seat {
+        width: 40px;
+        height: 40px;
+        border: 2px solid #333;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s;
+        user-select: none;
+        position: relative;
+    }
+
+    .seat:hover:not(.disabled):not(.selected):not(.occupied) {
+        transform: scale(1.15);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        z-index: 10;
+    }
+
+    .seat.economica {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .seat.ejecutiva {
+        background-color: #ffc107;
+        color: #000;
+    }
+
+    .seat.primera {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .seat.disabled {
+        background-color: #6c757d;
+        color: #fff;
+        cursor: not-allowed;
+        opacity: 0.4;
+    }
+
+    .seat.occupied {
+        background-color: #343a40;
+        color: #fff;
+        cursor: not-allowed;
+        opacity: 0.6;
+        position: relative;
+    }
+
+    .seat.occupied::after {
+        content: '✕';
+        position: absolute;
+        top: -2px;
+        right: -2px;
+        background: #dc3545;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: bold;
+    }
+
+    .seat.selected {
+        background-color: #dc3545;
+        color: white;
+        border-color: #dc3545;
+        transform: scale(1.2);
+        box-shadow: 0 0 15px rgba(220, 53, 69, 0.8);
+        z-index: 10;
+    }
+
+    .aisle-space {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        color: #adb5bd;
+    }
+
+    .seat-selection-info {
+        background: #fff3cd;
+        border: 2px solid #ffc107;
+        border-radius: 8px;
+        padding: 10px;
+        margin-top: 15px;
+        text-align: center;
+    }
+
+    .seat-selection-info.warning {
+        background: #f8d7da;
+        border-color: #dc3545;
+        color: #721c24;
+    }
+
+    .seat-selection-info.success {
+        background: #d4edda;
+        border-color: #28a745;
+        color: #155724;
+    }
+</style>
+
 @section Scripts {
     <script>
-        // Asignar precio automáticamente según la clase del boleto
-        const clase = document.getElementById("Clase");
-        const precio = document.getElementById("Precio");
-        const cantidad = document.getElementById("Cantidad");
-        const descuento = document.getElementById("Descuento");
-        const impuesto = document.getElementById("Impuesto");
-        const total = document.getElementById("Total");
+        let precioBase = 0;
+        let tipoPasajero = "";
+        let capacidadAvion = 0;
+        let asientosEconomica = [];
+        let asientosEjecutiva = [];
+        let asientosPrimera = [];
+        let asientosSeleccionados = []; // Array para múltiples asientos
+        let asientosOcupados = []; // Array para asientos ocupados en otros boletos
+        let claseSeleccionada = "";
+        let cantidadRequerida = 0;
+        let fechaSalidaVuelo = null;
+        let fechaLlegadaVuelo = null;
+        const idBoletoActual = @Model.IdBoleto;
 
-        function actualizarPrecio() {
-            switch (clase.value) {
-                case "Económica":
-                    precio.value = 500;
-                    break;
-                case "Ejecutiva":
-                    precio.value = 1200;
-                    break;
-                case "Primera Clase":
-                    precio.value = 2500;
-                    break;
-                default:
-                    precio.value = "";
-                    break;
+        // === Al cambiar el vuelo ===
+        document.getElementById("IdVuelo").addEventListener("change", async function () {
+            const idVuelo = this.value;
+            const clase = document.getElementById("Clase").value;
+
+            if (!idVuelo) {
+                precioBase = 0;
+                fechaSalidaVuelo = null;
+                fechaLlegadaVuelo = null;
+                document.getElementById("Precio").value = "";
+                document.getElementById("seatMapContainer").style.display = "none";
+                document.getElementById("noSeatsMessage").style.display = "block";
+                document.getElementById("vueloInfo").style.display = "none";
+                calcularReembolso();
+                calcularTotales();
+                return;
             }
-            calcularTotal();
+
+            try {
+                // Obtener información del vuelo (fechas)
+                const vueloInfoResponse = await fetch(`/Boletos/ObtenerInfoVuelo?idVuelo=${idVuelo}`);
+                const vueloInfoData = await vueloInfoResponse.json();
+                
+                if (vueloInfoData.fechaSalida) {
+                    fechaSalidaVuelo = new Date(vueloInfoData.fechaSalida);
+                    fechaLlegadaVuelo = vueloInfoData.fechaLlegada ? new Date(vueloInfoData.fechaLlegada) : null;
+                    
+                    // Mostrar información del vuelo
+                    mostrarInfoVuelo(vueloInfoData);
+                    
+                    // Actualizar validación de fecha de compra
+                    actualizarValidacionFechaCompra();
+                }
+
+                // Obtener capacidad del avión
+                const capacidadResponse = await fetch(`/Boletos/ObtenerCapacidadAvion?idVuelo=${idVuelo}`);
+                const capacidadData = await capacidadResponse.json();
+                capacidadAvion = capacidadData.capacidad || 0;
+
+                if (capacidadAvion > 0) {
+                    // Obtener asientos ocupados (excluyendo el boleto actual)
+                    const ocupadosResponse = await fetch(`/Boletos/ObtenerAsientosOcupados?idVuelo=${idVuelo}&idBoletoExcluir=${idBoletoActual}`);
+                    const ocupadosData = await ocupadosResponse.json();
+                    asientosOcupados = ocupadosData.asientosOcupados || [];
+
+                    calcularAsientosPorClase();
+                    dibujarMapaAsientos();
+                    
+                    // Preseleccionar asientos actuales si existen
+                    const numeroAsientoActual = document.getElementById("NumeroAsiento").value;
+                    if (numeroAsientoActual) {
+                        const asientosActuales = numeroAsientoActual.split(',').map(a => a.trim()).filter(a => a);
+                        asientosActuales.forEach(asiento => {
+                            const seatElement = document.querySelector(`.seat[data-numero="${asiento}"]`);
+                            if (seatElement && !seatElement.classList.contains("occupied")) {
+                                seatElement.classList.add("selected");
+                                if (!asientosSeleccionados.includes(asiento)) {
+                                    asientosSeleccionados.push(asiento);
+                                }
+                            }
+                        });
+                    }
+                    
+                    document.getElementById("seatMapContainer").style.display = "block";
+                    document.getElementById("noSeatsMessage").style.display = "none";
+                }
+
+                // Obtener precio
+                const url = clase 
+                    ? `/Boletos/ObtenerPrecioVuelo?idVuelo=${idVuelo}&clase=${encodeURIComponent(clase)}`
+                    : `/Boletos/ObtenerPrecioVuelo?idVuelo=${idVuelo}`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+
+                precioBase = data.precioBase || 0;
+                const precioFinal = data.precio || precioBase;
+
+                document.getElementById("Precio").value = precioFinal.toFixed(2);
+                calcularReembolso();
+                calcularTotales();
+            } catch (error) {
+                console.error("Error al obtener precio del vuelo:", error);
+                precioBase = 0;
+                document.getElementById("Precio").value = "";
+            }
+        });
+
+        // === Al cambiar la clase ===
+        document.getElementById("Clase").addEventListener("change", async function () {
+            const clase = this.value;
+            const idVuelo = document.getElementById("IdVuelo").value;
+            claseSeleccionada = clase;
+
+            // Resetear selección de asientos
+            asientosSeleccionados = [];
+            document.getElementById("NumeroAsiento").value = "";
+            
+            // Limpiar selecciones visuales
+            document.querySelectorAll(".seat.selected").forEach(seat => {
+                seat.classList.remove("selected");
+            });
+
+            // Actualizar estado de los asientos según la clase seleccionada
+            if (capacidadAvion > 0) {
+                actualizarDisponibilidadAsientos();
+                actualizarInfoSeleccion();
+            }
+
+            if (!idVuelo) {
+                calcularReembolso();
+                return;
+            }
+
+            try {
+                const url = clase 
+                    ? `/Boletos/ObtenerPrecioVuelo?idVuelo=${idVuelo}&clase=${encodeURIComponent(clase)}`
+                    : `/Boletos/ObtenerPrecioVuelo?idVuelo=${idVuelo}`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+
+                precioBase = data.precioBase || 0;
+                const precioFinal = data.precio || precioBase;
+
+                document.getElementById("Precio").value = precioFinal.toFixed(2);
+                calcularReembolso();
+                calcularTotales();
+            } catch (error) {
+                console.error("Error al obtener precio del vuelo:", error);
+            }
+        });
+
+        // === Al cambiar el pasajero ===
+        document.getElementById("IdPasajero").addEventListener("change", async function () {
+            const idPasajero = this.value;
+
+            if (!idPasajero) {
+                tipoPasajero = "";
+                calcularTotales();
+                return;
+            }
+
+            try {
+                const response = await fetch(`/Boletos/ObtenerTipoPasajero?idPasajero=${idPasajero}`);
+                const data = await response.json();
+
+                tipoPasajero = data.tipoPasajero || "";
+                calcularTotales();
+            } catch (error) {
+                console.error("Error al obtener tipo de pasajero:", error);
+                tipoPasajero = "";
+            }
+        });
+
+        // === Recalcular al cambiar cantidad ===
+        document.getElementById("Cantidad").addEventListener("input", function() {
+            calcularTotales();
+            cantidadRequerida = parseInt(this.value) || 0;
+            actualizarInfoSeleccion();
+            // Si se reduce la cantidad, deseleccionar asientos extras
+            if (asientosSeleccionados.length > cantidadRequerida && cantidadRequerida > 0) {
+                while (asientosSeleccionados.length > cantidadRequerida) {
+                    const asiento = asientosSeleccionados.pop();
+                    const seatElement = document.querySelector(`.seat[data-numero="${asiento}"]`);
+                    if (seatElement) {
+                        seatElement.classList.remove("selected");
+                    }
+                }
+                actualizarCampoNumeroAsiento();
+            }
+        });
+
+        // === Calcular reembolso según clase ===
+        function calcularReembolso() {
+            const clase = document.getElementById("Clase").value;
+            let reembolso = "";
+
+            if (clase === "Económica") {
+                reembolso = "No reembolsable";
+            } else if (clase === "Ejecutiva") {
+                reembolso = "Reembolso 50%";
+            } else if (clase === "Primera") {
+                reembolso = "Reembolso 80%";
+            }
+
+            document.getElementById("Reembolso").value = reembolso;
         }
 
-        function calcularTotal() {
-            const p = parseFloat(precio.value) || 0;
-            const c = parseInt(cantidad.value) || 1;
-            const d = parseFloat(descuento.value) || 0;
-            const i = parseFloat(impuesto.value) || 0;
+        // === Calcular totales (precio, descuento, impuesto, total) ===
+        function calcularTotales() {
+            const precio = parseFloat(document.getElementById("Precio").value) || 0;
+            const cantidad = parseInt(document.getElementById("Cantidad").value) || 0;
 
-            const subtotal = p * c;
-            const totalFinal = subtotal - d + i;
-            total.value = totalFinal.toFixed(2);
+            if (precio < 0 || cantidad < 0) {
+                alert("No se permiten valores negativos.");
+                return;
+            }
+
+            // Subtotal = precio * cantidad
+            const subtotal = precio * cantidad;
+
+            // Calcular descuento según tipo de pasajero
+            let porcentajeDescuento = 0;
+            if (tipoPasajero === "Turista") {
+                porcentajeDescuento = 0.05; // 5%
+            } else if (tipoPasajero === "Corporativo") {
+                porcentajeDescuento = 0.10; // 10%
+            } else if (tipoPasajero === "VIP") {
+                porcentajeDescuento = 0.20; // 20%
+            }
+
+            const descuento = subtotal * porcentajeDescuento;
+
+            // Calcular impuesto (IVA 12% en Guatemala para vuelos)
+            // Impuesto = cantidad * precio * 0.12
+            const impuesto = subtotal * 0.12;
+
+            // Total = (precio * cantidad) + impuesto - descuento
+            const total = subtotal + impuesto - descuento;
+
+            document.getElementById("Descuento").value = descuento.toFixed(2);
+            document.getElementById("Impuesto").value = impuesto.toFixed(2);
+            document.getElementById("Total").value = total.toFixed(2);
         }
 
-        clase.addEventListener("change", actualizarPrecio);
-        cantidad.addEventListener("input", calcularTotal);
-        descuento.addEventListener("input", calcularTotal);
-        impuesto.addEventListener("input", calcularTotal);
+        // === Calcular asientos por clase ===
+        function calcularAsientosPorClase() {
+            if (capacidadAvion <= 0) return;
 
-        actualizarPrecio(); // Inicializa el precio y total al cargar
+            // Económica: 50%
+            const numEconomica = Math.floor(capacidadAvion * 0.50);
+            // Ejecutiva: 30%
+            const numEjecutiva = Math.floor(capacidadAvion * 0.30);
+            // Primera: 20%
+            const numPrimera = Math.floor(capacidadAvion * 0.20);
 
+            // Generar listas de asientos
+            asientosEconomica = [];
+            asientosEjecutiva = [];
+            asientosPrimera = [];
+
+            let contador = 1;
+
+            // Asientos Económica
+            for (let i = 0; i < numEconomica; i++) {
+                asientosEconomica.push(`E${contador}`);
+                contador++;
+            }
+
+            // Asientos Ejecutiva
+            for (let i = 0; i < numEjecutiva; i++) {
+                asientosEjecutiva.push(`EJ${contador}`);
+                contador++;
+            }
+
+            // Asientos Primera
+            for (let i = 0; i < numPrimera; i++) {
+                asientosPrimera.push(`P${contador}`);
+                contador++;
+            }
+        }
+
+        // === Dibujar mapa de asientos (horizontal) ===
+        function dibujarMapaAsientos() {
+            const seatMap = document.getElementById("seatMap");
+            seatMap.innerHTML = "";
+
+            // Asientos por columna (vertical en diseño horizontal)
+            const asientosPorColumna = 8;
+            
+            // Orden: Primera Clase al frente (izquierda), luego Ejecutiva, luego Económica
+            const todasLasClases = [
+                ...asientosPrimera.map(s => ({ numero: s, clase: "primera" })),
+                ...asientosEjecutiva.map(s => ({ numero: s, clase: "ejecutiva" })),
+                ...asientosEconomica.map(s => ({ numero: s, clase: "economica" }))
+            ];
+
+            // Calcular número de columnas necesarias
+            const totalAsientos = todasLasClases.length;
+            const numColumnas = Math.ceil(totalAsientos / asientosPorColumna);
+
+            // Crear columnas (filas verticales en el diseño horizontal)
+            for (let col = 0; col < numColumnas; col++) {
+                const columnDiv = document.createElement("div");
+                columnDiv.className = "seat-column";
+
+                // Etiqueta de columna (opcional)
+                if (col === 0 || col === Math.floor(numColumnas / 2) || col === numColumnas - 1) {
+                    const colLabel = document.createElement("div");
+                    colLabel.className = "column-label";
+                    colLabel.textContent = col === 0 ? "Frente" : col === Math.floor(numColumnas / 2) ? "Centro" : "Atrás";
+                    columnDiv.appendChild(colLabel);
+                } else {
+                    const spacer = document.createElement("div");
+                    spacer.className = "column-label";
+                    spacer.style.visibility = "hidden";
+                    columnDiv.appendChild(spacer);
+                }
+
+                // Crear asientos en esta columna
+                for (let fila = 0; fila < asientosPorColumna; fila++) {
+                    const index = col * asientosPorColumna + fila;
+                    
+                    if (index < todasLasClases.length) {
+                        const asiento = todasLasClases[index];
+                        const seatDiv = crearAsiento(asiento.numero, asiento.clase);
+                        columnDiv.appendChild(seatDiv);
+                    } else {
+                        // Espacio vacío si no hay más asientos
+                        const emptySpace = document.createElement("div");
+                        emptySpace.className = "aisle-space";
+                        columnDiv.appendChild(emptySpace);
+                    }
+                }
+
+                // Agregar pasillo cada 3 columnas
+                seatMap.appendChild(columnDiv);
+                
+                if ((col + 1) % 3 === 0 && col < numColumnas - 1) {
+                    const aisle = document.createElement("div");
+                    aisle.className = "aisle-space";
+                    aisle.style.width = "30px";
+                    seatMap.appendChild(aisle);
+                }
+            }
+        }
+
+        // === Crear elemento de asiento ===
+        function crearAsiento(numero, clase) {
+            const seatDiv = document.createElement("div");
+            
+            // Verificar si el asiento está ocupado
+            const estaOcupado = asientosOcupados.includes(numero);
+            
+            seatDiv.className = `seat ${clase} ${estaOcupado ? 'occupied' : 'disabled'}`;
+            seatDiv.textContent = numero;
+            seatDiv.dataset.numero = numero;
+            seatDiv.dataset.clase = clase;
+            
+            if (estaOcupado) {
+                seatDiv.title = "Asiento ocupado - No disponible";
+            }
+
+            seatDiv.addEventListener("click", function() {
+                // No permitir clic en asientos ocupados
+                if (this.classList.contains("occupied")) {
+                    alert(`El asiento ${numero} ya está ocupado por otro boleto.`);
+                    return;
+                }
+
+                if (!this.classList.contains("disabled") && claseSeleccionada && cantidadRequerida > 0) {
+                    const numeroAsiento = this.dataset.numero;
+                    
+                    // Verificar si el asiento ya está seleccionado
+                    const indexSeleccionado = asientosSeleccionados.indexOf(numeroAsiento);
+                    
+                    if (indexSeleccionado > -1) {
+                        // Deseleccionar
+                        this.classList.remove("selected");
+                        asientosSeleccionados.splice(indexSeleccionado, 1);
+                    } else {
+                        // Verificar si ya se alcanzó el límite
+                        if (asientosSeleccionados.length < cantidadRequerida) {
+                            // Seleccionar
+                            this.classList.add("selected");
+                            asientosSeleccionados.push(numeroAsiento);
+                        } else {
+                            alert(`Ya ha seleccionado ${cantidadRequerida} asiento(s). Por favor deseleccione uno antes de seleccionar otro.`);
+                            return;
+                        }
+                    }
+                    
+                    actualizarCampoNumeroAsiento();
+                    actualizarInfoSeleccion();
+                }
+            });
+
+            return seatDiv;
+        }
+
+        // === Actualizar campo NumeroAsiento con los asientos seleccionados ===
+        function actualizarCampoNumeroAsiento() {
+            if (asientosSeleccionados.length > 0) {
+                document.getElementById("NumeroAsiento").value = asientosSeleccionados.join(", ");
+            } else {
+                document.getElementById("NumeroAsiento").value = "";
+            }
+        }
+
+        // === Actualizar información de selección ===
+        function actualizarInfoSeleccion() {
+            const infoDiv = document.getElementById("seatSelectionInfo");
+            const infoText = document.getElementById("seatSelectionText");
+            
+            if (!cantidadRequerida || cantidadRequerida <= 0) {
+                infoDiv.style.display = "none";
+                return;
+            }
+            
+            infoDiv.style.display = "block";
+            const faltantes = cantidadRequerida - asientosSeleccionados.length;
+            
+            if (faltantes === 0) {
+                infoDiv.className = "seat-selection-info success";
+                infoText.innerHTML = `✓ Selección completa: ${asientosSeleccionados.length} de ${cantidadRequerida} asiento(s) seleccionado(s)`;
+            } else {
+                infoDiv.className = "seat-selection-info warning";
+                infoText.innerHTML = `⚠️ Faltan ${faltantes} asiento(s) por asignar. Ha seleccionado ${asientosSeleccionados.length} de ${cantidadRequerida} asiento(s) requerido(s).`;
+            }
+        }
+
+        // === Actualizar disponibilidad de asientos según clase seleccionada ===
+        function actualizarDisponibilidadAsientos() {
+            const seats = document.querySelectorAll(".seat");
+
+            seats.forEach(seat => {
+                // No cambiar asientos ocupados
+                if (seat.classList.contains("occupied")) {
+                    return;
+                }
+
+                const seatClase = seat.dataset.clase;
+                seat.classList.remove("disabled", "selected");
+
+                if (!claseSeleccionada) {
+                    // Si no hay clase seleccionada, todos bloqueados
+                    seat.classList.add("disabled");
+                } else {
+                    // Habilitar solo los asientos de la clase seleccionada
+                    // Normalizar la clase seleccionada para comparación
+                    let claseMatch = false;
+                    
+                    if (claseSeleccionada === "Primera" && seatClase === "primera") {
+                        claseMatch = true;
+                    } else if (claseSeleccionada === "Ejecutiva" && seatClase === "ejecutiva") {
+                        claseMatch = true;
+                    } else if (claseSeleccionada === "Económica" && seatClase === "economica") {
+                        claseMatch = true;
+                    }
+
+                    if (!claseMatch) {
+                        seat.classList.add("disabled");
+                    }
+                }
+            });
+        }
+
+        // === Mostrar información del vuelo ===
+        function mostrarInfoVuelo(vueloInfo) {
+            const vueloInfoDiv = document.getElementById("vueloInfo");
+            const vueloInfoText = document.getElementById("vueloInfoText");
+            
+            if (vueloInfo.fechaSalida && vueloInfo.fechaLlegada) {
+                const fechaSalida = new Date(vueloInfo.fechaSalida);
+                const fechaLlegada = new Date(vueloInfo.fechaLlegada);
+                
+                const fechaSalidaStr = fechaSalida.toLocaleString('es-GT', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric', 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+                
+                const fechaLlegadaStr = fechaLlegada.toLocaleString('es-GT', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric', 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+                
+                vueloInfoText.innerHTML = `
+                    <strong>✈️ Salida:</strong> ${fechaSalidaStr} (${vueloInfo.aeropuertoOrigen})<br>
+                    <strong>🛬 Llegada:</strong> ${fechaLlegadaStr} (${vueloInfo.aeropuertoDestino})
+                `;
+                vueloInfoDiv.style.display = "block";
+            } else {
+                vueloInfoDiv.style.display = "none";
+            }
+        }
+
+        // === Actualizar validación de fecha de compra ===
+        function actualizarValidacionFechaCompra() {
+            const fechaCompraInput = document.getElementById("FechaCompra");
+            const validationDiv = document.getElementById("fechaCompraValidation");
+            
+            if (!fechaSalidaVuelo) {
+                fechaCompraInput.setAttribute("min", new Date().toISOString().slice(0, 16));
+                validationDiv.style.display = "none";
+                return;
+            }
+            
+            // Fecha mínima: ahora
+            const fechaMinima = new Date();
+            
+            // Fecha máxima: 2 horas antes de la salida del vuelo
+            const fechaMaxima = new Date(fechaSalidaVuelo);
+            fechaMaxima.setHours(fechaMaxima.getHours() - 2);
+            
+            // Establecer límites en el input
+            fechaCompraInput.setAttribute("min", fechaMinima.toISOString().slice(0, 16));
+            fechaCompraInput.setAttribute("max", fechaMaxima.toISOString().slice(0, 16));
+            
+            // Validar cuando cambia la fecha
+            fechaCompraInput.addEventListener("change", function() {
+                validarFechaCompra();
+            });
+            
+            validarFechaCompra();
+        }
+
+        // === Validar fecha de compra ===
+        function validarFechaCompra() {
+            const fechaCompraInput = document.getElementById("FechaCompra");
+            const validationDiv = document.getElementById("fechaCompraValidation");
+            
+            if (!fechaCompraInput.value || !fechaSalidaVuelo) {
+                validationDiv.style.display = "none";
+                fechaCompraInput.classList.remove("is-invalid");
+                return;
+            }
+            
+            const fechaCompra = new Date(fechaCompraInput.value);
+            const ahora = new Date();
+            const fechaMaximaPermitida = new Date(fechaSalidaVuelo);
+            fechaMaximaPermitida.setHours(fechaMaximaPermitida.getHours() - 2);
+            
+            let errorMsg = "";
+            
+            if (fechaCompra < ahora) {
+                errorMsg = "❌ La fecha de compra no puede ser anterior a la fecha actual.";
+                fechaCompraInput.classList.add("is-invalid");
+                validationDiv.style.display = "block";
+                validationDiv.textContent = errorMsg;
+            } else if (fechaCompra > fechaMaximaPermitida) {
+                errorMsg = `❌ La fecha de compra debe ser al menos 2 horas antes de la salida del vuelo (máximo: ${fechaMaximaPermitida.toLocaleString('es-GT', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })})`;
+                fechaCompraInput.classList.add("is-invalid");
+                validationDiv.style.display = "block";
+                validationDiv.textContent = errorMsg;
+            } else {
+                fechaCompraInput.classList.remove("is-invalid");
+                validationDiv.style.display = "none";
+            }
+        }
+
+        // === Validar antes de enviar el formulario ===
+        document.querySelector("form").addEventListener("submit", function(e) {
+            cantidadRequerida = parseInt(document.getElementById("Cantidad").value) || 0;
+            
+            if (cantidadRequerida > 0 && asientosSeleccionados.length < cantidadRequerida) {
+                e.preventDefault();
+                alert(`❌ Faltan asientos por asignar.\n\nHa seleccionado ${asientosSeleccionados.length} de ${cantidadRequerida} asiento(s) requerido(s).\n\nPor favor, seleccione todos los asientos necesarios antes de guardar.`);
+                return false;
+            }
+            
+            if (cantidadRequerida > 0 && asientosSeleccionados.length === 0) {
+                e.preventDefault();
+                alert("❌ Debe seleccionar al menos un asiento antes de guardar.");
+                return false;
+            }
+            
+            // Validar fecha de compra antes de enviar
+            const fechaCompraInput = document.getElementById("FechaCompra");
+            if (fechaCompraInput.value && fechaSalidaVuelo) {
+                const fechaCompra = new Date(fechaCompraInput.value);
+                const ahora = new Date();
+                const fechaMaximaPermitida = new Date(fechaSalidaVuelo);
+                fechaMaximaPermitida.setHours(fechaMaximaPermitida.getHours() - 2);
+                
+                if (fechaCompra < ahora) {
+                    e.preventDefault();
+                    alert("❌ La fecha de compra no puede ser anterior a la fecha actual.");
+                    fechaCompraInput.focus();
+                    return false;
+                }
+                
+                if (fechaCompra > fechaMaximaPermitida) {
+                    e.preventDefault();
+                    alert(`❌ La fecha de compra debe ser al menos 2 horas antes de la salida del vuelo.`);
+                    fechaCompraInput.focus();
+                    return false;
+                }
+            }
+        });
+
+        // === Cargar asientos al iniciar si hay vuelo seleccionado ===
+        document.addEventListener("DOMContentLoaded", async function() {
+            const idVuelo = document.getElementById("IdVuelo").value;
+            cantidadRequerida = parseInt(document.getElementById("Cantidad").value) || 0;
+            claseSeleccionada = document.getElementById("Clase").value;
+            
+            if (idVuelo) {
+                try {
+                    // Obtener información del vuelo (fechas)
+                    const vueloInfoResponse = await fetch(`/Boletos/ObtenerInfoVuelo?idVuelo=${idVuelo}`);
+                    const vueloInfoData = await vueloInfoResponse.json();
+                    
+                    if (vueloInfoData.fechaSalida) {
+                        fechaSalidaVuelo = new Date(vueloInfoData.fechaSalida);
+                        fechaLlegadaVuelo = vueloInfoData.fechaLlegada ? new Date(vueloInfoData.fechaLlegada) : null;
+                        
+                        // Mostrar información del vuelo
+                        mostrarInfoVuelo(vueloInfoData);
+                        
+                        // Actualizar validación de fecha de compra
+                        actualizarValidacionFechaCompra();
+                    }
+
+                    // Obtener capacidad del avión
+                    const capacidadResponse = await fetch(`/Boletos/ObtenerCapacidadAvion?idVuelo=${idVuelo}`);
+                    const capacidadData = await capacidadResponse.json();
+                    capacidadAvion = capacidadData.capacidad || 0;
+
+                    if (capacidadAvion > 0) {
+                        // Obtener asientos ocupados (excluyendo el boleto actual)
+                        const ocupadosResponse = await fetch(`/Boletos/ObtenerAsientosOcupados?idVuelo=${idVuelo}&idBoletoExcluir=${idBoletoActual}`);
+                        const ocupadosData = await ocupadosResponse.json();
+                        asientosOcupados = ocupadosData.asientosOcupados || [];
+
+                        calcularAsientosPorClase();
+                        dibujarMapaAsientos();
+                        
+                        // Preseleccionar asientos actuales si existen
+                        const numeroAsientoActual = document.getElementById("NumeroAsiento").value;
+                        if (numeroAsientoActual) {
+                            const asientosActuales = numeroAsientoActual.split(',').map(a => a.trim()).filter(a => a);
+                            asientosActuales.forEach(asiento => {
+                                const seatElement = document.querySelector(`.seat[data-numero="${asiento}"]`);
+                                if (seatElement && !seatElement.classList.contains("occupied")) {
+                                    seatElement.classList.add("selected");
+                                    if (!asientosSeleccionados.includes(asiento)) {
+                                        asientosSeleccionados.push(asiento);
+                                    }
+                                }
+                            });
+                        }
+                        
+                        document.getElementById("seatMapContainer").style.display = "block";
+                        document.getElementById("noSeatsMessage").style.display = "none";
+                        
+                        // Si hay clase seleccionada, actualizar disponibilidad
+                        if (claseSeleccionada) {
+                            actualizarDisponibilidadAsientos();
+                        }
+                        
+                        actualizarInfoSeleccion();
+                    }
+                } catch (error) {
+                    console.error("Error al cargar asientos iniciales:", error);
+                }
+            }
+            
+            // Inicializar cálculos
+            calcularReembolso();
+            calcularTotales();
+            
+            // Formatear fecha de compra para datetime-local si viene de la base de datos
+            const fechaCompraInput = document.getElementById("FechaCompra");
+            if (fechaCompraInput.value) {
+                // Si el valor viene del modelo, podría estar en formato date o datetime
+                // Asegurarse de que esté en formato datetime-local (YYYY-MM-DDTHH:mm)
+                let fechaValue = fechaCompraInput.value;
+                if (fechaValue && !fechaValue.includes('T')) {
+                    // Si solo tiene fecha, usar la fecha actual para la hora si no hay hora
+                    const fecha = new Date(fechaValue);
+                    if (!isNaN(fecha.getTime())) {
+                        const year = fecha.getFullYear();
+                        const month = String(fecha.getMonth() + 1).padStart(2, '0');
+                        const day = String(fecha.getDate()).padStart(2, '0');
+                        const hours = String(fecha.getHours()).padStart(2, '0');
+                        const minutes = String(fecha.getMinutes()).padStart(2, '0');
+                        fechaCompraInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+                    }
+                }
+            }
+        });
     </script>
-
-    @await Html.PartialAsync("_ValidationScriptsPartial")
 }

@@ -60,7 +60,7 @@
                             </td>
                             <td>@item.RangoKm</td>
                             <td>
-                                <span class="badge @(item.Estado == "Activo" ? "bg-success" : "bg-danger")">
+                                <span class="badge @(item.Estado == "Activo" ? "bg-success" : item.Estado == "Mantenimiento" ? "bg-warning text-dark" : "bg-danger")">
                                     @item.Estado
                                 </span>
                             </td>

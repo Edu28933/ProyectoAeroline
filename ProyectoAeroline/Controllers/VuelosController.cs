@@ -27,6 +27,19 @@ namespace ProyectoAeroline.Controllers
         [HttpPost]
         public IActionResult Guardar(VuelosModel oVuelo)
         {
+            // Si se seleccionó IdAerolinea pero no se llenó Aerolinea, obtener el nombre
+            if (oVuelo.IdAerolinea.HasValue && string.IsNullOrEmpty(oVuelo.Aerolinea))
+            {
+                var aerolineas = _VuelosData.ObtenerAerolineasActivas();
+                var aerolineaSeleccionada = aerolineas.FirstOrDefault(a => a.Value == oVuelo.IdAerolinea.Value.ToString());
+                if (aerolineaSeleccionada != null)
+                {
+                    var texto = aerolineaSeleccionada.Text;
+                    var nombre = texto.Substring(texto.IndexOf('-') + 2);
+                    oVuelo.Aerolinea = nombre;
+                }
+            }
+
             ValidarFechas(oVuelo);
 
             if (!ModelState.IsValid)
@@ -35,7 +48,13 @@ namespace ProyectoAeroline.Controllers
                 return View(oVuelo);
             }
 
-            oVuelo.Precio = _VuelosData.ObtenerPrecioRuta(oVuelo.AeropuertoOrigen, oVuelo.AeropuertoDestino);
+            // El precio ya debería estar calculado en el cliente
+            // Si no está, calcularlo
+            if (!oVuelo.Precio.HasValue || oVuelo.Precio == 0)
+            {
+                oVuelo.Precio = _VuelosData.ObtenerPrecioRuta(oVuelo.AeropuertoOrigen, oVuelo.AeropuertoDestino);
+            }
+
             var respuesta = _VuelosData.MtdAgregarVuelo(oVuelo);
 
             if (respuesta)
@@ -52,6 +71,18 @@ namespace ProyectoAeroline.Controllers
             if (oVuelo == null)
                 return NotFound();
 
+            // Si hay nombre de aerolínea, buscar el IdAerolinea correspondiente
+            if (!string.IsNullOrEmpty(oVuelo.Aerolinea))
+            {
+                var aerolineas = _VuelosData.ObtenerAerolineasActivas();
+                var aerolineaEncontrada = aerolineas.FirstOrDefault(a => 
+                    a.Text.Contains(oVuelo.Aerolinea, StringComparison.OrdinalIgnoreCase));
+                if (aerolineaEncontrada != null && int.TryParse(aerolineaEncontrada.Value, out int idAerolinea))
+                {
+                    oVuelo.IdAerolinea = idAerolinea;
+                }
+            }
+
             CargarCombos();
             return View(oVuelo);
         }
@@ -60,6 +91,19 @@ namespace ProyectoAeroline.Controllers
         [HttpPost]
         public IActionResult Modificar(VuelosModel oVuelo)
         {
+            // Si se seleccionó IdAerolinea pero no se llenó Aerolinea, obtener el nombre
+            if (oVuelo.IdAerolinea.HasValue && string.IsNullOrEmpty(oVuelo.Aerolinea))
+            {
+                var aerolineas = _VuelosData.ObtenerAerolineasActivas();
+                var aerolineaSeleccionada = aerolineas.FirstOrDefault(a => a.Value == oVuelo.IdAerolinea.Value.ToString());
+                if (aerolineaSeleccionada != null)
+                {
+                    var texto = aerolineaSeleccionada.Text;
+                    var nombre = texto.Substring(texto.IndexOf('-') + 2);
+                    oVuelo.Aerolinea = nombre;
+                }
+            }
+
             ValidarFechas(oVuelo);
 
             if (!ModelState.IsValid)
@@ -68,7 +112,13 @@ namespace ProyectoAeroline.Controllers
                 return View(oVuelo);
             }
 
-            oVuelo.Precio = _VuelosData.ObtenerPrecioRuta(oVuelo.AeropuertoOrigen, oVuelo.AeropuertoDestino);
+            // El precio ya debería estar calculado en el cliente
+            // Si no está, calcularlo
+            if (!oVuelo.Precio.HasValue || oVuelo.Precio == 0)
+            {
+                oVuelo.Precio = _VuelosData.ObtenerPrecioRuta(oVuelo.AeropuertoOrigen, oVuelo.AeropuertoDestino);
+            }
+
             var respuesta = _VuelosData.MtdEditarVuelo(oVuelo);
 
             if (respuesta)
@@ -111,11 +161,40 @@ namespace ProyectoAeroline.Controllers
             return Json(new { precio });
         }
 
+        // API para obtener código IATA de aeropuerto
+        [HttpGet]
+        public JsonResult ObtenerCodigoIATA(string nombreAeropuerto)
+        {
+            if (string.IsNullOrEmpty(nombreAeropuerto))
+                return Json(new { iata = "" });
+
+            var iata = _VuelosData.ObtenerCodigoIATAAeropuerto(nombreAeropuerto);
+            return Json(new { iata });
+        }
+
+        // API para obtener capacidad del avión
+        [HttpGet]
+        public JsonResult ObtenerCapacidadAvion(int idAvion)
+        {
+            if (idAvion <= 0)
+                return Json(new { capacidad = 0 });
+
+            var capacidad = _VuelosData.ObtenerCapacidadAvion(idAvion);
+            return Json(new { capacidad });
+        }
+
         // 🧩 MÉTODO PRIVADO PARA COMBOS
         private void CargarCombos()
         {
             ViewBag.Aviones = _VuelosData.ObtenerAvionesActivos();
             ViewBag.Aeropuertos = _VuelosData.ObtenerAeropuertosActivos();
+            ViewBag.Aerolineas = _VuelosData.ObtenerAerolineasActivas();
+            ViewBag.Monedas = new List<SelectListItem>
+            {
+                new SelectListItem { Text = "GTQ", Value = "GTQ" },
+                new SelectListItem { Text = "EURO", Value = "EURO" },
+                new SelectListItem { Text = "USD", Value = "USD" }
+            };
             ViewBag.Estados = new List<SelectListItem>
             {
                 new SelectListItem { Text = "Activo", Value = "Activo" },

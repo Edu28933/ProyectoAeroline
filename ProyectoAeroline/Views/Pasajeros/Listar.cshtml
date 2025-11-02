@@ -1,0 +1,210 @@
+@model List<ProyectoAeroline.Models.PasajerosModel>
+@{
+    ViewData["Title"] = "Listar Pasajeros";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 mt-4 animate__animated animate__fadeInUp">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-gradient text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center header-glow">
+            <h3 class="mb-0">
+                👤 <i class="bi bi-people"></i> <strong>Lista de Pasajeros</strong>
+            </h3>
+            <a href="/Pasajeros/Guardar" class="btn btn-light btn-sm fw-bold fancy-btn">
+                ➕ <i class="bi bi-plus-circle"></i> Agregar
+            </a>
+        </div>
+
+        <div class="card-body bg-light">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>✅ Éxito:</strong> @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>❌ Error:</strong> @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            
+            <div class="table-responsive">
+                <table id="tablaPasajeros" class="table table-hover align-middle text-center w-100">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>🆔 ID</th>
+                            <th>👤 Nombres</th>
+                            <th>👤 Apellidos</th>
+                            <th>📄 Pasaporte</th>
+                            <th>📧 Correo</th>
+                            <th>📍 Dirección</th>
+                            <th>📞 Teléfono</th>
+                            <th>🌍 País</th>
+                            <th>🌎 Nacionalidad</th>
+                            <th>🎫 Tipo</th>
+                            <th>🚨 Contacto Emergencia</th>
+                            <th>⚙️ Estado</th>
+                            <th>🪄 Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.IdPasajero</td>
+                                    <td>@item.Nombres</td>
+                                    <td>@item.Apellidos</td>
+                                    <td><strong>@item.Pasaporte</strong></td>
+                                    <td>@(item.Correo ?? "N/A")</td>
+                                    <td>@(item.Direccion ?? "N/A")</td>
+                                    <td>@(item.Telefono?.ToString() ?? "N/A")</td>
+                                    <td>@item.Pais</td>
+                                    <td>@(item.Nacionalidad ?? "N/A")</td>
+                                    <td>
+                                        <span class="badge @(item.TipoPasajero == "VIP" ? "bg-warning" : item.TipoPasajero == "Corporativo" ? "bg-info" : "bg-secondary") px-3 py-2 rounded-pill shadow-sm">
+                                            @item.TipoPasajero
+                                        </span>
+                                    </td>
+                                    <td>@(item.ContactoEmergencia?.ToString() ?? "N/A")</td>
+                                    <td>
+                                        <span class="badge @(item.Estado == "Activo" ? "bg-success" : "bg-danger") px-3 py-2 rounded-pill shadow-sm">
+                                            @(item.Estado == "Activo" ? "🟢 Activo" : "🔴 Inactivo")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="@Url.Action("Modificar", "Pasajeros", new { IdPasajero = item.IdPasajero })"
+                                               class="btn btn-outline-primary btn-sm fancy-action" title="Editar Pasajero">
+                                                🛠️ <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-outline-danger btn-sm fancy-action"
+                                                    onclick="confirmarEliminacion('@item.IdPasajero', '@($"{item.Nombres} {item.Apellidos}")')"
+                                                    title="Eliminar Pasajero">
+                                                🗑️ <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" />
+
+    <script>
+        $(document).ready(function () {
+            $('#tablaPasajeros').DataTable({
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json',
+                    emptyTable: "No hay pasajeros registrados."
+                },
+                pageLength: 10,
+                lengthMenu: [5, 10, 25, 50, 100],
+                responsive: true,
+                scrollX: true,
+                ordering: true,
+                order: [[0, 'desc']],
+                columnDefs: [
+                    { orderable: false, targets: [12] }, // Columna de Acciones
+                    { className: "text-nowrap", targets: [0, 3, 4, 5, 6, 10] } // Columnas que no deben hacer wrap
+                ]
+            });
+        });
+
+        function confirmarEliminacion(id, descripcion) {
+            const descripcionEscapada = (descripcion || 'Este pasajero').replace(/'/g, "\\'").replace(/"/g, '\\"');
+            
+            Swal.fire({
+                title: '¿Eliminar Pasajero?',
+                html: `👤 <b>${descripcionEscapada}</b> será eliminado permanentemente.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                backdrop: 'rgba(0,0,0,0.4)'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = `/Pasajeros/Eliminar?IdPasajero=${id}`;
+                }
+            });
+        }
+    </script>
+
+    <style>
+        .bg-gradient {
+            background: linear-gradient(135deg, #6c63ff, #8b7fff);
+        }
+
+        .header-glow {
+            box-shadow: 0 0 25px rgba(108, 99, 255, 0.6);
+        }
+
+        .fancy-btn,
+        .fancy-action {
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+        }
+
+            .fancy-btn:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(108, 99, 255, 0.6);
+            }
+
+            .fancy-action:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            }
+
+        table thead {
+            background: linear-gradient(135deg, #6c63ff, #8b7fff);
+            color: white;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        table tbody tr:hover {
+            background-color: #f0efff !important;
+            transform: scale(1.01);
+            transition: 0.2s ease-in-out;
+        }
+
+        .card {
+            transition: 0.4s ease;
+        }
+
+            .card:hover {
+                transform: scale(1.02);
+                box-shadow: 0 0 25px rgba(108, 99, 255, 0.3);
+            }
+
+        .badge {
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+    </style>
+}

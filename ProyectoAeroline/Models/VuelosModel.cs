@@ -4,7 +4,7 @@
     {
         public int IdVuelo { get; set; }
         public int IdAvion { get; set; }
-        public string? Aerolinea { get; set; }
+        public string? Aerolinea { get; set; } // Se mantiene como string pero se usará el nombre de la aerolínea del combo
         public string? NumeroVuelo { get; set; }
         public string AeropuertoOrigen { get; set; }
         public string? CodigoIATAOrigen { get; set; }
@@ -17,6 +17,8 @@
         public decimal? Precio { get; set; }
         public string? Moneda { get; set; }
         public string? Estado { get; set; }
-        public decimal Precio { get; set; }
+        // Campo auxiliar para el combo box
+        public int? IdAerolinea { get; set; }
     }
 }
+

@@ -29,6 +29,7 @@
                         <th>Impuesto</th>
                         <th>Total</th>
                         <th>Reembolso</th>
+                        <th>Fecha Compra</th>
                         <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
@@ -48,8 +49,9 @@
                             <td>Q @item.Impuesto?.ToString("N2")</td>
                             <td><strong>Q @item.Total.ToString("N2")</strong></td>
                             <td>@item.Reembolso</td>
+                            <td>@item.FechaCompra.ToString("dd/MM/yyyy")</td>
                             <td>
-                                <span class="badge @(item.Estado == "Activo" ? "bg-success" : item.Estado == "Pendiente" ? "bg-warning text-dark" : "bg-danger")">
+                                <span class="badge @(item.Estado == "Activo" ? "bg-success" : item.Estado == "Pendiente" ? "bg-warning text-dark" : item.Estado == "Confirmado" ? "bg-info" : item.Estado == "Utilizado" ? "bg-primary" : "bg-danger")">
                                     @item.Estado
                                 </span>
                             </td>
@@ -85,7 +87,7 @@
                 responsive: true,
                 ordering: true,
                 columnDefs: [
-                    { orderable: false, targets: [12] } // columna de Acciones no ordenable
+                    { orderable: false, targets: [13] } // columna de Acciones no ordenable
                 ]
             });
         });

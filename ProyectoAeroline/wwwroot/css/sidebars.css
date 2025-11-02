@@ -1,4 +1,4 @@
-/* ===== CONFIGURACIÓN GENERAL ===== */
+/* ===== CONFIGURACIï¿½N GENERAL ===== */
 :root {
     --sb-width: 280px; /* ancho expandido */
     --sb-width-collapsed: 72px; /* ancho colapsado (solo iconos) */
@@ -51,6 +51,9 @@
     padding: .625rem .75rem;
     color: #cbd5e1;
     text-decoration: none;
+    box-sizing: border-box;
+    min-height: 2.75rem;
+    transition: background-color 0.15s ease, color 0.15s ease;
 }
 
     .sb-link:hover {
@@ -61,6 +64,8 @@
     .sb-link.active {
         background-color: #0d6efd;
         color: #fff;
+        box-sizing: border-box;
+        padding: .625rem .75rem;
     }
 
 .sb-footer {
@@ -83,14 +88,14 @@ body.sb-collapsed .sb-content {
     margin-left: var(--sb-width-collapsed);
 }
 
-/* escondemos textos cuando está colapsado */
+/* escondemos textos cuando estï¿½ colapsado */
 body.sb-collapsed .sb-brand-text,
 body.sb-collapsed .sb-link span,
 body.sb-collapsed .sb-user {
     display: none;
 }
 
-/* centramos iconos cuando está colapsado */
+/* centramos iconos cuando estï¿½ colapsado */
 body.sb-collapsed .sb-link {
     justify-content: center;
 }

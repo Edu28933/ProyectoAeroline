@@ -57,6 +57,11 @@ namespace ProyectoAeroline.Data
         {
             bool respuesta = false;
 
+            if (oMantenimiento == null)
+            {
+                throw new ArgumentNullException(nameof(oMantenimiento), "El modelo de mantenimiento no puede ser nulo.");
+            }
+
             try
             {
                 var conn = new Conexion();
@@ -69,21 +74,26 @@ namespace ProyectoAeroline.Data
                     cmd.Parameters.AddWithValue("@IdEmpleado", (object?)oMantenimiento.IdEmpleado ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@FechaIngreso", oMantenimiento.FechaIngreso);
                     cmd.Parameters.AddWithValue("@FechaSalida", (object?)oMantenimiento.FechaSalida ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("@Tipo", oMantenimiento.Tipo ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Tipo", (object?)oMantenimiento.Tipo ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@Costo", oMantenimiento.Costo);
                     cmd.Parameters.AddWithValue("@CostoExtra", oMantenimiento.CostoExtra);
-                    cmd.Parameters.AddWithValue("@Descripcion", oMantenimiento.Descripcion ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@Estado", oMantenimiento.Estado ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Descripcion", (object?)oMantenimiento.Descripcion ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Estado", (object?)oMantenimiento.Estado ?? DBNull.Value);
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.ExecuteNonQuery();
                 }
 
                 respuesta = true;
             }
+            catch (SqlException sqlEx)
+            {
+                Console.WriteLine($"Error SQL al agregar mantenimiento: {sqlEx.Message}");
+                throw new Exception($"Error en base de datos: {sqlEx.Message}", sqlEx);
+            }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                respuesta = false;
+                Console.WriteLine($"Error al agregar mantenimiento: {ex.Message}");
+                throw;
             }
 
             return respuesta;
@@ -93,6 +103,11 @@ namespace ProyectoAeroline.Data
         public bool MtdEditarMantenimiento(MantenimientosModel oMantenimiento)
         {
             bool respuesta = false;
+
+            if (oMantenimiento == null)
+            {
+                throw new ArgumentNullException(nameof(oMantenimiento), "El modelo de mantenimiento no puede ser nulo.");
+            }
 
             try
             {
@@ -107,21 +122,26 @@ namespace ProyectoAeroline.Data
                     cmd.Parameters.AddWithValue("@IdEmpleado", (object?)oMantenimiento.IdEmpleado ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@FechaIngreso", oMantenimiento.FechaIngreso);
                     cmd.Parameters.AddWithValue("@FechaSalida", (object?)oMantenimiento.FechaSalida ?? DBNull.Value);
-                    cmd.Parameters.AddWithValue("@Tipo", oMantenimiento.Tipo ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Tipo", (object?)oMantenimiento.Tipo ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@Costo", oMantenimiento.Costo);
                     cmd.Parameters.AddWithValue("@CostoExtra", oMantenimiento.CostoExtra);
-                    cmd.Parameters.AddWithValue("@Descripcion", oMantenimiento.Descripcion ?? (object)DBNull.Value);
-                    cmd.Parameters.AddWithValue("@Estado", oMantenimiento.Estado ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Descripcion", (object?)oMantenimiento.Descripcion ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@Estado", (object?)oMantenimiento.Estado ?? DBNull.Value);
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.ExecuteNonQuery();
                 }
 
                 respuesta = true;
             }
+            catch (SqlException sqlEx)
+            {
+                Console.WriteLine($"Error SQL al modificar mantenimiento: {sqlEx.Message}");
+                throw new Exception($"Error en base de datos: {sqlEx.Message}", sqlEx);
+            }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                respuesta = false;
+                Console.WriteLine($"Error al modificar mantenimiento: {ex.Message}");
+                throw;
             }
 
             return respuesta;
@@ -174,6 +194,11 @@ namespace ProyectoAeroline.Data
             bool respuesta = false;
             var conn = new Conexion();
 
+            if (IdMantenimiento <= 0)
+            {
+                throw new ArgumentException("El IdMantenimiento debe ser mayor que cero.", nameof(IdMantenimiento));
+            }
+
             try
             {
                 using (var conexion = new SqlConnection(conn.GetConnectionString()))
@@ -187,10 +212,15 @@ namespace ProyectoAeroline.Data
 
                 respuesta = true;
             }
+            catch (SqlException sqlEx)
+            {
+                Console.WriteLine($"Error SQL al eliminar mantenimiento: {sqlEx.Message}");
+                throw new Exception($"Error en base de datos: {sqlEx.Message}", sqlEx);
+            }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                respuesta = false;
+                Console.WriteLine($"Error al eliminar mantenimiento: {ex.Message}");
+                throw;
             }
 
             return respuesta;
@@ -248,6 +278,35 @@ namespace ProyectoAeroline.Data
                 }
             }
             return lista;
+        }
+
+        // --- OBTENER INFORMACIÓN DE UN AVION POR ID ---
+        public string? MtdObtenerInfoAvion(int IdAvion)
+        {
+            string? placa = null;
+            var conn = new Conexion();
+
+            try
+            {
+                using (var conexion = new SqlConnection(conn.GetConnectionString()))
+                {
+                    conexion.Open();
+                    SqlCommand cmd = new SqlCommand("SELECT Placa FROM Aviones WHERE IdAvion = @IdAvion", conexion);
+                    cmd.Parameters.AddWithValue("@IdAvion", IdAvion);
+                    
+                    var result = cmd.ExecuteScalar();
+                    if (result != null && result != DBNull.Value)
+                    {
+                        placa = result.ToString();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al obtener información del avión: {ex.Message}");
+            }
+
+            return placa;
         }
 
     }

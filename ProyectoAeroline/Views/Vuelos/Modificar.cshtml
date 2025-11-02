@@ -7,133 +7,154 @@
 
 <div class="container-fluid px-4 mt-4 animate__animated animate__fadeInUp">
     <div class="card shadow-lg border-0 rounded-4">
-        <div class="card-header bg-gradient text-white py-3">
-            <h4 class="mb-0"><i class="fas fa-plane-departure me-2"></i>Modificar Vuelo</h4>
+        <div class="card-header bg-gradient text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center header-glow">
+            <h3 class="mb-0">
+                ✏️ <i class="bi bi-airplane"></i> <strong>Modificar Vuelo</strong>
+            </h3>
+            <a asp-action="Listar" class="btn btn-light btn-sm fw-bold fancy-btn">
+                ⬅️ <i class="bi bi-arrow-left-circle"></i> Regresar
+            </a>
         </div>
-        <div class="card-body">
+
+        <div class="card-body bg-light">
             <form asp-action="Modificar" method="post">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                 <!-- ID oculto -->
                 <input type="hidden" asp-for="IdVuelo" />
 
-                <!-- Aerolínea -->
-                <div class="form-group mb-3">
-                    <label asp-for="Aerolinea" class="form-label fw-bold"></label>
-                    <input asp-for="Aerolinea" class="form-control" maxlength="50" required />
-                    <span asp-validation-for="Aerolinea" class="text-danger"></span>
+                <div class="row g-3">
+                    <!-- Aerolínea -->
+                    <div class="col-md-6">
+                        <label asp-for="IdAerolinea" class="form-label fw-bold">✈️ Aerolínea</label>
+                        <select asp-for="IdAerolinea" class="form-select rounded-3" asp-items="ViewBag.Aerolineas" id="ddlAerolinea" required>
+                            <option value="">-- Selecciona aerolínea --</option>
+                        </select>
+                        <input type="hidden" asp-for="Aerolinea" id="txtAerolinea" />
+                        <span asp-validation-for="IdAerolinea" class="text-danger"></span>
+                    </div>
+
+                    <!-- Número de vuelo -->
+                    <div class="col-md-6">
+                        <label asp-for="NumeroVuelo" class="form-label fw-bold">🔢 Número de Vuelo</label>
+                        <input asp-for="NumeroVuelo" class="form-control rounded-3" maxlength="10" placeholder="Ejemplo: AV123" required />
+                        <span asp-validation-for="NumeroVuelo" class="text-danger"></span>
+                    </div>
+
+                    <!-- Código Avión -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">🛫 Código del Avión</label>
+                        <select asp-for="IdAvion" class="form-select rounded-3" asp-items="ViewBag.Aviones" id="ddlAvion" required>
+                            <option value="">-- Selecciona un avión --</option>
+                        </select>
+                        <span asp-validation-for="IdAvion" class="text-danger"></span>
+                    </div>
+
+                    <!-- Aeropuerto Origen -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">🛫 Aeropuerto Origen</label>
+                        <select asp-for="AeropuertoOrigen" class="form-select rounded-3" asp-items="ViewBag.Aeropuertos" id="origen" required>
+                            <option value="">-- Selecciona aeropuerto origen --</option>
+                        </select>
+                        <span asp-validation-for="AeropuertoOrigen" class="text-danger"></span>
+                    </div>
+
+                    <!-- Código IATA Origen -->
+                    <div class="col-md-6">
+                        <label asp-for="CodigoIATAOrigen" class="form-label fw-bold">✈️ Código IATA Origen</label>
+                        <input asp-for="CodigoIATAOrigen" class="form-control rounded-3" id="txtCodigoIATAOrigen" readonly placeholder="Se asignará automáticamente" required />
+                        <small class="text-muted">Se asigna automáticamente según el aeropuerto origen</small>
+                        <span asp-validation-for="CodigoIATAOrigen" class="text-danger"></span>
+                    </div>
+
+                    <!-- Aeropuerto Destino -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">🛬 Aeropuerto Destino</label>
+                        <select asp-for="AeropuertoDestino" class="form-select rounded-3" asp-items="ViewBag.Aeropuertos" id="destino" required>
+                            <option value="">-- Selecciona aeropuerto destino --</option>
+                        </select>
+                        <span asp-validation-for="AeropuertoDestino" class="text-danger"></span>
+                    </div>
+
+                    <!-- Código IATA Destino -->
+                    <div class="col-md-6">
+                        <label asp-for="CodigoIATADestino" class="form-label fw-bold">✈️ Código IATA Destino</label>
+                        <input asp-for="CodigoIATADestino" class="form-control rounded-3" id="txtCodigoIATADestino" readonly placeholder="Se asignará automáticamente" required />
+                        <small class="text-muted">Se asigna automáticamente según el aeropuerto destino</small>
+                        <span asp-validation-for="CodigoIATADestino" class="text-danger"></span>
+                    </div>
+
+                    <!-- Clase -->
+                    <div class="col-md-6">
+                        <label asp-for="Clase" class="form-label fw-bold">🎫 Clase</label>
+                        <select asp-for="Clase" class="form-select rounded-3" id="ddlClase" required>
+                            <option value="">-- Selecciona clase --</option>
+                            <option value="Económica">Económica</option>
+                            <option value="Ejecutiva">Ejecutiva</option>
+                            <option value="Primera">Primera Clase</option>
+                        </select>
+                        <span asp-validation-for="Clase" class="text-danger"></span>
+                    </div>
+
+                    <!-- Fecha y hora salida -->
+                    <div class="col-md-6">
+                        <label asp-for="FechaHoraSalida" class="form-label fw-bold">🛫 Fecha y Hora Salida</label>
+                        <input asp-for="FechaHoraSalida" type="datetime-local" class="form-control rounded-3" 
+                               value="@(Model.FechaHoraSalida.HasValue ? ((DateTime)Model.FechaHoraSalida).ToString("yyyy-MM-ddTHH:mm") : "")" id="fechaSalida" required />
+                        <span asp-validation-for="FechaHoraSalida" class="text-danger"></span>
+                    </div>
+
+                    <!-- Fecha y hora llegada -->
+                    <div class="col-md-6">
+                        <label asp-for="FechaHoraLlegada" class="form-label fw-bold">🛬 Fecha y Hora Llegada</label>
+                        <input asp-for="FechaHoraLlegada" type="datetime-local" class="form-control rounded-3" 
+                               value="@(Model.FechaHoraLlegada.HasValue ? ((DateTime)Model.FechaHoraLlegada).ToString("yyyy-MM-ddTHH:mm") : "")" id="fechaLlegada" readonly required />
+                        <small class="text-muted">Se calcula automáticamente según la fecha de salida y tiempo de vuelo</small>
+                        <span asp-validation-for="FechaHoraLlegada" class="text-danger"></span>
+                    </div>
+
+                    <!-- Asientos disponibles -->
+                    <div class="col-md-6">
+                        <label asp-for="AsientosDisponibles" class="form-label fw-bold">💺 Asientos Disponibles</label>
+                        <input asp-for="AsientosDisponibles" type="number" class="form-control rounded-3" id="txtAsientosDisponibles" readonly min="0" required />
+                        <small class="text-muted">Se calcula automáticamente según el avión y clase seleccionados</small>
+                        <span asp-validation-for="AsientosDisponibles" class="text-danger"></span>
+                    </div>
+
+                    <!-- Precio -->
+                    <div class="col-md-6">
+                        <label asp-for="Precio" class="form-label fw-bold">💰 Precio</label>
+                        <input asp-for="Precio" type="number" step="0.01" class="form-control rounded-3" id="precio" readonly />
+                        <small class="text-muted">Se calcula automáticamente según ruta y clase</small>
+                        <span asp-validation-for="Precio" class="text-danger"></span>
+                    </div>
+
+                    <!-- Moneda -->
+                    <div class="col-md-6">
+                        <label asp-for="Moneda" class="form-label fw-bold">💵 Moneda</label>
+                        <select asp-for="Moneda" class="form-select rounded-3" asp-items="ViewBag.Monedas" required>
+                            <option value="">-- Selecciona moneda --</option>
+                        </select>
+                        <span asp-validation-for="Moneda" class="text-danger"></span>
+                    </div>
+
+                    <!-- Estado -->
+                    <div class="col-md-6">
+                        <label asp-for="Estado" class="form-label fw-bold">⚙️ Estado</label>
+                        <select asp-for="Estado" class="form-select rounded-3" asp-items="ViewBag.Estados" required>
+                            <option value="">-- Selecciona estado --</option>
+                        </select>
+                        <span asp-validation-for="Estado" class="text-danger"></span>
+                    </div>
                 </div>
 
-                <!-- Número de vuelo -->
-                <div class="form-group mb-3">
-                    <label asp-for="NumeroVuelo" class="form-label fw-bold"></label>
-                    <input asp-for="NumeroVuelo" class="form-control" maxlength="10" required />
-                    <span asp-validation-for="NumeroVuelo" class="text-danger"></span>
-                </div>
-
-                <!-- Código Avión -->
-                <div class="form-group mb-3">
-                    <label class="form-label fw-bold">Código del Avión</label>
-                    <select asp-for="IdAvion" class="form-select" asp-items="ViewBag.Aviones" required>
-                        <option value="">-- Selecciona un avión --</option>
-                    </select>
-                    <span asp-validation-for="IdAvion" class="text-danger"></span>
-                </div>
-
-                <!-- Aeropuerto Origen -->
-                <div class="form-group mb-3">
-                    <label class="form-label fw-bold">Aeropuerto Origen</label>
-                    <select asp-for="AeropuertoOrigen" class="form-select" asp-items="ViewBag.Aeropuertos" id="origen" required>
-                        <option value="">-- Selecciona aeropuerto origen --</option>
-                    </select>
-                    <span asp-validation-for="AeropuertoOrigen" class="text-danger"></span>
-                </div>
-
-                <!-- Código IATA Origen -->
-                <div class="form-group mb-3">
-                    <label asp-for="CodigoIATAOrigen" class="form-label fw-bold"></label>
-                    <input asp-for="CodigoIATAOrigen" class="form-control" maxlength="3" required />
-                    <span asp-validation-for="CodigoIATAOrigen" class="text-danger"></span>
-                </div>
-
-                <!-- Aeropuerto Destino -->
-                <div class="form-group mb-3">
-                    <label class="form-label fw-bold">Aeropuerto Destino</label>
-                    <select asp-for="AeropuertoDestino" class="form-select" asp-items="ViewBag.Aeropuertos" id="destino" required>
-                        <option value="">-- Selecciona aeropuerto destino --</option>
-                    </select>
-                    <span asp-validation-for="AeropuertoDestino" class="text-danger"></span>
-                </div>
-
-                <!-- Código IATA Destino -->
-                <div class="form-group mb-3">
-                    <label asp-for="CodigoIATADestino" class="form-label fw-bold"></label>
-                    <input asp-for="CodigoIATADestino" class="form-control" maxlength="3" required />
-                    <span asp-validation-for="CodigoIATADestino" class="text-danger"></span>
-                </div>
-
-                <!-- Clase -->
-                <div class="form-group mb-3">
-                    <label asp-for="Clase" class="form-label fw-bold"></label>
-                    <select asp-for="Clase" class="form-select" required>
-                        <option value="">-- Selecciona clase --</option>
-                        <option value="Económica">Económica</option>
-                        <option value="Ejecutiva">Ejecutiva</option>
-                        <option value="Primera">Primera Clase</option>
-                    </select>
-                    <span asp-validation-for="Clase" class="text-danger"></span>
-                </div>
-
-                <!-- Fecha y hora salida -->
-                <div class="form-group mb-3">
-                    <label asp-for="FechaHoraSalida" class="form-label fw-bold"></label>
-                    <input asp-for="FechaHoraSalida" type="datetime-local" class="form-control"
-                           value="@(((DateTime)Model.FechaHoraSalida).ToString("yyyy-MM-ddTHH:mm"))" id="fechaSalida" required />
-                    <span asp-validation-for="FechaHoraSalida" class="text-danger"></span>
-                </div>
-
-                <!-- Fecha y hora llegada -->
-                <div class="form-group mb-3">
-                    <label asp-for="FechaHoraLlegada" class="form-label fw-bold"></label>
-                    <input asp-for="FechaHoraLlegada" type="datetime-local" class="form-control"
-                           value="@(((DateTime)Model.FechaHoraLlegada).ToString("yyyy-MM-ddTHH:mm"))" required />
-                    <span asp-validation-for="FechaHoraLlegada" class="text-danger"></span>
-                </div>
-
-                <!-- Asientos disponibles -->
-                <div class="form-group mb-3">
-                    <label asp-for="AsientosDisponibles" class="form-label fw-bold"></label>
-                    <input asp-for="AsientosDisponibles" type="number" class="form-control" min="0" required />
-                    <span asp-validation-for="AsientosDisponibles" class="text-danger"></span>
-                </div>
-
-                <!-- Precio -->
-                <div class="form-group mb-3">
-                    <label asp-for="Precio" class="form-label fw-bold"></label>
-                    <input asp-for="Precio" type="number" step="0.01" class="form-control" id="precio" readonly />
-                    <span asp-validation-for="Precio" class="text-danger"></span>
-                </div>
-
-                <!-- Moneda -->
-                <div class="form-group mb-3">
-                    <label asp-for="Moneda" class="form-label fw-bold"></label>
-                    <input asp-for="Moneda" class="form-control" maxlength="3" required />
-                    <span asp-validation-for="Moneda" class="text-danger"></span>
-                </div>
-
-                <!-- Estado -->
-                <div class="form-group mb-3">
-                    <label asp-for="Estado" class="form-label fw-bold"></label>
-                    <select asp-for="Estado" class="form-select" asp-items="ViewBag.Estados" required>
-                        <option value="">-- Selecciona estado --</option>
-                    </select>
-                    <span asp-validation-for="Estado" class="text-danger"></span>
-                </div>
-
-                <!-- Botones -->
-                <div class="form-group text-end">
-                    <button type="submit" class="btn btn-success px-4">💾 Guardar Cambios</button>
-                    <a asp-action="Listar" class="btn btn-secondary px-4 ms-2">Cancelar</a>
+                <div class="form-group text-end mt-4">
+                    <button type="submit" class="btn btn-success px-4 fancy-btn">
+                        💾 <i class="bi bi-save"></i> Guardar Cambios
+                    </button>
+                    <a asp-action="Listar" class="btn btn-secondary px-4 fancy-btn ms-2">
+                        ❌ <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
                 </div>
             </form>
         </div>
@@ -143,6 +164,8 @@
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
     <script>
         // === Establecer fecha mínima ===
         const ahora = new Date();
@@ -150,30 +173,247 @@
             .toISOString().slice(0, 16);
         document.getElementById("fechaSalida").min = isoLocal;
 
-        // === Calcular precio automáticamente ===
-        const origen = document.getElementById('origen');
-        const destino = document.getElementById('destino');
-        origen.addEventListener('change', calcularPrecio);
-        destino.addEventListener('change', calcularPrecio);
+        // --- Obtener nombre de aerolínea del combo y guardarlo en el campo hidden ---
+        document.getElementById('ddlAerolinea').addEventListener('change', function() {
+            const select = this;
+            const selectedOption = select.options[select.selectedIndex];
+            if (selectedOption.value) {
+                const text = selectedOption.text;
+                const nombre = text.substring(text.indexOf('-') + 2);
+                document.getElementById('txtAerolinea').value = nombre;
+            } else {
+                document.getElementById('txtAerolinea').value = '';
+            }
+        });
 
+        // --- Obtener código IATA cuando se selecciona aeropuerto origen ---
+        document.getElementById('origen').addEventListener('change', function() {
+            const nombreAeropuerto = this.value;
+            if (nombreAeropuerto) {
+                fetch(`/Vuelos/ObtenerCodigoIATA?nombreAeropuerto=${encodeURIComponent(nombreAeropuerto)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.iata) {
+                            document.getElementById('txtCodigoIATAOrigen').value = data.iata;
+                        }
+                    })
+                    .catch(() => document.getElementById('txtCodigoIATAOrigen').value = '');
+                calcularPrecio();
+            } else {
+                document.getElementById('txtCodigoIATAOrigen').value = '';
+            }
+        });
+
+        // --- Obtener código IATA cuando se selecciona aeropuerto destino ---
+        document.getElementById('destino').addEventListener('change', function() {
+            const nombreAeropuerto = this.value;
+            if (nombreAeropuerto) {
+                fetch(`/Vuelos/ObtenerCodigoIATA?nombreAeropuerto=${encodeURIComponent(nombreAeropuerto)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.iata) {
+                            document.getElementById('txtCodigoIATADestino').value = data.iata;
+                        }
+                    })
+                    .catch(() => document.getElementById('txtCodigoIATADestino').value = '');
+                calcularPrecio();
+            } else {
+                document.getElementById('txtCodigoIATADestino').value = '';
+            }
+        });
+
+        // --- Calcular asientos disponibles según avión y clase ---
+        function calcularAsientos() {
+            const idAvion = document.getElementById('ddlAvion').value;
+            const clase = document.getElementById('ddlClase').value;
+            
+            if (idAvion && clase) {
+                fetch(`/Vuelos/ObtenerCapacidadAvion?idAvion=${idAvion}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.capacidad) {
+                            let asientos = 0;
+                            const capacidad = data.capacidad;
+                            
+                            if (clase === 'Económica') {
+                                asientos = Math.floor(capacidad * 0.60);
+                            } else if (clase === 'Ejecutiva') {
+                                asientos = Math.floor(capacidad * 0.30);
+                            } else if (clase === 'Primera') {
+                                asientos = Math.floor(capacidad * 0.10);
+                            }
+                            
+                            document.getElementById('txtAsientosDisponibles').value = asientos;
+                        }
+                    })
+                    .catch(() => document.getElementById('txtAsientosDisponibles').value = '');
+            } else {
+                document.getElementById('txtAsientosDisponibles').value = '';
+            }
+        }
+
+        document.getElementById('ddlAvion').addEventListener('change', calcularAsientos);
+        document.getElementById('ddlClase').addEventListener('change', function() {
+            calcularAsientos();
+            calcularPrecioFinal();
+        });
+
+        // --- Calcular fecha de llegada según fecha de salida y tiempo de vuelo ---
+        document.getElementById('fechaSalida').addEventListener('change', function() {
+            const fechaSalidaStr = this.value;
+            if (fechaSalidaStr) {
+                const origen = document.getElementById('origen').value;
+                const destino = document.getElementById('destino').value;
+                
+                if (origen && destino) {
+                    let horasVuelo = 3; // Tiempo por defecto
+                    const fechaSalida = new Date(fechaSalidaStr);
+                    const fechaLlegada = new Date(fechaSalida.getTime() + horasVuelo * 60 * 60 * 1000);
+                    const año = fechaLlegada.getFullYear();
+                    const mes = String(fechaLlegada.getMonth() + 1).padStart(2, '0');
+                    const dia = String(fechaLlegada.getDate()).padStart(2, '0');
+                    const hora = String(fechaLlegada.getHours()).padStart(2, '0');
+                    const minutos = String(fechaLlegada.getMinutes()).padStart(2, '0');
+                    const fechaLlegadaStr = `${año}-${mes}-${dia}T${hora}:${minutos}`;
+                    document.getElementById('fechaLlegada').value = fechaLlegadaStr;
+                }
+            }
+        });
+
+        // --- Calcular precio base y aplicar aumentos según clase ---
+        let precioBase = 0;
+        
         function calcularPrecio() {
-            const o = origen.value;
-            const d = destino.value;
+            const origen = document.getElementById('origen').value;
+            const destino = document.getElementById('destino').value;
 
-            if (o && d && o !== d) {
-                fetch(`/api/vuelos/precio?origen=${o}&destino=${d}`)
+            if (origen && destino && origen !== destino) {
+                fetch(`/api/vuelos/precio?origen=${encodeURIComponent(origen)}&destino=${encodeURIComponent(destino)}`)
                     .then(res => res.json())
                     .then(data => {
                         if (data && data.precio) {
-                            document.getElementById('precio').value = data.precio.toFixed(2);
+                            precioBase = data.precio;
+                            calcularPrecioFinal();
                         }
                     })
                     .catch(() => {
+                        precioBase = 0;
                         document.getElementById('precio').value = 0;
                     });
             } else {
+                precioBase = 0;
                 document.getElementById('precio').value = 0;
             }
         }
+
+        function calcularPrecioFinal() {
+            const clase = document.getElementById('ddlClase').value;
+            
+            if (precioBase > 0 && clase) {
+                let precioFinal = precioBase;
+                
+                if (clase === 'Ejecutiva') {
+                    precioFinal = precioBase * 1.30; // +30%
+                } else if (clase === 'Primera') {
+                    precioFinal = precioBase * 1.50; // +50%
+                }
+                // Económica se queda con el precio base
+                
+                document.getElementById('precio').value = precioFinal.toFixed(2);
+            } else if (precioBase > 0 && !clase) {
+                // Si hay precio base pero no clase, mostrar solo el precio base
+                document.getElementById('precio').value = precioBase.toFixed(2);
+            }
+        }
+
+        // Llamar a calcularPrecio cuando cambien origen o destino
+        document.getElementById('origen').addEventListener('change', calcularPrecio);
+        document.getElementById('destino').addEventListener('change', calcularPrecio);
+
+        // Calcular precio y asientos iniciales si ya hay valores cargados al abrir el formulario
+        $(document).ready(function() {
+            // Obtener código IATA para origen si ya está seleccionado
+            const origen = document.getElementById('origen').value;
+            if (origen) {
+                fetch(`/Vuelos/ObtenerCodigoIATA?nombreAeropuerto=${encodeURIComponent(origen)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.iata) {
+                            document.getElementById('txtCodigoIATAOrigen').value = data.iata;
+                        }
+                    })
+                    .catch(() => {});
+            }
+
+            // Obtener código IATA para destino si ya está seleccionado
+            const destino = document.getElementById('destino').value;
+            if (destino) {
+                fetch(`/Vuelos/ObtenerCodigoIATA?nombreAeropuerto=${encodeURIComponent(destino)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.iata) {
+                            document.getElementById('txtCodigoIATADestino').value = data.iata;
+                        }
+                    })
+                    .catch(() => {});
+            }
+
+            // Calcular precio inicial si hay origen y destino
+            if (origen && destino && origen !== destino) {
+                calcularPrecio();
+            }
+
+            // Calcular asientos si hay avión y clase seleccionados
+            const idAvion = document.getElementById('ddlAvion').value;
+            const clase = document.getElementById('ddlClase').value;
+            if (idAvion && clase) {
+                calcularAsientos();
+            }
+        });
     </script>
+
+    <style>
+        .bg-gradient {
+            background: linear-gradient(135deg, #007bff, #00b4d8);
+        }
+
+        .header-glow {
+            box-shadow: 0 0 25px rgba(0, 174, 255, 0.6);
+        }
+
+        .fancy-btn {
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+        }
+
+            .fancy-btn:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(0, 174, 255, 0.6);
+            }
+
+        .form-control,
+        .form-select {
+            transition: 0.3s ease;
+        }
+
+            .form-control:focus,
+            .form-select:focus {
+                box-shadow: 0 0 10px rgba(0, 174, 255, 0.4);
+                border-color: #00b4d8;
+            }
+
+        .card {
+            transition: 0.4s ease;
+        }
+
+            .card:hover {
+                transform: scale(1.02);
+                box-shadow: 0 0 25px rgba(0, 123, 255, 0.3);
+            }
+
+        label {
+            color: #0077b6;
+        }
+    </style>
 }
