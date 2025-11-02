@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ProyectoAeroline.Data;
 using ProyectoAeroline.Models;
+using ProyectoAeroline.Attributes;
 using System.Security.Claims;
 
 namespace ProyectoAeroline.Controllers
@@ -15,6 +16,7 @@ namespace ProyectoAeroline.Controllers
         // LISTAR
         // --------------------------------------------------------------
         [Authorize]
+        [RequirePermission("Usuarios", "Ver")]
         public IActionResult Listar()
         {
             var oListaUsuarios = _UsuariosData.MtdConsultarUsuarios();
@@ -25,6 +27,7 @@ namespace ProyectoAeroline.Controllers
         // GUARDAR (GET)
         // --------------------------------------------------------------
         [Authorize]
+        [RequirePermission("Usuarios", "Crear")]
         public IActionResult Guardar()
         {
             return View();
@@ -35,6 +38,7 @@ namespace ProyectoAeroline.Controllers
         // --------------------------------------------------------------
         [HttpPost]
         [Authorize]
+        [RequirePermission("Usuarios", "Crear")]
         public IActionResult Guardar(UsuariosModel oUsuario)
         {
             var respuesta = _UsuariosData.MtdAgregarUsuario(oUsuario);
@@ -49,6 +53,7 @@ namespace ProyectoAeroline.Controllers
         // MODIFICAR (GET)
         // --------------------------------------------------------------
         [Authorize]
+        [RequirePermission("Usuarios", "Editar")]
         public IActionResult Modificar(int? CodigoUsuario = null)
         {
             int idUsuario = CodigoUsuario ?? 0;
@@ -83,6 +88,7 @@ namespace ProyectoAeroline.Controllers
         // --------------------------------------------------------------
         [HttpPost]
         [Authorize]
+        [RequirePermission("Usuarios", "Editar")]
         public IActionResult Modificar(UsuariosModel oUsuario)
         {
             var respuesta = _UsuariosData.MtdEditarUsuario(oUsuario);
@@ -97,6 +103,7 @@ namespace ProyectoAeroline.Controllers
         // ELIMINAR (GET)
         // --------------------------------------------------------------
         [Authorize]
+        [RequirePermission("Usuarios", "Eliminar")]
         public IActionResult Eliminar(int CodigoUsuario)
         {
             var oUsuario = _UsuariosData.MtdBuscarUsuario(CodigoUsuario);
@@ -108,6 +115,7 @@ namespace ProyectoAeroline.Controllers
         // --------------------------------------------------------------
         [HttpPost]
         [Authorize]
+        [RequirePermission("Usuarios", "Eliminar")]
         public IActionResult Eliminar(UsuariosModel oUsuario)
         {
             var respuesta = _UsuariosData.MtdEliminarUsuario(oUsuario.IdUsuario);

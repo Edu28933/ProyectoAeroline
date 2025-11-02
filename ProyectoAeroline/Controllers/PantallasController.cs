@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProyectoAeroline.Data;
 using ProyectoAeroline.Models;
+using ProyectoAeroline.Attributes;
 
 namespace ProyectoAeroline.Controllers
 {
@@ -13,6 +14,7 @@ namespace ProyectoAeroline.Controllers
         // --------------------------------------------------------------
         // LISTAR
         // --------------------------------------------------------------
+        [RequirePermission("Pantallas", "Ver")]
         public IActionResult Listar()
         {
             var oListaPantallas = _PantallasData.MtdConsultarPantallas();
@@ -22,6 +24,7 @@ namespace ProyectoAeroline.Controllers
         // --------------------------------------------------------------
         // GUARDAR (GET)
         // --------------------------------------------------------------
+        [RequirePermission("Pantallas", "Crear")]
         public IActionResult Guardar()
         {
             return View();
@@ -31,6 +34,7 @@ namespace ProyectoAeroline.Controllers
         // GUARDAR (POST)
         // --------------------------------------------------------------
         [HttpPost]
+        [RequirePermission("Pantallas", "Crear")]
         public IActionResult Guardar(PantallasModel oPantalla)
         {
             var respuesta = _PantallasData.MtdAgregarPantalla(oPantalla);
@@ -50,6 +54,7 @@ namespace ProyectoAeroline.Controllers
         // --------------------------------------------------------------
         // MODIFICAR (GET)
         // --------------------------------------------------------------
+        [RequirePermission("Pantallas", "Editar")]
         public IActionResult Modificar(int? CodigoPantalla = null)
         {
             int idPantalla = CodigoPantalla ?? 0;
@@ -75,6 +80,7 @@ namespace ProyectoAeroline.Controllers
         // MODIFICAR (POST)
         // --------------------------------------------------------------
         [HttpPost]
+        [RequirePermission("Pantallas", "Editar")]
         public IActionResult Modificar(PantallasModel oPantalla)
         {
             var respuesta = _PantallasData.MtdEditarPantalla(oPantalla);
@@ -94,6 +100,7 @@ namespace ProyectoAeroline.Controllers
         // --------------------------------------------------------------
         // ELIMINAR (GET)
         // --------------------------------------------------------------
+        [RequirePermission("Pantallas", "Eliminar")]
         public IActionResult Eliminar(int CodigoPantalla)
         {
             var oPantalla = _PantallasData.MtdBuscarPantalla(CodigoPantalla);
@@ -104,6 +111,7 @@ namespace ProyectoAeroline.Controllers
         // ELIMINAR (POST)
         // --------------------------------------------------------------
         [HttpPost]
+        [RequirePermission("Pantallas", "Eliminar")]
         public IActionResult Eliminar(PantallasModel oPantalla)
         {
             var respuesta = _PantallasData.MtdEliminarPantalla(oPantalla.IdPantalla);

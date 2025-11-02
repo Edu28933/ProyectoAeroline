@@ -9,9 +9,12 @@
     <div class="card shadow-lg border-0 rounded-4">
         <div class="card-header bg-primary text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center">
             <h3 class="mb-0"><i class="bi bi-window"></i> Lista de Pantallas</h3>
-            <a href="/Pantallas/Guardar" class="btn btn-light btn-sm fw-bold">
-                <i class="bi bi-plus-circle"></i> Agregar
-            </a>
+            @if (PermisosHelper.PuedeCrear(ViewContext, "Pantallas"))
+            {
+                <a href="/Pantallas/Guardar" class="btn btn-light btn-sm fw-bold">
+                    <i class="bi bi-plus-circle"></i> Agregar
+                </a>
+            }
         </div>
 
         <div class="card-body bg-light">
@@ -70,16 +73,26 @@
                                 </td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="@Url.Action("Modificar", "Pantallas", new { CodigoPantalla = item.IdPantalla })"
-                                           class="btn btn-outline-secondary btn-sm" title="Modificar">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </a>
-                                        <a href="@Url.Action("Eliminar", "Pantallas", new { CodigoPantalla = item.IdPantalla })"
-                                           class="btn btn-outline-danger btn-sm"
-                                           title="Eliminar"
-                                           onclick="return confirm('¿Seguro que deseas eliminar esta pantalla?');">
-                                            <i class="bi bi-trash"></i>
-                                        </a>
+                                        @if (PermisosHelper.PuedeEditar(ViewContext, "Pantallas"))
+                                        {
+                                            <a href="@Url.Action("Modificar", "Pantallas", new { CodigoPantalla = item.IdPantalla })"
+                                               class="btn btn-outline-secondary btn-sm" title="Modificar">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                        }
+                                        @if (PermisosHelper.PuedeEliminar(ViewContext, "Pantallas"))
+                                        {
+                                            <a href="@Url.Action("Eliminar", "Pantallas", new { CodigoPantalla = item.IdPantalla })"
+                                               class="btn btn-outline-danger btn-sm"
+                                               title="Eliminar"
+                                               onclick="return confirm('¿Seguro que deseas eliminar esta pantalla?');">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        }
+                                        @if (!PermisosHelper.PuedeEditar(ViewContext, "Pantallas") && !PermisosHelper.PuedeEliminar(ViewContext, "Pantallas"))
+                                        {
+                                            <span class="text-muted">Sin acciones disponibles</span>
+                                        }
                                     </div>
                                 </td>
                             </tr>

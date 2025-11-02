@@ -96,7 +96,8 @@ namespace ProyectoAeroline.Controllers
                 new Claim(ClaimTypes.Name, nombre),
                 new Claim("Nombre", nombre),
                 new Claim(ClaimTypes.Email, correo),
-                new Claim(ClaimTypes.Role, rolNombre)
+                new Claim(ClaimTypes.Role, rolNombre),
+                new Claim("IdRol", user.IdRol.ToString()) // Agregar IdRol para verificación de permisos
             };
 
             var identity = new ClaimsIdentity(claims, AuthScheme);
@@ -229,7 +230,8 @@ namespace ProyectoAeroline.Controllers
                     new Claim(ClaimTypes.Name, nombreFinal),
                     new Claim("Nombre", nombreFinal),
                     new Claim(ClaimTypes.Email, correoFinal),
-                    new Claim(ClaimTypes.Role, rolFinal)
+                    new Claim(ClaimTypes.Role, rolFinal),
+                    new Claim("IdRol", usuarioExistente.IdRol.ToString()) // Agregar IdRol para verificación de permisos
                 };
 
                 var identity = new ClaimsIdentity(claims, AuthScheme);
@@ -279,7 +281,8 @@ namespace ProyectoAeroline.Controllers
                     new Claim(ClaimTypes.Name, nombreFinal),
                     new Claim("Nombre", nombreFinal),
                     new Claim(ClaimTypes.Email, correoFinal),
-                    new Claim(ClaimTypes.Role, rolFinal)
+                    new Claim(ClaimTypes.Role, rolFinal),
+                    new Claim("IdRol", usuarioPorCorreo.IdRol.ToString()) // Agregar IdRol para verificación de permisos
                 };
 
                 var identity = new ClaimsIdentity(claims, AuthScheme);

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProyectoAeroline.Data;
 using ProyectoAeroline.Models;
+using ProyectoAeroline.Attributes;
 
 namespace ProyectoAeroline.Controllers
 {
@@ -13,6 +14,7 @@ namespace ProyectoAeroline.Controllers
         // --------------------------------------------------------------
         // LISTAR
         // --------------------------------------------------------------
+        [RequirePermission("Roles", "Ver")]
         public IActionResult Listar()
         {
             var oListaRoles = _RolesData.MtdConsultarRoles();
@@ -22,6 +24,7 @@ namespace ProyectoAeroline.Controllers
         // --------------------------------------------------------------
         // GUARDAR (GET)
         // --------------------------------------------------------------
+        [RequirePermission("Roles", "Crear")]
         public IActionResult Guardar()
         {
             return View();
@@ -31,6 +34,7 @@ namespace ProyectoAeroline.Controllers
         // GUARDAR (POST)
         // --------------------------------------------------------------
         [HttpPost]
+        [RequirePermission("Roles", "Crear")]
         public IActionResult Guardar(RolesModel oRol)
         {
             var respuesta = _RolesData.MtdAgregarRol(oRol);
@@ -50,6 +54,7 @@ namespace ProyectoAeroline.Controllers
         // --------------------------------------------------------------
         // MODIFICAR (GET)
         // --------------------------------------------------------------
+        [RequirePermission("Roles", "Editar")]
         public IActionResult Modificar(int? CodigoRol = null)
         {
             int idRol = CodigoRol ?? 0;
@@ -75,6 +80,7 @@ namespace ProyectoAeroline.Controllers
         // MODIFICAR (POST)
         // --------------------------------------------------------------
         [HttpPost]
+        [RequirePermission("Roles", "Editar")]
         public IActionResult Modificar(RolesModel oRol)
         {
             var respuesta = _RolesData.MtdEditarRol(oRol);
@@ -94,6 +100,7 @@ namespace ProyectoAeroline.Controllers
         // --------------------------------------------------------------
         // ELIMINAR (GET)
         // --------------------------------------------------------------
+        [RequirePermission("Roles", "Eliminar")]
         public IActionResult Eliminar(int CodigoRol)
         {
             var oRol = _RolesData.MtdBuscarRol(CodigoRol);
@@ -104,6 +111,7 @@ namespace ProyectoAeroline.Controllers
         // ELIMINAR (POST)
         // --------------------------------------------------------------
         [HttpPost]
+        [RequirePermission("Roles", "Eliminar")]
         public IActionResult Eliminar(RolesModel oRol)
         {
             var respuesta = _RolesData.MtdEliminarRol(oRol.IdRol);

@@ -9,9 +9,12 @@
     <div class="card shadow-lg border-0 rounded-4">
         <div class="card-header bg-primary text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center">
             <h3 class="mb-0"><i class="bi bi-shield-check"></i> Lista de Roles</h3>
-            <a href="/Roles/Guardar" class="btn btn-light btn-sm fw-bold">
-                <i class="bi bi-plus-circle"></i> Agregar
-            </a>
+            @if (PermisosHelper.PuedeCrear(ViewContext, "Roles"))
+            {
+                <a href="/Roles/Guardar" class="btn btn-light btn-sm fw-bold">
+                    <i class="bi bi-plus-circle"></i> Agregar
+                </a>
+            }
         </div>
 
         <div class="card-body bg-light">
@@ -72,16 +75,26 @@
                                 </td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="@Url.Action("Modificar", "Roles", new { CodigoRol = item.IdRol })"
-                                           class="btn btn-outline-secondary btn-sm" title="Modificar">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </a>
-                                        <a href="@Url.Action("Eliminar", "Roles", new { CodigoRol = item.IdRol })"
-                                           class="btn btn-outline-danger btn-sm"
-                                           title="Eliminar"
-                                           onclick="return confirm('¿Seguro que deseas eliminar este rol?');">
-                                            <i class="bi bi-trash"></i>
-                                        </a>
+                                        @if (PermisosHelper.PuedeEditar(ViewContext, "Roles"))
+                                        {
+                                            <a href="@Url.Action("Modificar", "Roles", new { CodigoRol = item.IdRol })"
+                                               class="btn btn-outline-secondary btn-sm" title="Modificar">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                        }
+                                        @if (PermisosHelper.PuedeEliminar(ViewContext, "Roles"))
+                                        {
+                                            <a href="@Url.Action("Eliminar", "Roles", new { CodigoRol = item.IdRol })"
+                                               class="btn btn-outline-danger btn-sm"
+                                               title="Eliminar"
+                                               onclick="return confirm('¿Seguro que deseas eliminar este rol?');">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        }
+                                        @if (!PermisosHelper.PuedeEditar(ViewContext, "Roles") && !PermisosHelper.PuedeEliminar(ViewContext, "Roles"))
+                                        {
+                                            <span class="text-muted">Sin acciones disponibles</span>
+                                        }
                                     </div>
                                 </td>
                             </tr>

@@ -1,5 +1,7 @@
 ﻿@* Pages/Shared/_Sidebar.cshtml *@
 @using System.Security.Claims
+@using ProyectoAeroline.Helpers
+@inject ProyectoAeroline.Services.IPermisosService PermisosService
 @{
     // Muestra el nombre del usuario priorizando Claims; luego Session; luego Identity.Name
     var nombre =
@@ -13,6 +15,15 @@
     var idUsuario =
         User.FindFirst(ClaimTypes.NameIdentifier)?.Value
         ?? Context.Session?.GetInt32("IdUsuario")?.ToString();
+    
+    // Helper para verificar permisos en Razor Pages
+    // Como estamos en un partial, necesitamos crear el ViewContext manualmente o usar el servicio directamente
+    bool PuedeVer(string nombrePantalla)
+    {
+        if (User?.Identity?.IsAuthenticated != true)
+            return false;
+        return PermisosService.TienePermiso(User, nombrePantalla, "Ver");
+    }
 }
 
 <aside id="sidebar" class="sb-sidebar text-bg-dark">
@@ -24,54 +35,87 @@
     <hr class="m-0 opacity-25" />
 
     <nav class="sb-nav py-3">
+        <!-- Home siempre visible -->
         <a class="sb-link" asp-page="/Index">
             <i class="bi bi-house"></i><span>Home</span>
         </a>
 
-        <a class="sb-link" asp-controller="Empleados" asp-action="Listar">
-            <i class="bi bi-speedometer2"></i><span>Empleados</span>
-        </a>
+        @if (PuedeVer("Empleados"))
+        {
+            <a class="sb-link" asp-controller="Empleados" asp-action="Listar">
+                <i class="bi bi-speedometer2"></i><span>Empleados</span>
+            </a>
+        }
 
-        <a class="sb-link" asp-controller="Usuarios" asp-action="Listar">
-            <i class="bi bi-receipt"></i><span>Usuarios</span>
-        </a>
+        @if (PuedeVer("Usuarios"))
+        {
+            <a class="sb-link" asp-controller="Usuarios" asp-action="Listar">
+                <i class="bi bi-receipt"></i><span>Usuarios</span>
+            </a>
+        }
 
-        <a class="sb-link" asp-controller="Roles" asp-action="Listar">
-            <i class="bi bi-shield-check"></i><span>Roles</span>
-        </a>
+        @if (PuedeVer("Roles"))
+        {
+            <a class="sb-link" asp-controller="Roles" asp-action="Listar">
+                <i class="bi bi-shield-check"></i><span>Roles</span>
+            </a>
+        }
 
-        <a class="sb-link" asp-controller="Pantallas" asp-action="Listar">
-            <i class="bi bi-window"></i><span>Pantallas</span>
-        </a>
+        @if (PuedeVer("Pantallas"))
+        {
+            <a class="sb-link" asp-controller="Pantallas" asp-action="Listar">
+                <i class="bi bi-window"></i><span>Pantallas</span>
+            </a>
+        }
 
-        <a class="sb-link" asp-controller="RolPantallaOpcion" asp-action="Listar">
-            <i class="bi bi-key-fill"></i><span>Permisos</span>
-        </a>
+        @if (PuedeVer("RolPantallaOpcion"))
+        {
+            <a class="sb-link" asp-controller="RolPantallaOpcion" asp-action="Listar">
+                <i class="bi bi-key-fill"></i><span>Permisos</span>
+            </a>
+        }
 
-        <a class="sb-link" asp-controller="Aeropuertos" asp-action="Listar">
-            <i class="bi bi-box-seam"></i><span>Aeropuertos</span>
-        </a>
+        @if (PuedeVer("Aeropuertos"))
+        {
+            <a class="sb-link" asp-controller="Aeropuertos" asp-action="Listar">
+                <i class="bi bi-box-seam"></i><span>Aeropuertos</span>
+            </a>
+        }
 
-        <a class="sb-link" asp-controller="Aviones" asp-action="Listar">
-            <i class="bi bi-people"></i><span>Aviones</span>
-        </a>
+        @if (PuedeVer("Aviones"))
+        {
+            <a class="sb-link" asp-controller="Aviones" asp-action="Listar">
+                <i class="bi bi-people"></i><span>Aviones</span>
+            </a>
+        }
 
-        <a class="sb-link" asp-controller="Mantenimientos" asp-action="Listar">
-            <i class="bi bi-tools"></i><span>Mantenimientos</span>
-        </a>
+        @if (PuedeVer("Mantenimientos"))
+        {
+            <a class="sb-link" asp-controller="Mantenimientos" asp-action="Listar">
+                <i class="bi bi-tools"></i><span>Mantenimientos</span>
+            </a>
+        }
 
-        <a class="sb-link" asp-controller="Boletos" asp-action="Listar">
-            <i class="bi bi-people"></i><span>Boletos</span>
-        </a>
+        @if (PuedeVer("Boletos"))
+        {
+            <a class="sb-link" asp-controller="Boletos" asp-action="Listar">
+                <i class="bi bi-people"></i><span>Boletos</span>
+            </a>
+        }
 
-        <a class="sb-link" asp-controller="Aerolineas" asp-action="Listar">
-            <i class="bi bi-people"></i><span>Aerolineas</span>
-        </a>
+        @if (PuedeVer("Aerolineas"))
+        {
+            <a class="sb-link" asp-controller="Aerolineas" asp-action="Listar">
+                <i class="bi bi-people"></i><span>Aerolineas</span>
+            </a>
+        }
 
-
-        <a class="sb-link" asp-controller="Vuelos" asp-action="Listar">
-            <i class="bi bi-people"></i><span>Vuelos</span>
-        </a> 
+        @if (PuedeVer("Vuelos"))
+        {
+            <a class="sb-link" asp-controller="Vuelos" asp-action="Listar">
+                <i class="bi bi-people"></i><span>Vuelos</span>
+            </a>
+        }
 
     </nav>
 

@@ -43,6 +43,8 @@ builder.Services.AddScoped<LoginData>();
 // ==== NUEVO: servicios requeridos por las nuevas funciones ====
 builder.Services.AddScoped<IEmailService, EmailService>(); // envío de correos (reset/verificación)
 builder.Services.AddScoped<UsuariosData>(); // acceso a datos de usuarios y Google login
+builder.Services.AddScoped<RolPantallaOpcionData>(); // acceso a permisos
+builder.Services.AddScoped<ProyectoAeroline.Services.IPermisosService, ProyectoAeroline.Services.PermisosService>(); // servicio de permisos
 
 // Cookies de autenticación
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
