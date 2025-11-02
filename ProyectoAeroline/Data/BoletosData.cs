@@ -40,6 +40,7 @@ namespace ProyectoAeroline.Data
                                 Impuesto = dr["Impuesto"] == DBNull.Value ? (decimal?)null : Convert.ToDecimal(dr["Impuesto"]),
                                 Total = Convert.ToDecimal(dr["Total"]),
                                 Reembolso = dr["Reembolso"] == DBNull.Value ? null : dr["Reembolso"].ToString(),
+                                FechaCompra = dr["FechaCompra"] == DBNull.Value ? DateTime.Now : Convert.ToDateTime(dr["FechaCompra"]),
                                 Estado = dr["Estado"] == DBNull.Value ? null : dr["Estado"].ToString()
                             });
                         }
@@ -69,7 +70,7 @@ namespace ProyectoAeroline.Data
                     SqlCommand cmd = new SqlCommand("sp_BoletoAgregar", conexion);
                     cmd.Parameters.AddWithValue("@IdVuelo", oBoleto.IdVuelo);
                     cmd.Parameters.AddWithValue("@IdPasajero", oBoleto.IdPasajero);
-                    cmd.Parameters.AddWithValue("@NumeroAsiento", oBoleto.NumeroAsiento);
+                    cmd.Parameters.AddWithValue("@NumeroAsiento", oBoleto.NumeroAsiento ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@Clase", oBoleto.Clase ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@Precio", oBoleto.Precio);
                     cmd.Parameters.AddWithValue("@Cantidad", (object?)oBoleto.Cantidad ?? DBNull.Value);
@@ -77,6 +78,7 @@ namespace ProyectoAeroline.Data
                     cmd.Parameters.AddWithValue("@Impuesto", (object?)oBoleto.Impuesto ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@Total", oBoleto.Total);
                     cmd.Parameters.AddWithValue("@Reembolso", oBoleto.Reembolso ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@FechaCompra", oBoleto.FechaCompra);
                     cmd.Parameters.AddWithValue("@Estado", oBoleto.Estado ?? (object)DBNull.Value);
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.ExecuteNonQuery();
@@ -109,7 +111,7 @@ namespace ProyectoAeroline.Data
                     cmd.Parameters.AddWithValue("@IdBoleto", oBoleto.IdBoleto);
                     cmd.Parameters.AddWithValue("@IdVuelo", oBoleto.IdVuelo);
                     cmd.Parameters.AddWithValue("@IdPasajero", oBoleto.IdPasajero);
-                    cmd.Parameters.AddWithValue("@NumeroAsiento", oBoleto.NumeroAsiento);
+                    cmd.Parameters.AddWithValue("@NumeroAsiento", oBoleto.NumeroAsiento ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@Clase", oBoleto.Clase ?? (object)DBNull.Value);
                     cmd.Parameters.AddWithValue("@Precio", oBoleto.Precio);
                     cmd.Parameters.AddWithValue("@Cantidad", (object?)oBoleto.Cantidad ?? DBNull.Value);
@@ -117,6 +119,7 @@ namespace ProyectoAeroline.Data
                     cmd.Parameters.AddWithValue("@Impuesto", (object?)oBoleto.Impuesto ?? DBNull.Value);
                     cmd.Parameters.AddWithValue("@Total", oBoleto.Total);
                     cmd.Parameters.AddWithValue("@Reembolso", oBoleto.Reembolso ?? (object)DBNull.Value);
+                    cmd.Parameters.AddWithValue("@FechaCompra", oBoleto.FechaCompra);
                     cmd.Parameters.AddWithValue("@Estado", oBoleto.Estado ?? (object)DBNull.Value);
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.ExecuteNonQuery();
@@ -163,6 +166,7 @@ namespace ProyectoAeroline.Data
                             oBoleto.Impuesto = dr["Impuesto"] == DBNull.Value ? (decimal?)null : Convert.ToDecimal(dr["Impuesto"]);
                             oBoleto.Total = Convert.ToDecimal(dr["Total"]);
                             oBoleto.Reembolso = dr["Reembolso"] == DBNull.Value ? null : dr["Reembolso"].ToString();
+                            oBoleto.FechaCompra = dr["FechaCompra"] == DBNull.Value ? DateTime.Now : Convert.ToDateTime(dr["FechaCompra"]);
                             oBoleto.Estado = dr["Estado"] == DBNull.Value ? null : dr["Estado"].ToString();
                         }
                     }
@@ -213,11 +217,14 @@ namespace ProyectoAeroline.Data
 
             using (var conexion = new SqlConnection(conn.GetConnectionString()))
             {
-                conexion.Open();
-                SqlCommand cmd = new SqlCommand("usp_ListarVuelosActivos", conexion)
-                {
-                    CommandType = CommandType.StoredProcedure
-                };
+                conexion.Open();                SqlCommand cmd = new SqlCommand(@"
+                    SELECT 
+                        IdVuelo,
+                        AeropuertoOrigen,
+                        AeropuertoDestino
+                    FROM Vuelos
+                    WHERE Estado = 'Activo'
+                    ORDER BY IdVuelo DESC", conexion);
 
                 using (var dr = cmd.ExecuteReader())
                 {
@@ -253,10 +260,12 @@ namespace ProyectoAeroline.Data
                 {
                     while (dr.Read())
                     {
+                        var tipoPasajero = dr["TipoPasajero"] != DBNull.Value ? dr["TipoPasajero"].ToString() : "";
+                        var nombreCompleto = $"{dr["Nombres"]} {dr["Apellidos"]}";
                         lista.Add(new SelectListItem
                         {
                             Value = dr["IdPasajero"].ToString(),
-                            Text = $"{dr["IdPasajero"]} - {dr["Nombres"]} - {dr["Apellidos"]}"
+                            Text = $"{dr["IdPasajero"]} - {nombreCompleto} - {tipoPasajero}"
                         });
                     }
                 }
@@ -273,7 +282,7 @@ namespace ProyectoAeroline.Data
             using (var conexion = new SqlConnection(conn.GetConnectionString()))
             {
                 conexion.Open();
-                var cmd = new SqlCommand("SELECT Precio FROM Vuelos WHERE IdVuelo = @IdVuelo", conexion);
+                var cmd = new SqlCommand("SELECT Precio, Clase FROM Vuelos WHERE IdVuelo = @IdVuelo", conexion);
                 cmd.Parameters.AddWithValue("@IdVuelo", idVuelo);
 
                 using (var dr = cmd.ExecuteReader())
@@ -283,7 +292,8 @@ namespace ProyectoAeroline.Data
                         vuelo = new VuelosModel
                         {
                             IdVuelo = idVuelo,
-                            Precio = dr["Precio"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["Precio"])
+                            Precio = dr["Precio"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["Precio"]),
+                            Clase = dr["Clase"] == DBNull.Value ? null : dr["Clase"].ToString()
                         };
                     }
                 }
@@ -292,6 +302,174 @@ namespace ProyectoAeroline.Data
             return vuelo;
         }
 
+        // --- OBTENER TIPO DE PASAJERO POR ID ---
+        public string? MtdObtenerTipoPasajero(int idPasajero)
+        {
+            string? tipoPasajero = null;
+            var conn = new Conexion();
+
+            try
+            {
+                using (var conexion = new SqlConnection(conn.GetConnectionString()))
+                {
+                    conexion.Open();
+                    var cmd = new SqlCommand("SELECT TipoPasajero FROM Pasajeros WHERE IdPasajero = @IdPasajero", conexion);
+                    cmd.Parameters.AddWithValue("@IdPasajero", idPasajero);
+
+                    var result = cmd.ExecuteScalar();
+                    if (result != null && result != DBNull.Value)
+                    {
+                        tipoPasajero = result.ToString();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al obtener tipo de pasajero: {ex.Message}");
+            }
+
+            return tipoPasajero;
+        }
+
+        // --- OBTENER CAPACIDAD DEL AVIÓN POR IDVUELO ---
+        public int MtdObtenerCapacidadAvionPorVuelo(int idVuelo)
+        {
+            int capacidad = 0;
+            var conn = new Conexion();
+
+            try
+            {
+                using (var conexion = new SqlConnection(conn.GetConnectionString()))
+                {
+                    conexion.Open();
+                    var cmd = new SqlCommand(@"
+                        SELECT a.Capacidad 
+                        FROM Aviones a
+                        INNER JOIN Vuelos v ON a.IdAvion = v.IdAvion
+                        WHERE v.IdVuelo = @IdVuelo", conexion);
+                    cmd.Parameters.AddWithValue("@IdVuelo", idVuelo);
+
+                    var result = cmd.ExecuteScalar();
+                    if (result != null && result != DBNull.Value)
+                    {
+                        capacidad = Convert.ToInt32(result);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al obtener capacidad del avión: {ex.Message}");
+            }
+
+            return capacidad;
+        }
+
+        // --- OBTENER ASIENTOS OCUPADOS POR IDVUELO ---
+        public List<string> MtdObtenerAsientosOcupados(int idVuelo, int? idBoletoExcluir = null)
+        {
+            var asientosOcupados = new List<string>();
+            var conn = new Conexion();
+
+            try
+            {
+                using (var conexion = new SqlConnection(conn.GetConnectionString()))
+                {
+                    conexion.Open();
+                    var sql = @"
+                        SELECT NumeroAsiento
+                        FROM Boletos
+                        WHERE IdVuelo = @IdVuelo
+                            AND NumeroAsiento IS NOT NULL
+                            AND NumeroAsiento != ''
+                            AND Estado != 'Anulado'
+                            AND FechaEliminacion IS NULL";
+                    
+                    if (idBoletoExcluir.HasValue)
+                    {
+                        sql += " AND IdBoleto != @IdBoletoExcluir";
+                    }
+
+                    var cmd = new SqlCommand(sql, conexion);
+                    cmd.Parameters.AddWithValue("@IdVuelo", idVuelo);
+                    if (idBoletoExcluir.HasValue)
+                    {
+                        cmd.Parameters.AddWithValue("@IdBoletoExcluir", idBoletoExcluir.Value);
+                    }
+
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            var numeroAsiento = dr["NumeroAsiento"]?.ToString();
+                            if (!string.IsNullOrEmpty(numeroAsiento))
+                            {
+                                // Si contiene múltiples asientos separados por comas, dividirlos
+                                var asientos = numeroAsiento.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                                foreach (var asiento in asientos)
+                                {
+                                    var asientoLimpio = asiento.Trim();
+                                    if (!string.IsNullOrEmpty(asientoLimpio) && !asientosOcupados.Contains(asientoLimpio))
+                                    {
+                                        asientosOcupados.Add(asientoLimpio);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al obtener asientos ocupados: {ex.Message}");
+            }
+
+            return asientosOcupados;
+        }
+
+        // --- OBTENER INFORMACIÓN DEL VUELO (FECHAS) ---
+        public VuelosModel? MtdObtenerInfoVuelo(int idVuelo)
+        {
+            VuelosModel? vuelo = null;
+            var conn = new Conexion();
+
+            try
+            {
+                using (var conexion = new SqlConnection(conn.GetConnectionString()))
+                {
+                    conexion.Open();
+                    var cmd = new SqlCommand(@"
+                        SELECT 
+                            FechaHoraSalida,
+                            FechaHoraLlegada,
+                            AeropuertoOrigen,
+                            AeropuertoDestino
+                        FROM Vuelos 
+                        WHERE IdVuelo = @IdVuelo", conexion);
+                    cmd.Parameters.AddWithValue("@IdVuelo", idVuelo);
+
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        if (dr.Read())
+                        {
+                            vuelo = new VuelosModel
+                            {
+                                IdVuelo = idVuelo,
+                                FechaHoraSalida = dr["FechaHoraSalida"] == DBNull.Value ? null : Convert.ToDateTime(dr["FechaHoraSalida"]),
+                                FechaHoraLlegada = dr["FechaHoraLlegada"] == DBNull.Value ? null : Convert.ToDateTime(dr["FechaHoraLlegada"]),
+                                AeropuertoOrigen = dr["AeropuertoOrigen"]?.ToString() ?? "",
+                                AeropuertoDestino = dr["AeropuertoDestino"]?.ToString() ?? ""
+                            };
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al obtener información del vuelo: {ex.Message}");
+            }
+
+            return vuelo;
+        }
 
     }
 }

@@ -1,0 +1,185 @@
+@model ProyectoAeroline.Models.PasajerosModel
+
+@{
+    ViewData["Title"] = "Modificar Pasajero";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 mt-4 animate__animated animate__fadeInUp">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-gradient text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center header-glow">
+            <h3 class="mb-0">
+                🛠️ <i class="bi bi-pencil-square"></i> <strong>Modificar Pasajero</strong>
+            </h3>
+            <a asp-action="Listar" class="btn btn-light btn-sm fw-bold fancy-btn">
+                ⬅️ <i class="bi bi-arrow-left-circle"></i> Regresar
+            </a>
+        </div>
+
+        <div class="card-body bg-light">
+            <form asp-action="Modificar" method="post" id="formModificarPasajero">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="IdPasajero" />
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="row g-3">
+                    <!-- Nombres -->
+                    <div class="col-md-6">
+                        <label asp-for="Nombres" class="form-label fw-bold">👤 Nombres <span class="text-danger">*</span></label>
+                        <input asp-for="Nombres" class="form-control rounded-3" placeholder="Ej: Juan Carlos" maxlength="45" required />
+                        <span asp-validation-for="Nombres" class="text-danger"></span>
+                    </div>
+
+                    <!-- Apellidos -->
+                    <div class="col-md-6">
+                        <label asp-for="Apellidos" class="form-label fw-bold">👤 Apellidos <span class="text-danger">*</span></label>
+                        <input asp-for="Apellidos" class="form-control rounded-3" placeholder="Ej: Pérez García" maxlength="45" required />
+                        <span asp-validation-for="Apellidos" class="text-danger"></span>
+                    </div>
+
+                    <!-- Pasaporte -->
+                    <div class="col-md-6">
+                        <label asp-for="Pasaporte" class="form-label fw-bold">📄 Pasaporte <span class="text-danger">*</span></label>
+                        <input asp-for="Pasaporte" class="form-control rounded-3" placeholder="Ej: ABC123456" maxlength="13" style="text-transform: uppercase;" required />
+                        <small class="text-muted">Solo letras mayúsculas y números (6-13 caracteres)</small>
+                        <span asp-validation-for="Pasaporte" class="text-danger"></span>
+                    </div>
+
+                    <!-- Correo -->
+                    <div class="col-md-6">
+                        <label asp-for="Correo" class="form-label fw-bold">📧 Correo Electrónico</label>
+                        <input asp-for="Correo" type="email" class="form-control rounded-3" placeholder="Ej: usuario@ejemplo.com" maxlength="45" />
+                        <span asp-validation-for="Correo" class="text-danger"></span>
+                    </div>
+
+                    <!-- Dirección -->
+                    <div class="col-md-6">
+                        <label asp-for="Direccion" class="form-label fw-bold">📍 Dirección</label>
+                        <input asp-for="Direccion" class="form-control rounded-3" placeholder="Ej: Calle 123, Ciudad" maxlength="45" />
+                        <span asp-validation-for="Direccion" class="text-danger"></span>
+                    </div>
+
+                    <!-- Teléfono -->
+                    <div class="col-md-6">
+                        <label asp-for="Telefono" class="form-label fw-bold">📞 Teléfono</label>
+                        <input asp-for="Telefono" type="number" class="form-control rounded-3" placeholder="Ej: 12345678" />
+                        <span asp-validation-for="Telefono" class="text-danger"></span>
+                    </div>
+
+                    <!-- País -->
+                    <div class="col-md-6">
+                        <label asp-for="Pais" class="form-label fw-bold">🌍 País <span class="text-danger">*</span></label>
+                        <select asp-for="Pais" class="form-select rounded-3" asp-items="ViewBag.Paises" required>
+                            <option value="">-- Selecciona un país --</option>
+                        </select>
+                        <span asp-validation-for="Pais" class="text-danger"></span>
+                    </div>
+
+                    <!-- Nacionalidad -->
+                    <div class="col-md-6">
+                        <label asp-for="Nacionalidad" class="form-label fw-bold">🌎 Nacionalidad</label>
+                        <select asp-for="Nacionalidad" class="form-select rounded-3" asp-items="ViewBag.Nacionalidades">
+                            <option value="">-- Selecciona nacionalidad --</option>
+                        </select>
+                        <span asp-validation-for="Nacionalidad" class="text-danger"></span>
+                    </div>
+
+                    <!-- Tipo Pasajero -->
+                    <div class="col-md-6">
+                        <label asp-for="TipoPasajero" class="form-label fw-bold">🎫 Tipo de Pasajero <span class="text-danger">*</span></label>
+                        <select asp-for="TipoPasajero" class="form-select rounded-3" asp-items="ViewBag.TiposPasajero" required>
+                            <option value="">-- Selecciona tipo --</option>
+                        </select>
+                        <span asp-validation-for="TipoPasajero" class="text-danger"></span>
+                    </div>
+
+                    <!-- Contacto Emergencia -->
+                    <div class="col-md-6">
+                        <label asp-for="ContactoEmergencia" class="form-label fw-bold">🚨 Contacto de Emergencia</label>
+                        <input asp-for="ContactoEmergencia" type="number" class="form-control rounded-3" placeholder="Ej: 12345678" />
+                        <span asp-validation-for="ContactoEmergencia" class="text-danger"></span>
+                    </div>
+
+                    <!-- Estado -->
+                    <div class="col-md-12">
+                        <label asp-for="Estado" class="form-label fw-bold">⚙️ Estado <span class="text-danger">*</span></label>
+                        <select asp-for="Estado" class="form-select rounded-3" asp-items="ViewBag.Estados" required>
+                            <option value="">-- Selecciona estado --</option>
+                        </select>
+                        <span asp-validation-for="Estado" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group text-end mt-4">
+                    <button type="submit" class="btn btn-primary px-4 fancy-btn">
+                        💾 <i class="bi bi-save"></i> Actualizar
+                    </button>
+                    <a asp-action="Listar" class="btn btn-secondary px-4 fancy-btn ms-2">
+                        ❌ <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Convertir pasaporte a mayúsculas automáticamente
+            $('#Pasaporte').on('input', function () {
+                this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            });
+
+            // Validación del formulario antes de enviar
+            $('#formModificarPasajero').on('submit', function (e) {
+                const pasaporte = $('#Pasaporte').val();
+                
+                // Validar formato del pasaporte (6-13 caracteres)
+                if (pasaporte && !/^[A-Z0-9]{6,13}$/.test(pasaporte)) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error en Pasaporte',
+                        html: 'El pasaporte debe:<br>• Contener solo letras mayúsculas y números<br>• Tener entre 6 y 13 caracteres',
+                        confirmButtonColor: '#dc3545'
+                    });
+                    return false;
+                }
+            });
+        });
+    </script>
+
+    <style>
+        .bg-gradient {
+            background: linear-gradient(135deg, #6c63ff, #8b7fff);
+        }
+
+        .header-glow {
+            box-shadow: 0 0 25px rgba(108, 99, 255, 0.6);
+        }
+
+        .fancy-btn {
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+        }
+
+            .fancy-btn:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(108, 99, 255, 0.6);
+            }
+
+        .card {
+            transition: 0.4s ease;
+        }
+
+            .card:hover {
+                transform: scale(1.02);
+                box-shadow: 0 0 25px rgba(108, 99, 255, 0.3);
+            }
+    </style>
+}

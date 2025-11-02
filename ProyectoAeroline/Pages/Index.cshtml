@@ -29,6 +29,9 @@
     bool isMantenimientos = path.StartsWith("/Mantenimientos", StringComparison.OrdinalIgnoreCase); 
     bool isAerolineas = path.StartsWith("/Aerolineas", StringComparison.OrdinalIgnoreCase); 
     bool isVuelos = path.StartsWith("/Vuelos", StringComparison.OrdinalIgnoreCase);
+    bool isHorarios = path.StartsWith("/Horarios", StringComparison.OrdinalIgnoreCase);
+    bool isEscalas = path.StartsWith("/Escalas", StringComparison.OrdinalIgnoreCase);
+    bool isPasajeros = path.StartsWith("/Pasajeros", StringComparison.OrdinalIgnoreCase);
     bool isBoletos = path.StartsWith("/Boletos", StringComparison.OrdinalIgnoreCase);
     bool isRolPantallaOpcion = path.StartsWith("/RolPantallaOpcion", StringComparison.OrdinalIgnoreCase);
     bool isEquipaje = path.StartsWith("/Equipaje", StringComparison.OrdinalIgnoreCase);
@@ -100,40 +103,28 @@
             <i class="bi bi-people"></i><span>Vuelos</span>
         </a>
 
+        <!-- Horarios -->
+        <a class="sb-link @(isHorarios ? "active" : "")"
+           asp-controller="Horarios" asp-action="Listar">
+            <i class="bi bi-clock"></i><span>Horarios</span>
+        </a>
+
+        <!-- Escalas -->
+        <a class="sb-link @(isEscalas ? "active" : "")"
+           asp-controller="Escalas" asp-action="Listar">
+            <i class="bi bi-airplane-engines"></i><span>Escalas</span>
+        </a>
+
+        <!-- Pasajeros -->
+        <a class="sb-link @(isPasajeros ? "active" : "")"
+           asp-controller="Pasajeros" asp-action="Listar">
+            <i class="bi bi-person-badge"></i><span>Pasajeros</span>
+        </a>
+
         <!-- Boletos -->
         <a class="sb-link @(isBoletos ? "active" : "")"
            asp-controller="Boletos" asp-action="Listar">
             <i class="bi bi-ticket-perforated"></i><span>Boletos</span>
-        </a>
-
-        <!-- Equipaje -->
-        <a class="sb-link @(isEquipaje ? "active" : "")"
-           asp-controller="Equipaje" asp-action="Listar">
-            <i class="bi bi-bag-fill"></i><span>Equipaje</span>
-        </a>
-
-        <!-- Servicios -->
-        <a class="sb-link @(isServicios ? "active" : "")"
-           asp-controller="Servicios" asp-action="Listar">
-            <i class="bi bi-stars"></i><span>Servicios</span>
-        </a>
-
-        <!-- Reservas -->
-        <a class="sb-link @(isReservas ? "active" : "")"
-           asp-controller="Reservas" asp-action="Listar">
-            <i class="bi bi-calendar-check-fill"></i><span>Reservas</span>
-        </a>
-
-        <!-- Facturación -->
-        <a class="sb-link @(isFacturacion ? "active" : "")"
-           asp-controller="Facturacion" asp-action="Listar">
-            <i class="bi bi-receipt-cutoff"></i><span>Facturación</span>
-        </a>
-
-        <!-- Historiales -->
-        <a class="sb-link @(isHistoriales ? "active" : "")"
-           asp-controller="Historiales" asp-action="Listar">
-            <i class="bi bi-clock-history"></i><span>Historiales</span>
         </a>
     </nav>
 

@@ -1,0 +1,212 @@
+@model ProyectoAeroline.Models.HorariosModel
+
+@{
+    ViewData["Title"] = "Modificar Horario";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 mt-4 animate__animated animate__fadeInUp">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-gradient text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center header-glow">
+            <h3 class="mb-0">
+                🛠️ <i class="bi bi-pencil-square"></i> <strong>Modificar Horario</strong>
+            </h3>
+            <a asp-action="Listar" class="btn btn-light btn-sm fw-bold fancy-btn">
+                ⬅️ <i class="bi bi-arrow-left-circle"></i> Regresar
+            </a>
+        </div>
+
+        <div class="card-body bg-light">
+            <form asp-action="Modificar" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="IdHorario" />
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="row g-3">
+                    <!-- Vuelo -->
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">✈️ Vuelo <span class="text-danger">*</span></label>
+                        <select asp-for="IdVuelo" class="form-select rounded-3" asp-items="ViewBag.Vuelos" id="idVuelo" required>
+                            <option value="">-- Selecciona un vuelo --</option>
+                        </select>
+                        <span asp-validation-for="IdVuelo" class="text-danger"></span>
+                    </div>
+
+                    <!-- Estado -->
+                    <div class="col-md-6">
+                        <label asp-for="Estado" class="form-label fw-bold">⚙️ Estado <span class="text-danger">*</span></label>
+                        <select asp-for="Estado" class="form-select rounded-3" asp-items="ViewBag.Estados" required>
+                            <option value="">-- Selecciona estado --</option>
+                        </select>
+                        <span asp-validation-for="Estado" class="text-danger"></span>
+                    </div>
+
+                    <!-- Hora Salida -->
+                    <div class="col-md-4">
+                        <label asp-for="HoraSalidaString" class="form-label fw-bold">🕐 Hora Salida <span class="text-danger">*</span></label>
+                        <input name="HoraSalidaString" type="time" class="form-control rounded-3" id="horaSalida" 
+                               value="@Model.HoraSalidaString" required />
+                        <span asp-validation-for="HoraSalidaString" class="text-danger"></span>
+                    </div>
+
+                    <!-- Hora Llegada -->
+                    <div class="col-md-4">
+                        <label asp-for="HoraLlegadaString" class="form-label fw-bold">🕐 Hora Llegada <span class="text-danger">*</span></label>
+                        <input name="HoraLlegadaString" type="time" class="form-control rounded-3" id="horaLlegada"
+                               value="@Model.HoraLlegadaString" required />
+                        <span asp-validation-for="HoraLlegadaString" class="text-danger"></span>
+                        <small class="text-danger" id="errorHora" style="display:none;">La hora de llegada debe ser mayor que la hora de salida.</small>
+                    </div>
+
+                    <!-- Tiempo Espera -->
+                    <div class="col-md-4">
+                        <label asp-for="TiempoEsperaString" class="form-label fw-bold">⏱️ Tiempo Espera</label>
+                        <input name="TiempoEsperaString" type="time" class="form-control rounded-3"
+                               value="@Model.TiempoEsperaString" />
+                        <span asp-validation-for="TiempoEsperaString" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="form-group text-end mt-4">
+                    <button type="submit" class="btn btn-primary px-4 fancy-btn">
+                        💾 <i class="bi bi-save"></i> Guardar Cambios
+                    </button>
+                    <a asp-action="Listar" class="btn btn-secondary px-4 fancy-btn ms-2">
+                        ❌ <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const horaSalidaEl = document.getElementById('horaSalida');
+            const horaLlegadaEl = document.getElementById('horaLlegada');
+            const errorHora = document.getElementById('errorHora');
+            const submitBtn = document.querySelector('button[type="submit"]');
+            const form = document.querySelector('form');
+
+            if (!horaSalidaEl || !horaLlegadaEl || !form) return;
+
+            // Validación de horas en tiempo real
+            horaSalidaEl.addEventListener('change', validarHoras);
+            horaLlegadaEl.addEventListener('change', validarHoras);
+
+            function validarHoras() {
+                const horaSalida = horaSalidaEl.value;
+                const horaLlegada = horaLlegadaEl.value;
+
+                if (horaSalida && horaLlegada) {
+                    const salida = new Date('2000-01-01T' + horaSalida + ':00');
+                    const llegada = new Date('2000-01-01T' + horaLlegada + ':00');
+
+                    if (salida >= llegada) {
+                        if (errorHora) errorHora.style.display = 'block';
+                        if (submitBtn) {
+                            submitBtn.disabled = true;
+                            submitBtn.classList.add('disabled');
+                        }
+                    } else {
+                        if (errorHora) errorHora.style.display = 'none';
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            submitBtn.classList.remove('disabled');
+                        }
+                    }
+                } else {
+                    if (errorHora) errorHora.style.display = 'none';
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.classList.remove('disabled');
+                    }
+                }
+            }
+
+            // Validación al enviar el formulario
+            form.addEventListener('submit', function (e) {
+                const horaSalida = horaSalidaEl.value;
+                const horaLlegada = horaLlegadaEl.value;
+
+                if (horaSalida && horaLlegada) {
+                    const salida = new Date('2000-01-01T' + horaSalida + ':00');
+                    const llegada = new Date('2000-01-01T' + horaLlegada + ':00');
+
+                    if (salida >= llegada) {
+                        e.preventDefault();
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error de Validación',
+                                text: 'La hora de salida no puede ser mayor o igual a la hora de llegada.',
+                                confirmButtonColor: '#3085d6'
+                            });
+                        } else {
+                            alert('La hora de salida no puede ser mayor o igual a la hora de llegada.');
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+    <style>
+        .bg-gradient {
+            background: linear-gradient(135deg, #007bff, #00b4d8);
+        }
+
+        .header-glow {
+            box-shadow: 0 0 25px rgba(0, 174, 255, 0.6);
+        }
+
+        .fancy-btn {
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+        }
+
+            .fancy-btn:hover:not(.disabled) {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(0, 174, 255, 0.6);
+            }
+
+            .fancy-btn.disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+            }
+
+        .form-control,
+        .form-select {
+            transition: 0.3s ease;
+        }
+
+            .form-control:focus,
+            .form-select:focus {
+                box-shadow: 0 0 10px rgba(0, 174, 255, 0.4);
+                border-color: #00b4d8;
+            }
+
+        .card {
+            transition: 0.4s ease;
+        }
+
+            .card:hover {
+                transform: scale(1.02);
+                box-shadow: 0 0 25px rgba(0, 123, 255, 0.3);
+            }
+
+        label {
+            color: #0077b6;
+        }
+    </style>
+}
+

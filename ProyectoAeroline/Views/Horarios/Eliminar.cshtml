@@ -1,0 +1,113 @@
+@model ProyectoAeroline.Models.HorariosModel
+
+@{
+    ViewData["Title"] = "Eliminar Horario";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 mt-4 animate__animated animate__fadeInUp">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-danger text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">
+                🗑️ <i class="bi bi-trash"></i> <strong>Eliminar Horario</strong>
+            </h3>
+            <a asp-action="Listar" class="btn btn-light btn-sm fw-bold">
+                ⬅️ <i class="bi bi-arrow-left-circle"></i> Regresar
+            </a>
+        </div>
+
+        <div class="card-body bg-light">
+            <div class="alert alert-warning" role="alert">
+                <h5 class="alert-heading">⚠️ ¿Estás seguro de eliminar este horario?</h5>
+                <p class="mb-0">Esta acción no se puede deshacer. El horario será eliminado permanentemente.</p>
+            </div>
+
+            <form asp-action="Eliminar" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="IdHorario" />
+                
+                <div class="row g-3">
+                    <!-- Información del horario -->
+                    <div class="col-md-12">
+                        <div class="card bg-light border">
+                            <div class="card-body">
+                                <h5 class="card-title text-primary">📋 Información del Horario</h5>
+                                <hr />
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <strong>🆔 ID Horario:</strong>
+                                        <p class="text-muted">@Model.IdHorario</p>
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <strong>✈️ Vuelo:</strong>
+                                        <p class="text-muted">@(Model.DescripcionVuelo ?? $"ID: {Model.IdVuelo}")</p>
+                                    </div>
+                                    
+                                    <div class="col-md-4 mb-3">
+                                        <strong>🕐 Hora Salida:</strong>
+                                        <p class="text-muted">@Model.HoraSalida.ToString(@"hh\:mm")</p>
+                                    </div>
+                                    
+                                    <div class="col-md-4 mb-3">
+                                        <strong>🕐 Hora Llegada:</strong>
+                                        <p class="text-muted">@Model.HoraLlegada.ToString(@"hh\:mm")</p>
+                                    </div>
+                                    
+                                    <div class="col-md-4 mb-3">
+                                        <strong>⏱️ Tiempo Espera:</strong>
+                                        <p class="text-muted">@(Model.TiempoEspera?.ToString(@"hh\:mm") ?? "N/A")</p>
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <strong>⚙️ Estado:</strong>
+                                        <span class="badge @(Model.Estado == "Activo" ? "bg-success" : "bg-danger") px-3 py-2 rounded-pill">
+                                            @Model.Estado
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group text-end mt-4">
+                    <button type="submit" class="btn btn-danger px-4 fancy-btn">
+                        🗑️ <i class="bi bi-trash"></i> Confirmar Eliminación
+                    </button>
+                    <a asp-action="Listar" class="btn btn-secondary px-4 fancy-btn ms-2">
+                        ❌ <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+    <style>
+        .fancy-btn {
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+        }
+
+            .fancy-btn:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(220, 53, 69, 0.6);
+            }
+
+        .card {
+            transition: 0.4s ease;
+        }
+
+            .card:hover {
+                transform: scale(1.02);
+                box-shadow: 0 0 25px rgba(220, 53, 69, 0.3);
+            }
+    </style>
+}
+

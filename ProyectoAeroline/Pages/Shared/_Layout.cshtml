@@ -57,19 +57,27 @@
 
     @RenderSection("Scripts", required: false)
 
-    <!-- Activo en sidebar -->
+    <!-- Activo en sidebar - Solo guarda en localStorage, no cambia clases -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
           const links = document.querySelectorAll('.sb-link');
-          function setActive(el){ links.forEach(l => l.classList.remove('active')); el.classList.add('active'); }
-          const savedHref = localStorage.getItem('sb-active');
-          let initial = Array.from(links).find(a => a.pathname === location.pathname);
-          if (!initial && savedHref) initial = Array.from(links).find(a => a.getAttribute('href') === savedHref);
-          if (initial) setActive(initial);
-          links.forEach(a => a.addEventListener('click', function(){
-            setActive(this);
-            localStorage.setItem('sb-active', this.getAttribute('href'));
-          }));
+          
+          // Solo guardar en localStorage cuando se hace click, pero NO cambiar clases
+          // Las clases ya vienen del servidor (Razor)
+          links.forEach(a => {
+            a.addEventListener('click', function(){
+              const href = this.getAttribute('href');
+              if (href) {
+                localStorage.setItem('sb-active', href);
+              }
+            });
+          });
+          
+          // Asegurar que todos los links mantengan el mismo tamaño
+          links.forEach(l => {
+            l.style.minHeight = '2.75rem';
+            l.style.boxSizing = 'border-box';
+          });
         });
     </script>
 </body>

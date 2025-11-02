@@ -327,5 +327,93 @@ namespace ProyectoAeroline.Data
             return precio;
         }
 
+        // Obtener aerolíneas activas
+        public List<SelectListItem> ObtenerAerolineasActivas()
+        {
+            var lista = new List<SelectListItem>();
+            var conn = new Conexion();
+
+            using (var conexion = new SqlConnection(conn.GetConnectionString()))
+            {
+                try
+                {
+                    conexion.Open();
+                    SqlCommand cmd = new SqlCommand("SELECT IdAerolinea, Nombre FROM Aerolineas WHERE Estado = 'Activo'", conexion);
+                    
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            lista.Add(new SelectListItem
+                            {
+                                Value = dr["IdAerolinea"].ToString(),
+                                Text = $"{dr["IdAerolinea"]} - {dr["Nombre"]}"
+                            });
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error al obtener aerolíneas: {ex.Message}");
+                }
+            }
+
+            return lista;
+        }
+
+        // Obtener código IATA de un aeropuerto por nombre
+        public string ObtenerCodigoIATAAeropuerto(string nombreAeropuerto)
+        {
+            string iata = "";
+            var conn = new Conexion();
+
+            using (var conexion = new SqlConnection(conn.GetConnectionString()))
+            {
+                try
+                {
+                    conexion.Open();
+                    SqlCommand cmd = new SqlCommand("SELECT IATA FROM Aeropuertos WHERE Nombre = @Nombre", conexion);
+                    cmd.Parameters.AddWithValue("@Nombre", nombreAeropuerto);
+
+                    var result = cmd.ExecuteScalar();
+                    if (result != null && result != DBNull.Value)
+                        iata = result.ToString();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error al obtener IATA: {ex.Message}");
+                }
+            }
+
+            return iata;
+        }
+
+        // Obtener capacidad del avión
+        public int ObtenerCapacidadAvion(int idAvion)
+        {
+            int capacidad = 0;
+            var conn = new Conexion();
+
+            using (var conexion = new SqlConnection(conn.GetConnectionString()))
+            {
+                try
+                {
+                    conexion.Open();
+                    SqlCommand cmd = new SqlCommand("SELECT Capacidad FROM Aviones WHERE IdAvion = @IdAvion", conexion);
+                    cmd.Parameters.AddWithValue("@IdAvion", idAvion);
+
+                    var result = cmd.ExecuteScalar();
+                    if (result != null && result != DBNull.Value)
+                        capacidad = Convert.ToInt32(result);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error al obtener capacidad: {ex.Message}");
+                }
+            }
+
+            return capacidad;
+        }
+
     }
 }
