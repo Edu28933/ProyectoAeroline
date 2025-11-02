@@ -31,6 +31,11 @@
     bool isVuelos = path.StartsWith("/Vuelos", StringComparison.OrdinalIgnoreCase);
     bool isBoletos = path.StartsWith("/Boletos", StringComparison.OrdinalIgnoreCase);
     bool isRolPantallaOpcion = path.StartsWith("/RolPantallaOpcion", StringComparison.OrdinalIgnoreCase);
+    bool isEquipaje = path.StartsWith("/Equipaje", StringComparison.OrdinalIgnoreCase);
+    bool isServicios = path.StartsWith("/Servicios", StringComparison.OrdinalIgnoreCase);
+    bool isReservas = path.StartsWith("/Reservas", StringComparison.OrdinalIgnoreCase);
+    bool isFacturacion = path.StartsWith("/Facturacion", StringComparison.OrdinalIgnoreCase);
+    bool isHistoriales = path.StartsWith("/Historiales", StringComparison.OrdinalIgnoreCase);
 }
 
 
@@ -98,7 +103,37 @@
         <!-- Boletos -->
         <a class="sb-link @(isBoletos ? "active" : "")"
            asp-controller="Boletos" asp-action="Listar">
-            <i class="bi bi-people"></i><span>Boletos</span>
+            <i class="bi bi-ticket-perforated"></i><span>Boletos</span>
+        </a>
+
+        <!-- Equipaje -->
+        <a class="sb-link @(isEquipaje ? "active" : "")"
+           asp-controller="Equipaje" asp-action="Listar">
+            <i class="bi bi-bag-fill"></i><span>Equipaje</span>
+        </a>
+
+        <!-- Servicios -->
+        <a class="sb-link @(isServicios ? "active" : "")"
+           asp-controller="Servicios" asp-action="Listar">
+            <i class="bi bi-stars"></i><span>Servicios</span>
+        </a>
+
+        <!-- Reservas -->
+        <a class="sb-link @(isReservas ? "active" : "")"
+           asp-controller="Reservas" asp-action="Listar">
+            <i class="bi bi-calendar-check-fill"></i><span>Reservas</span>
+        </a>
+
+        <!-- Facturación -->
+        <a class="sb-link @(isFacturacion ? "active" : "")"
+           asp-controller="Facturacion" asp-action="Listar">
+            <i class="bi bi-receipt-cutoff"></i><span>Facturación</span>
+        </a>
+
+        <!-- Historiales -->
+        <a class="sb-link @(isHistoriales ? "active" : "")"
+           asp-controller="Historiales" asp-action="Listar">
+            <i class="bi bi-clock-history"></i><span>Historiales</span>
         </a>
     </nav>
 

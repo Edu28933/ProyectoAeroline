@@ -92,11 +92,26 @@ namespace ProyectoAeroline.Controllers
         [HttpPost]
         public IActionResult Eliminar(VuelosModel oVuelo)
         {
-            var respuesta = _VuelosData.MtdEliminarVuelo(oVuelo.IdVuelo);
-            if (respuesta)
-                return RedirectToAction("Listar");
-
-            return View(oVuelo);
+            try
+            {
+                var respuesta = _VuelosData.MtdEliminarVuelo(oVuelo.IdVuelo);
+                
+                if (respuesta == "OK")
+                {
+                    TempData["Mensaje"] = "Vuelo eliminado correctamente.";
+                    return RedirectToAction("Listar");
+                }
+                else
+                {
+                    ModelState.AddModelError("", respuesta);
+                    return View(oVuelo);
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Error al eliminar: " + ex.Message);
+                return View(oVuelo);
+            }
         }
 
         // ✅ API para el precio dinámico

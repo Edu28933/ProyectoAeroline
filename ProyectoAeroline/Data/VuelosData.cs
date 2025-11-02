@@ -191,9 +191,8 @@ namespace ProyectoAeroline.Data
             return oVuelo;
         }
 
-        public bool MtdEliminarVuelo(int IdVuelo)
+        public string MtdEliminarVuelo(int IdVuelo)
         {
-            bool respuesta = false;
             var conn = new Conexion();
 
             try
@@ -209,14 +208,38 @@ namespace ProyectoAeroline.Data
                     cmd.ExecuteNonQuery();
                 }
 
-                respuesta = true;
+                return "OK"; // Se eliminó correctamente
+            }
+            catch (SqlException ex)
+            {
+                string errorMessage = ex.Message.ToLower();
+                
+                // Si el error contiene información sobre escalas que ya fueron eliminadas, ignoramos ese error específico
+                if (errorMessage.Contains("escala") && 
+                    (errorMessage.Contains("ya fue eliminada") || 
+                     errorMessage.Contains("no se encontró") ||
+                     errorMessage.Contains("no se encontró la escala")))
+                {
+                    // Este error no es crítico, las escalas ya no existen o nunca existieron
+                    // No mostramos el error en la consola ya que es un caso esperado
+                    return "OK";
+                }
+
+                // Si el error viene por una restricción de clave foránea
+                if (ex.Message.Contains("REFERENCE constraint"))
+                {
+                    return "No se puede eliminar el vuelo porque tiene registros relacionados (boletos, reservas, etc.).";
+                }
+
+                // Otros errores SQL - los mostramos para diagnóstico
+                Console.WriteLine("Error SQL al eliminar vuelo: " + ex.Message);
+                return "Error al eliminar el vuelo: " + ex.Message;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                // Cualquier otro error inesperado
+                return "Error inesperado: " + ex.Message;
             }
-
-            return respuesta;
         }
 
         // Obtener aviones activos

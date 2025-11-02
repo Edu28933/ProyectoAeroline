@@ -1,0 +1,97 @@
+@model IEnumerable<ProyectoAeroline.Models.FacturacionModel>
+
+@{
+    ViewData["Title"] = "Listar Facturación";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 mt-4">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-primary text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center">
+            <h3 class="mb-0"><i class="bi bi-receipt-cutoff"></i> Lista de Facturas</h3>
+            <a href="/Facturacion/Guardar" class="btn btn-light btn-sm fw-bold">
+                <i class="bi bi-plus-circle"></i> Agregar
+            </a>
+        </div>
+
+        <div class="card-body bg-light">
+            <table id="tablaFacturacion" class="table table-hover align-middle text-center w-100">
+                <thead class="table-primary">
+                    <tr>
+                        <th>ID</th>
+                        <th>Boleto</th>
+                        <th>Fecha Emisión</th>
+                        <th>Hora</th>
+                        <th>Descripción</th>
+                        <th>Tipo Pago</th>
+                        <th>Moneda</th>
+                        <th>Monto</th>
+                        <th>Impuesto</th>
+                        <th>Monto Factura</th>
+                        <th>Monto Total</th>
+                        <th>N° Autorización</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.IdFactura</td>
+                            <td>@item.IdBoleto</td>
+                            <td>@item.FechaEmision.ToString("dd/MM/yyyy")</td>
+                            <td>@(item.HoraEmision?.ToString(@"hh\:mm") ?? "N/A")</td>
+                            <td>@item.Descripcion</td>
+                            <td>@item.TipoPago</td>
+                            <td>@item.Moneda</td>
+                            <td>@(item.Monto?.ToString("N2") ?? "0.00")</td>
+                            <td>@(item.Impuesto?.ToString("N2") ?? "0.00")</td>
+                            <td><strong>@item.MontoFactura.ToString("N2")</strong></td>
+                            <td><strong>@(item.MontoTotal?.ToString("N2") ?? "0.00")</strong></td>
+                            <td>@item.NumeroAutorizacion</td>
+                            <td>
+                                <span class="badge @(item.Estado == "Activo" ? "bg-success" : item.Estado == "Cancelado" ? "bg-danger" : "bg-secondary")">
+                                    @item.Estado
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="@Url.Action("Modificar", "Facturacion", new { CodigoFactura = item.IdFactura })"
+                                       class="btn btn-outline-secondary btn-sm" title="Modificar">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a href="@Url.Action("Eliminar", "Facturacion", new { CodigoFactura = item.IdFactura })"
+                                       class="btn btn-outline-danger btn-sm"
+                                       title="Eliminar"
+                                       onclick="return confirm('¿Seguro que deseas eliminar esta factura?');">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#tablaFacturacion').DataTable({
+                language: { url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json' },
+                pageLength: 10,
+                lengthMenu: [5, 10, 25, 50],
+                responsive: true,
+                ordering: true,
+                columnDefs: [
+                    { orderable: false, targets: [13] } // acciones no ordenables
+                ]
+            });
+        });
+    </script>
+}
+

@@ -1,0 +1,79 @@
+@model IEnumerable<ProyectoAeroline.Models.HistorialesModel>
+
+@{
+    ViewData["Title"] = "Listar Historiales";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 mt-4">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-primary text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center">
+            <h3 class="mb-0"><i class="bi bi-clock-history"></i> Lista de Historiales</h3>
+            <a href="/Historiales/Guardar" class="btn btn-light btn-sm fw-bold">
+                <i class="bi bi-plus-circle"></i> Agregar
+            </a>
+        </div>
+
+        <div class="card-body bg-light">
+            <table id="tablaHistoriales" class="table table-hover align-middle text-center w-100">
+                <thead class="table-primary">
+                    <tr>
+                        <th>ID</th>
+                        <th>Boleto</th>
+                        <th>Pasajero</th>
+                        <th>Aerolínea</th>
+                        <th>Vuelo</th>
+                        <th>Observación</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.IdHistorial</td>
+                            <td>@item.IdBoleto</td>
+                            <td>@item.IdPasajero</td>
+                            <td>@item.IdAerolinea</td>
+                            <td>@item.IdVuelo</td>
+                            <td>@(item.Observacion ?? "Sin observaciones")</td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="@Url.Action("Modificar", "Historiales", new { CodigoHistorial = item.IdHistorial })"
+                                       class="btn btn-outline-secondary btn-sm" title="Modificar">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a href="@Url.Action("Eliminar", "Historiales", new { CodigoHistorial = item.IdHistorial })"
+                                       class="btn btn-outline-danger btn-sm"
+                                       title="Eliminar"
+                                       onclick="return confirm('¿Seguro que deseas eliminar este historial?');">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#tablaHistoriales').DataTable({
+                language: { url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json' },
+                pageLength: 10,
+                lengthMenu: [5, 10, 25, 50],
+                responsive: true,
+                ordering: true,
+                columnDefs: [
+                    { orderable: false, targets: [6] } // acciones no ordenables
+                ]
+            });
+        });
+    </script>
+}
+
