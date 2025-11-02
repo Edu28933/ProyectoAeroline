@@ -32,14 +32,16 @@
                 <!-- Código IATA -->
                 <div class="col-md-6">
                     <label asp-for="IATA" class="form-label fw-bold">Código IATA</label>
-                    <input asp-for="IATA" class="form-control" readonly />
+                    <input asp-for="IATA" class="form-control" id="txtIATA" readonly placeholder="Se actualizará automáticamente según el país" />
+                    <small class="text-muted">Se actualiza automáticamente al cambiar el país</small>
                     <span asp-validation-for="IATA" class="text-danger"></span>
                 </div>
 
                 <!-- Nombre -->
                 <div class="col-md-6">
-                    <label asp-for="Nombre" class="form-label fw-bold">Nombre</label>
-                    <input asp-for="Nombre" class="form-control" />
+                    <label asp-for="Nombre" class="form-label fw-bold">🏛️ Nombre del Aeropuerto</label>
+                    <input asp-for="Nombre" class="form-control" id="txtNombre" readonly placeholder="Se actualizará automáticamente según la ciudad" />
+                    <small class="text-muted">Se actualiza automáticamente al cambiar la ciudad</small>
                     <span asp-validation-for="Nombre" class="text-danger"></span>
                 </div>
 
@@ -65,15 +67,17 @@
 
                 <!-- Dirección -->
                 <div class="col-md-6">
-                    <label asp-for="Direccion" class="form-label fw-bold">Dirección</label>
-                    <input asp-for="Direccion" class="form-control" />
+                    <label asp-for="Direccion" class="form-label fw-bold">📍 Dirección</label>
+                    <input asp-for="Direccion" class="form-control" id="txtDireccion" readonly placeholder="Se actualizará automáticamente según país y ciudad" />
+                    <small class="text-muted">Se actualiza automáticamente al cambiar el país o ciudad</small>
                     <span asp-validation-for="Direccion" class="text-danger"></span>
                 </div>
 
                 <!-- Teléfono -->
                 <div class="col-md-6">
-                    <label asp-for="Telefono" class="form-label fw-bold">Teléfono</label>
-                    <input asp-for="Telefono" class="form-control" />
+                    <label asp-for="Telefono" class="form-label fw-bold">📞 Teléfono</label>
+                    <input asp-for="Telefono" class="form-control" id="txtTelefono" type="number" readonly placeholder="Se actualizará automáticamente según el país" />
+                    <small class="text-muted">Se actualiza automáticamente al cambiar el país</small>
                     <span asp-validation-for="Telefono" class="text-danger"></span>
                 </div>
 
@@ -106,10 +110,28 @@
         $(document).ready(function() {
             $('#ddlPais').change(function () {
                 var pais = $(this).val();
-                $('#ddlCiudad').html('<option>-- Cargando ciudades --</option>');
+                
+                // Limpiar campos dependientes
+                $('#ddlCiudad').html('<option value="">-- Seleccione Ciudad --</option>');
 
                 if (pais) {
-                    $.getJSON('/Aeropuertos/ObtenerCiudades', { pais: pais }, function (data) {
+                    // Obtener código IATA según el país
+                    $.getJSON('@Url.Action("ObtenerCodigoIATA", "Aeropuertos")', { pais: pais }, function (data) {
+                        if (data.iata) {
+                            $('#txtIATA').val(data.iata);
+                        }
+                    });
+
+                    // Obtener teléfono según el país
+                    $.getJSON('@Url.Action("ObtenerTelefono", "Aeropuertos")', { pais: pais }, function (data) {
+                        if (data.telefono) {
+                            $('#txtTelefono').val(data.telefono);
+                        }
+                    });
+
+                    // Obtener ciudades del país
+                    $('#ddlCiudad').html('<option>-- Cargando ciudades --</option>');
+                    $.getJSON('@Url.Action("ObtenerCiudades", "Aeropuertos")', { pais: pais }, function (data) {
                         var options = '<option value="">-- Seleccione Ciudad --</option>';
                         $.each(data, function (i, ciudad) {
                             options += '<option value="' + ciudad + '">' + ciudad + '</option>';
@@ -118,6 +140,37 @@
                     });
                 } else {
                     $('#ddlCiudad').html('<option value="">-- Seleccione Ciudad --</option>');
+                    $('#txtIATA').val('');
+                    $('#txtNombre').val('');
+                    $('#txtDireccion').val('');
+                    $('#txtTelefono').val('');
+                }
+            });
+
+            // Cuando se selecciona una ciudad, actualizar nombre y dirección
+            $('#ddlCiudad').change(function () {
+                var pais = $('#ddlPais').val();
+                var ciudad = $(this).val();
+                
+                if (ciudad) {
+                    // Obtener nombre del aeropuerto según la ciudad
+                    $.getJSON('@Url.Action("ObtenerNombreAeropuerto", "Aeropuertos")', { ciudad: ciudad }, function (data) {
+                        if (data.nombre) {
+                            $('#txtNombre').val(data.nombre);
+                        }
+                    });
+                } else {
+                    $('#txtNombre').val('');
+                }
+                
+                if (pais && ciudad) {
+                    $.getJSON('@Url.Action("ObtenerDireccion", "Aeropuertos")', { pais: pais, ciudad: ciudad }, function (data) {
+                        if (data.direccion) {
+                            $('#txtDireccion').val(data.direccion);
+                        }
+                    });
+                } else {
+                    $('#txtDireccion').val('');
                 }
             });
         });

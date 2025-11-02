@@ -29,8 +29,16 @@
     bool isMantenimientos = path.StartsWith("/Mantenimientos", StringComparison.OrdinalIgnoreCase); 
     bool isAerolineas = path.StartsWith("/Aerolineas", StringComparison.OrdinalIgnoreCase); 
     bool isVuelos = path.StartsWith("/Vuelos", StringComparison.OrdinalIgnoreCase);
+    bool isHorarios = path.StartsWith("/Horarios", StringComparison.OrdinalIgnoreCase);
+    bool isEscalas = path.StartsWith("/Escalas", StringComparison.OrdinalIgnoreCase);
+    bool isPasajeros = path.StartsWith("/Pasajeros", StringComparison.OrdinalIgnoreCase);
     bool isBoletos = path.StartsWith("/Boletos", StringComparison.OrdinalIgnoreCase);
     bool isRolPantallaOpcion = path.StartsWith("/RolPantallaOpcion", StringComparison.OrdinalIgnoreCase);
+    bool isEquipaje = path.StartsWith("/Equipaje", StringComparison.OrdinalIgnoreCase);
+    bool isServicios = path.StartsWith("/Servicios", StringComparison.OrdinalIgnoreCase);
+    bool isReservas = path.StartsWith("/Reservas", StringComparison.OrdinalIgnoreCase);
+    bool isFacturacion = path.StartsWith("/Facturacion", StringComparison.OrdinalIgnoreCase);
+    bool isHistoriales = path.StartsWith("/Historiales", StringComparison.OrdinalIgnoreCase);
 }
 
 
@@ -132,13 +140,29 @@
             </a>
         }
 
-        @if (PuedeVer("Boletos"))
-        {
-            <a class="sb-link @(isBoletos ? "active" : "")"
-               asp-controller="Boletos" asp-action="Listar">
-                <i class="bi bi-people"></i><span>Boletos</span>
-            </a>
-        }
+        <!-- Horarios -->
+        <a class="sb-link @(isHorarios ? "active" : "")"
+           asp-controller="Horarios" asp-action="Listar">
+            <i class="bi bi-clock"></i><span>Horarios</span>
+        </a>
+
+        <!-- Escalas -->
+        <a class="sb-link @(isEscalas ? "active" : "")"
+           asp-controller="Escalas" asp-action="Listar">
+            <i class="bi bi-airplane-engines"></i><span>Escalas</span>
+        </a>
+
+        <!-- Pasajeros -->
+        <a class="sb-link @(isPasajeros ? "active" : "")"
+           asp-controller="Pasajeros" asp-action="Listar">
+            <i class="bi bi-person-badge"></i><span>Pasajeros</span>
+        </a>
+
+        <!-- Boletos -->
+        <a class="sb-link @(isBoletos ? "active" : "")"
+           asp-controller="Boletos" asp-action="Listar">
+            <i class="bi bi-ticket-perforated"></i><span>Boletos</span>
+        </a>
     </nav>
 
     <div class="sb-footer mt-auto px-3 py-3">

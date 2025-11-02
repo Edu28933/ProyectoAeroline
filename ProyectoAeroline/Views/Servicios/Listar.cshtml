@@ -1,0 +1,87 @@
+@model IEnumerable<ProyectoAeroline.Models.ServiciosModel>
+
+@{
+    ViewData["Title"] = "Listar Servicios";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 mt-4">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-primary text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center">
+            <h3 class="mb-0"><i class="bi bi-stars"></i> Lista de Servicios</h3>
+            <a href="/Servicios/Guardar" class="btn btn-light btn-sm fw-bold">
+                <i class="bi bi-plus-circle"></i> Agregar
+            </a>
+        </div>
+
+        <div class="card-body bg-light">
+            <table id="tablaServicios" class="table table-hover align-middle text-center w-100">
+                <thead class="table-primary">
+                    <tr>
+                        <th>ID</th>
+                        <th>Boleto</th>
+                        <th>Fecha</th>
+                        <th>Tipo de Servicio</th>
+                        <th>Costo</th>
+                        <th>Cantidad</th>
+                        <th>Costo Total</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.IdServicio</td>
+                            <td>@item.IdBoleto</td>
+                            <td>@(item.Fecha?.ToString("dd/MM/yyyy") ?? "N/A")</td>
+                            <td>@item.TipoServicio</td>
+                            <td>Q @item.Costo.ToString("N2")</td>
+                            <td>@item.Cantidad</td>
+                            <td><strong>Q @(item.CostoTotal?.ToString("N2") ?? "0.00")</strong></td>
+                            <td>
+                                <span class="badge @(item.Estado == "Activo" ? "bg-success" : "bg-danger")">
+                                    @item.Estado
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="@Url.Action("Modificar", "Servicios", new { CodigoServicio = item.IdServicio })"
+                                       class="btn btn-outline-secondary btn-sm" title="Modificar">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a href="@Url.Action("Eliminar", "Servicios", new { CodigoServicio = item.IdServicio })"
+                                       class="btn btn-outline-danger btn-sm"
+                                       title="Eliminar"
+                                       onclick="return confirm('¿Seguro que deseas eliminar este servicio?');">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#tablaServicios').DataTable({
+                language: { url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json' },
+                pageLength: 10,
+                lengthMenu: [5, 10, 25, 50],
+                responsive: true,
+                ordering: true,
+                columnDefs: [
+                    { orderable: false, targets: [8] } // acciones no ordenables
+                ]
+            });
+        });
+    </script>
+}
+

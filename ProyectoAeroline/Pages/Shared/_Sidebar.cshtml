@@ -15,15 +15,24 @@
     var idUsuario =
         User.FindFirst(ClaimTypes.NameIdentifier)?.Value
         ?? Context.Session?.GetInt32("IdUsuario")?.ToString();
-    
-    // Helper para verificar permisos en Razor Pages
-    // Como estamos en un partial, necesitamos crear el ViewContext manualmente o usar el servicio directamente
-    bool PuedeVer(string nombrePantalla)
-    {
-        if (User?.Identity?.IsAuthenticated != true)
-            return false;
-        return PermisosService.TienePermiso(User, nombrePantalla, "Ver");
-    }
+
+    // Obtiene la ruta actual para marcar el enlace activo
+    var path = Context.Request.Path.Value ?? "";
+    bool isHome = path.Equals("/", StringComparison.OrdinalIgnoreCase) || path.StartsWith("/Index", StringComparison.OrdinalIgnoreCase);
+    bool isEmpleados = path.StartsWith("/Empleados", StringComparison.OrdinalIgnoreCase);
+    bool isUsuarios = path.StartsWith("/Usuarios", StringComparison.OrdinalIgnoreCase);
+    bool isRoles = path.StartsWith("/Roles", StringComparison.OrdinalIgnoreCase);
+    bool isPantallas = path.StartsWith("/Pantallas", StringComparison.OrdinalIgnoreCase);
+    bool isAeropuertos = path.StartsWith("/Aeropuertos", StringComparison.OrdinalIgnoreCase);
+    bool isAviones = path.StartsWith("/Aviones", StringComparison.OrdinalIgnoreCase);
+    bool isMantenimientos = path.StartsWith("/Mantenimientos", StringComparison.OrdinalIgnoreCase);
+    bool isAerolineas = path.StartsWith("/Aerolineas", StringComparison.OrdinalIgnoreCase);
+    bool isVuelos = path.StartsWith("/Vuelos", StringComparison.OrdinalIgnoreCase);
+    bool isHorarios = path.StartsWith("/Horarios", StringComparison.OrdinalIgnoreCase);
+    bool isEscalas = path.StartsWith("/Escalas", StringComparison.OrdinalIgnoreCase);
+    bool isPasajeros = path.StartsWith("/Pasajeros", StringComparison.OrdinalIgnoreCase);
+    bool isBoletos = path.StartsWith("/Boletos", StringComparison.OrdinalIgnoreCase);
+    bool isRolPantallaOpcion = path.StartsWith("/RolPantallaOpcion", StringComparison.OrdinalIgnoreCase);
 }
 
 <aside id="sidebar" class="sb-sidebar text-bg-dark">
@@ -35,87 +44,65 @@
     <hr class="m-0 opacity-25" />
 
     <nav class="sb-nav py-3">
-        <!-- Home siempre visible -->
-        <a class="sb-link" asp-page="/Index">
+        <a class="sb-link @(isHome ? "active" : "")" asp-page="/Index">
             <i class="bi bi-house"></i><span>Home</span>
         </a>
 
-        @if (PuedeVer("Empleados"))
-        {
-            <a class="sb-link" asp-controller="Empleados" asp-action="Listar">
-                <i class="bi bi-speedometer2"></i><span>Empleados</span>
-            </a>
-        }
+        <a class="sb-link @(isEmpleados ? "active" : "")" asp-controller="Empleados" asp-action="Listar">
+            <i class="bi bi-speedometer2"></i><span>Empleados</span>
+        </a>
 
-        @if (PuedeVer("Usuarios"))
-        {
-            <a class="sb-link" asp-controller="Usuarios" asp-action="Listar">
-                <i class="bi bi-receipt"></i><span>Usuarios</span>
-            </a>
-        }
+        <a class="sb-link @(isUsuarios ? "active" : "")" asp-controller="Usuarios" asp-action="Listar">
+            <i class="bi bi-receipt"></i><span>Usuarios</span>
+        </a>
 
-        @if (PuedeVer("Roles"))
-        {
-            <a class="sb-link" asp-controller="Roles" asp-action="Listar">
-                <i class="bi bi-shield-check"></i><span>Roles</span>
-            </a>
-        }
+        <a class="sb-link @(isRoles ? "active" : "")" asp-controller="Roles" asp-action="Listar">
+            <i class="bi bi-shield-check"></i><span>Roles</span>
+        </a>
 
-        @if (PuedeVer("Pantallas"))
-        {
-            <a class="sb-link" asp-controller="Pantallas" asp-action="Listar">
-                <i class="bi bi-window"></i><span>Pantallas</span>
-            </a>
-        }
+        <a class="sb-link @(isPantallas ? "active" : "")" asp-controller="Pantallas" asp-action="Listar">
+            <i class="bi bi-window"></i><span>Pantallas</span>
+        </a>
 
-        @if (PuedeVer("RolPantallaOpcion"))
-        {
-            <a class="sb-link" asp-controller="RolPantallaOpcion" asp-action="Listar">
-                <i class="bi bi-key-fill"></i><span>Permisos</span>
-            </a>
-        }
+        <a class="sb-link @(isRolPantallaOpcion ? "active" : "")" asp-controller="RolPantallaOpcion" asp-action="Listar">
+            <i class="bi bi-key-fill"></i><span>Permisos</span>
+        </a>
 
-        @if (PuedeVer("Aeropuertos"))
-        {
-            <a class="sb-link" asp-controller="Aeropuertos" asp-action="Listar">
-                <i class="bi bi-box-seam"></i><span>Aeropuertos</span>
-            </a>
-        }
+        <a class="sb-link @(isAeropuertos ? "active" : "")" asp-controller="Aeropuertos" asp-action="Listar">
+            <i class="bi bi-box-seam"></i><span>Aeropuertos</span>
+        </a>
 
-        @if (PuedeVer("Aviones"))
-        {
-            <a class="sb-link" asp-controller="Aviones" asp-action="Listar">
-                <i class="bi bi-people"></i><span>Aviones</span>
-            </a>
-        }
+        <a class="sb-link @(isAviones ? "active" : "")" asp-controller="Aviones" asp-action="Listar">
+            <i class="bi bi-people"></i><span>Aviones</span>
+        </a>
 
-        @if (PuedeVer("Mantenimientos"))
-        {
-            <a class="sb-link" asp-controller="Mantenimientos" asp-action="Listar">
-                <i class="bi bi-tools"></i><span>Mantenimientos</span>
-            </a>
-        }
+        <a class="sb-link @(isMantenimientos ? "active" : "")" asp-controller="Mantenimientos" asp-action="Listar">
+            <i class="bi bi-tools"></i><span>Mantenimientos</span>
+        </a>
 
-        @if (PuedeVer("Boletos"))
-        {
-            <a class="sb-link" asp-controller="Boletos" asp-action="Listar">
-                <i class="bi bi-people"></i><span>Boletos</span>
-            </a>
-        }
+        <a class="sb-link @(isAerolineas ? "active" : "")" asp-controller="Aerolineas" asp-action="Listar">
+            <i class="bi bi-airplane"></i><span>Aerolineas</span>
+        </a>
 
-        @if (PuedeVer("Aerolineas"))
-        {
-            <a class="sb-link" asp-controller="Aerolineas" asp-action="Listar">
-                <i class="bi bi-people"></i><span>Aerolineas</span>
-            </a>
-        }
+        <a class="sb-link @(isVuelos ? "active" : "")" asp-controller="Vuelos" asp-action="Listar">
+            <i class="bi bi-airplane-fill"></i><span>Vuelos</span>
+        </a>
 
-        @if (PuedeVer("Vuelos"))
-        {
-            <a class="sb-link" asp-controller="Vuelos" asp-action="Listar">
-                <i class="bi bi-people"></i><span>Vuelos</span>
-            </a>
-        }
+        <a class="sb-link @(isHorarios ? "active" : "")" asp-controller="Horarios" asp-action="Listar">
+            <i class="bi bi-clock"></i><span>Horarios</span>
+        </a>
+
+        <a class="sb-link @(isEscalas ? "active" : "")" asp-controller="Escalas" asp-action="Listar">
+            <i class="bi bi-airplane-engines"></i><span>Escalas</span>
+        </a>
+
+        <a class="sb-link @(isPasajeros ? "active" : "")" asp-controller="Pasajeros" asp-action="Listar">
+            <i class="bi bi-person-badge"></i><span>Pasajeros</span>
+        </a>
+
+        <a class="sb-link @(isBoletos ? "active" : "")" asp-controller="Boletos" asp-action="Listar">
+            <i class="bi bi-ticket-perforated"></i><span>Boletos</span>
+        </a>
 
     </nav>
 

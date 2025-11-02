@@ -1,0 +1,194 @@
+@model List<ProyectoAeroline.Models.EscalasModel>
+@{
+    ViewData["Title"] = "Listar Escalas";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 mt-4 animate__animated animate__fadeInUp">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-gradient text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center header-glow">
+            <h3 class="mb-0">
+                🛫 <i class="bi bi-airplane-engines"></i> <strong>Lista de Escalas</strong>
+            </h3>
+            <a href="/Escalas/Guardar" class="btn btn-light btn-sm fw-bold fancy-btn">
+                ➕ <i class="bi bi-plus-circle"></i> Agregar
+            </a>
+        </div>
+
+        <div class="card-body bg-light">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>✅ Éxito:</strong> @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>❌ Error:</strong> @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            
+            <table id="tablaEscalas" class="table table-hover align-middle text-center w-100">
+                <thead class="table-primary">
+                    <tr>
+                        <th>🆔 ID</th>
+                        <th>✈️ Vuelo</th>
+                        <th>🛫 Aeropuerto</th>
+                        <th>🕐 Hora Llegada</th>
+                        <th>🕐 Hora Salida</th>
+                        <th>⏱️ Tiempo Espera</th>
+                        <th>⚙️ Estado</th>
+                        <th>🪄 Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.IdEscala</td>
+                                <td>
+                                    <small class="text-muted">@(item.DescripcionVuelo ?? $"Vuelo ID: {item.IdVuelo}")</small>
+                                </td>
+                                <td>
+                                    <small class="text-muted">@(item.DescripcionAeropuerto ?? $"Aeropuerto ID: {item.IdAeropuerto}")</small>
+                                </td>
+                                <td>@item.HoraLlegada.ToString(@"hh\:mm")</td>
+                                <td>@item.HoraSalida.ToString(@"hh\:mm")</td>
+                                <td>@(item.TiempoEspera?.ToString(@"hh\:mm") ?? "N/A")</td>
+                                <td>
+                                    <span class="badge @(item.Estado == "Activo" ? "bg-success" : item.Estado == "Inactivo" ? "bg-danger" : "bg-warning") px-3 py-2 rounded-pill shadow-sm">
+                                        @(item.Estado == "Activo" ? "🟢 Activo" : item.Estado == "Inactivo" ? "🔴 Inactivo" : $"🟡 {item.Estado}")
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="@Url.Action("Modificar", "Escalas", new { IdEscala = item.IdEscala })"
+                                           class="btn btn-outline-primary btn-sm fancy-action" title="Editar Escala">
+                                            🛠️ <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-outline-danger btn-sm fancy-action"
+                                                onclick="confirmarEliminacion('@item.IdEscala', '@(item.DescripcionVuelo ?? $"Escala {item.IdEscala}")')"
+                                                title="Eliminar Escala">
+                                            🗑️ <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" />
+
+    <script>
+        $(document).ready(function () {
+            $('#tablaEscalas').DataTable({
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json',
+                    emptyTable: "No hay escalas registradas."
+                },
+                pageLength: 10,
+                lengthMenu: [5, 10, 25, 50],
+                responsive: true,
+                ordering: true,
+                order: [[0, 'asc']],
+                columnDefs: [
+                    { orderable: false, targets: [7] }
+                ]
+            });
+        });
+
+        function confirmarEliminacion(id, descripcion) {
+            // Escapar comillas simples y dobles para evitar errores en JavaScript
+            const descripcionEscapada = (descripcion || 'Esta escala').replace(/'/g, "\\'").replace(/"/g, '\\"');
+            
+            Swal.fire({
+                title: '¿Eliminar Escala?',
+                html: `🛫 <b>${descripcionEscapada}</b> será eliminada permanentemente.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                backdrop: 'rgba(0,0,0,0.4)'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = `/Escalas/Eliminar?IdEscala=${id}`;
+                }
+            });
+        }
+    </script>
+
+    <style>
+        .bg-gradient {
+            background: linear-gradient(135deg, #007bff, #00b4d8);
+        }
+
+        .header-glow {
+            box-shadow: 0 0 25px rgba(0, 174, 255, 0.6);
+        }
+
+        .fancy-btn,
+        .fancy-action {
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+        }
+
+            .fancy-btn:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(0, 174, 255, 0.6);
+            }
+
+            .fancy-action:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            }
+
+        table thead {
+            background: linear-gradient(135deg, #90e0ef, #0077b6);
+            color: white;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        table tbody tr:hover {
+            background-color: #caf0f8 !important;
+            transform: scale(1.01);
+            transition: 0.2s ease-in-out;
+        }
+
+        .card {
+            transition: 0.4s ease;
+        }
+
+            .card:hover {
+                transform: scale(1.02);
+                box-shadow: 0 0 25px rgba(0, 123, 255, 0.3);
+            }
+
+        .badge {
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+    </style>
+}
+

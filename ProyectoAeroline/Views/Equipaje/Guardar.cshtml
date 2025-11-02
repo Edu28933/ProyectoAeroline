@@ -1,0 +1,99 @@
+@model ProyectoAeroline.Models.EquipajeModel
+
+@{
+    ViewData["Title"] = "Guardar Equipaje";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="card shadow-lg border-0 rounded-4 mt-4">
+    <div class="card-header bg-dark text-white rounded-top-4 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0"><i class="bi bi-bag-plus-fill"></i> Registrar nuevo equipaje</h4>
+        <a href="/Equipaje/Listar" class="btn btn-outline-light btn-sm">
+            <i class="bi bi-arrow-left"></i> Regresar
+        </a>
+    </div>
+
+    <div class="card-body p-4">
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger">@ViewBag.Error</div>
+        }
+
+        <div class="card-body bg-light rounded-bottom-4">
+            <form asp-action="Guardar" method="post" class="needs-validation" novalidate>
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="IdBoleto" class="form-label fw-bold">Boleto</label>
+                        <select asp-for="IdBoleto" class="form-select" required>
+                            <option value="">Seleccione un boleto</option>
+                            @foreach (var boleto in ViewBag.Boletos as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)
+                            {
+                                <option value="@boleto.Value">@boleto.Text</option>
+                            }
+                        </select>
+                        <span asp-validation-for="IdBoleto" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Peso" class="form-label fw-bold">Peso (kg)</label>
+                        <input asp-for="Peso" class="form-control" type="number" step="0.01" placeholder="0.00" required />
+                        <span asp-validation-for="Peso" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Dimensiones" class="form-label fw-bold">Dimensiones</label>
+                        <input asp-for="Dimensiones" class="form-control" placeholder="Ej: 40x60x100" />
+                        <span asp-validation-for="Dimensiones" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="CaracteristicasEspeciales" class="form-label fw-bold">Características Especiales</label>
+                        <input asp-for="CaracteristicasEspeciales" class="form-control" placeholder="Ej: Frágil, Mascota" />
+                        <span asp-validation-for="CaracteristicasEspeciales" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Monto" class="form-label fw-bold">Monto</label>
+                        <input asp-for="Monto" class="form-control" type="number" step="0.01" placeholder="0.00" />
+                        <span asp-validation-for="Monto" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="CostoExtra" class="form-label fw-bold">Costo Extra</label>
+                        <input asp-for="CostoExtra" class="form-control" type="number" step="0.01" placeholder="0.00" />
+                        <span asp-validation-for="CostoExtra" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Estado" class="form-label fw-bold">Estado</label>
+                        <select asp-for="Estado" class="form-select">
+                            @foreach (var estado in ViewBag.Estados as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)
+                            {
+                                <option value="@estado.Value">@estado.Text</option>
+                            }
+                        </select>
+                        <span asp-validation-for="Estado" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-success px-4">
+                        <i class="bi bi-save"></i> Guardar
+                    </button>
+                    <a href="/Equipaje/Listar" class="btn btn-outline-secondary ms-2 px-4">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+

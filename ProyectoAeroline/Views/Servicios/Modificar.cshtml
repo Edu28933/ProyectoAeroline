@@ -1,0 +1,124 @@
+@model ProyectoAeroline.Models.ServiciosModel
+
+@{
+    ViewData["Title"] = "Modificar Servicio";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="card shadow-lg border-0 rounded-4 mt-4">
+    <div class="card-header bg-primary text-white rounded-top-4 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0"><i class="bi bi-pencil-square"></i> Modificar servicio</h4>
+        <a href="/Servicios/Listar" class="btn btn-light btn-sm fw-bold">
+            <i class="bi bi-arrow-left-circle"></i> Regresar
+        </a>
+    </div>
+
+    <div class="card-body p-4">
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger">@ViewBag.Error</div>
+        }
+
+        <div class="card-body bg-light rounded-bottom-4">
+            <form asp-action="Modificar" method="post" class="needs-validation" novalidate>
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <input type="hidden" asp-for="IdServicio" />
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="IdServicio" class="control-label">ID Servicio</label>
+                        <input asp-for="IdServicio" class="form-control" readonly />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="IdBoleto" class="form-label fw-bold">Boleto</label>
+                        <select asp-for="IdBoleto" class="form-select" required>
+                            <option value="">Seleccione un boleto</option>
+                            @foreach (var boleto in ViewBag.Boletos as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)
+                            {
+                                <option value="@boleto.Value" selected="@(boleto.Value == Model.IdBoleto.ToString())">@boleto.Text</option>
+                            }
+                        </select>
+                        <span asp-validation-for="IdBoleto" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Fecha" class="form-label fw-bold">Fecha</label>
+                        <input asp-for="Fecha" class="form-control" type="date" value="@(Model.Fecha?.ToString("yyyy-MM-dd"))" />
+                        <span asp-validation-for="Fecha" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="TipoServicio" class="form-label fw-bold">Tipo de Servicio</label>
+                        <select asp-for="TipoServicio" class="form-select" required>
+                            <option value="">Seleccione un tipo</option>
+                            @foreach (var tipo in ViewBag.TiposServicio as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)
+                            {
+                                <option value="@tipo.Value" selected="@(tipo.Value == Model.TipoServicio)">@tipo.Text</option>
+                            }
+                        </select>
+                        <span asp-validation-for="TipoServicio" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Costo" class="form-label fw-bold">Costo</label>
+                        <input asp-for="Costo" class="form-control" type="number" step="0.01" required />
+                        <span asp-validation-for="Costo" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Cantidad" class="form-label fw-bold">Cantidad</label>
+                        <input asp-for="Cantidad" class="form-control" type="number" min="1" />
+                        <span asp-validation-for="Cantidad" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="CostoTotal" class="form-label fw-bold">Costo Total</label>
+                        <input asp-for="CostoTotal" class="form-control" type="number" step="0.01" />
+                        <small class="text-muted">Se calcula automáticamente: Costo × Cantidad</small>
+                        <span asp-validation-for="CostoTotal" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Estado" class="form-label fw-bold">Estado</label>
+                        <select asp-for="Estado" class="form-select">
+                            @foreach (var estado in ViewBag.Estados as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)
+                            {
+                                <option value="@estado.Value" selected="@(estado.Value == Model.Estado)">@estado.Text</option>
+                            }
+                        </select>
+                        <span asp-validation-for="Estado" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary px-4">
+                        <i class="bi bi-save"></i> Guardar cambios
+                    </button>
+                    <a href="/Servicios/Listar" class="btn btn-outline-secondary ms-2 px-4">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Calcular costo total automáticamente
+        document.getElementById('Costo').addEventListener('input', calcularTotal);
+        document.getElementById('Cantidad').addEventListener('input', calcularTotal);
+
+        function calcularTotal() {
+            const costo = parseFloat(document.getElementById('Costo').value) || 0;
+            const cantidad = parseInt(document.getElementById('Cantidad').value) || 1;
+            const total = costo * cantidad;
+            document.getElementById('CostoTotal').value = total.toFixed(2);
+        }
+    </script>
+}
+

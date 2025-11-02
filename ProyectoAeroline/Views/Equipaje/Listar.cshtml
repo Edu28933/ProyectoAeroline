@@ -1,0 +1,87 @@
+@model IEnumerable<ProyectoAeroline.Models.EquipajeModel>
+
+@{
+    ViewData["Title"] = "Listar Equipaje";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 mt-4">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-primary text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center">
+            <h3 class="mb-0"><i class="bi bi-bag-fill"></i> Lista de Equipaje</h3>
+            <a href="/Equipaje/Guardar" class="btn btn-light btn-sm fw-bold">
+                <i class="bi bi-plus-circle"></i> Agregar
+            </a>
+        </div>
+
+        <div class="card-body bg-light">
+            <table id="tablaEquipaje" class="table table-hover align-middle text-center w-100">
+                <thead class="table-primary">
+                    <tr>
+                        <th>ID</th>
+                        <th>Boleto</th>
+                        <th>Peso (kg)</th>
+                        <th>Dimensiones</th>
+                        <th>Características Especiales</th>
+                        <th>Monto</th>
+                        <th>Costo Extra</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.IdEquipaje</td>
+                            <td>@item.IdBoleto</td>
+                            <td>@item.Peso.ToString("N2")</td>
+                            <td>@item.Dimensiones</td>
+                            <td>@item.CaracteristicasEspeciales</td>
+                            <td>Q @(item.Monto?.ToString("N2") ?? "0.00")</td>
+                            <td>Q @(item.CostoExtra?.ToString("N2") ?? "0.00")</td>
+                            <td>
+                                <span class="badge @(item.Estado == "Activo" ? "bg-success" : "bg-danger")">
+                                    @item.Estado
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="@Url.Action("Modificar", "Equipaje", new { CodigoEquipaje = item.IdEquipaje })"
+                                       class="btn btn-outline-secondary btn-sm" title="Modificar">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a href="@Url.Action("Eliminar", "Equipaje", new { CodigoEquipaje = item.IdEquipaje })"
+                                       class="btn btn-outline-danger btn-sm"
+                                       title="Eliminar"
+                                       onclick="return confirm('¿Seguro que deseas eliminar este equipaje?');">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#tablaEquipaje').DataTable({
+                language: { url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json' },
+                pageLength: 10,
+                lengthMenu: [5, 10, 25, 50],
+                responsive: true,
+                ordering: true,
+                columnDefs: [
+                    { orderable: false, targets: [8] } // acciones no ordenables
+                ]
+            });
+        });
+    </script>
+}
+

@@ -1,0 +1,100 @@
+@model ProyectoAeroline.Models.HistorialesModel
+
+@{
+    ViewData["Title"] = "Guardar Historial";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="card shadow-lg border-0 rounded-4 mt-4">
+    <div class="card-header bg-dark text-white rounded-top-4 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0"><i class="bi bi-plus-circle-fill"></i> Registrar nuevo historial</h4>
+        <a href="/Historiales/Listar" class="btn btn-outline-light btn-sm">
+            <i class="bi bi-arrow-left"></i> Regresar
+        </a>
+    </div>
+
+    <div class="card-body p-4">
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger">@ViewBag.Error</div>
+        }
+
+        <div class="card-body bg-light rounded-bottom-4">
+            <form asp-action="Guardar" method="post" class="needs-validation" novalidate>
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="IdBoleto" class="form-label fw-bold">Boleto</label>
+                        <select asp-for="IdBoleto" class="form-select" required>
+                            <option value="">Seleccione un boleto</option>
+                            @foreach (var boleto in ViewBag.Boletos as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)
+                            {
+                                <option value="@boleto.Value">@boleto.Text</option>
+                            }
+                        </select>
+                        <span asp-validation-for="IdBoleto" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="IdPasajero" class="form-label fw-bold">Pasajero</label>
+                        <select asp-for="IdPasajero" class="form-select" required>
+                            <option value="">Seleccione un pasajero</option>
+                            @foreach (var pasajero in ViewBag.Pasajeros as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)
+                            {
+                                <option value="@pasajero.Value">@pasajero.Text</option>
+                            }
+                        </select>
+                        <span asp-validation-for="IdPasajero" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="IdAerolinea" class="form-label fw-bold">Aerolínea</label>
+                        <select asp-for="IdAerolinea" class="form-select" required>
+                            <option value="">Seleccione una aerolínea</option>
+                            @foreach (var aerolinea in ViewBag.Aerolineas as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)
+                            {
+                                <option value="@aerolinea.Value">@aerolinea.Text</option>
+                            }
+                        </select>
+                        <span asp-validation-for="IdAerolinea" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="IdVuelo" class="form-label fw-bold">Vuelo</label>
+                        <select asp-for="IdVuelo" class="form-select" required>
+                            <option value="">Seleccione un vuelo</option>
+                            @foreach (var vuelo in ViewBag.Vuelos as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)
+                            {
+                                <option value="@vuelo.Value">@vuelo.Text</option>
+                            }
+                        </select>
+                        <span asp-validation-for="IdVuelo" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-12">
+                        <label asp-for="Observacion" class="form-label fw-bold">Observación</label>
+                        <textarea asp-for="Observacion" class="form-control" rows="5" placeholder="Observaciones o notas sobre este historial..."></textarea>
+                        <span asp-validation-for="Observacion" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-success px-4">
+                        <i class="bi bi-save"></i> Guardar
+                    </button>
+                    <a href="/Historiales/Listar" class="btn btn-outline-secondary ms-2 px-4">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+

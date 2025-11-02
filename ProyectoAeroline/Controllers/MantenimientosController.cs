@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using ProyectoAeroline.Data;
 using ProyectoAeroline.Models;
+using System.Linq;
 
 namespace ProyectoAeroline.Controllers
 {
@@ -55,14 +56,45 @@ namespace ProyectoAeroline.Controllers
         {
             if (ModelState.IsValid)
             {
-                var respuesta = _MantenimientosData.MtdAgregarMantenimiento(oMantenimientos);
-                if (respuesta)
-                    return RedirectToAction("Listar");
+                try
+                {
+                    var respuesta = _MantenimientosData.MtdAgregarMantenimiento(oMantenimientos);
+                    if (respuesta)
+                    {
+                        TempData["MensajeMantenimiento"] = "Mantenimiento agregado correctamente. El avión ha sido cambiado a 'Mantenimiento'.";
+                        return RedirectToAction("Listar");
+                    }
+                    else
+                    {
+                        TempData["ErrorMantenimiento"] = "Error al agregar el mantenimiento.";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TempData["ErrorMantenimiento"] = $"Error al agregar el mantenimiento: {ex.Message}";
+                }
             }
 
             // Recargar combos si hay error
             ViewBag.Aviones = _MantenimientosData.MtdListarAvionesActivos();
             ViewBag.Empleados = _MantenimientosData.MtdListarEmpleadosActivos();
+            
+            // Tipos predefinidos
+            ViewBag.Tipos = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "Preventivo", Text = "Preventivo" },
+                new SelectListItem { Value = "Correctivo", Text = "Correctivo" },
+                new SelectListItem { Value = "Inspección", Text = "Inspección" }
+            };
+
+            // Estados posibles
+            ViewBag.Estados = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "Pendiente", Text = "Pendiente" },
+                new SelectListItem { Value = "En proceso", Text = "En proceso" },
+                new SelectListItem { Value = "Finalizado", Text = "Finalizado" }
+            };
+            
             return View(oMantenimientos);
 
         }
@@ -73,7 +105,30 @@ namespace ProyectoAeroline.Controllers
         {
             var oMantenimiento = _MantenimientosData.MtdBuscarMantenimiento(CodigoMantenimiento);
 
-            ViewBag.Aviones = _MantenimientosData.MtdListarAvionesActivos();
+            // Obtener lista de aviones y asegurar que el avión actual esté seleccionado
+            var listaAviones = _MantenimientosData.MtdListarAvionesActivos();
+            
+            // Si el avión del mantenimiento no está en la lista (puede estar inactivo), agregarlo
+            if (oMantenimiento != null && oMantenimiento.IdAvion > 0)
+            {
+                var avionExiste = listaAviones.Any(a => a.Value == oMantenimiento.IdAvion.ToString());
+                if (!avionExiste)
+                {
+                    // Obtener información del avión desde la BD
+                    var avionInfo = _MantenimientosData.MtdObtenerInfoAvion(oMantenimiento.IdAvion);
+                    if (avionInfo != null)
+                    {
+                        listaAviones.Insert(0, new SelectListItem
+                        {
+                            Value = oMantenimiento.IdAvion.ToString(),
+                            Text = $"{oMantenimiento.IdAvion} - {avionInfo}",
+                            Selected = true
+                        });
+                    }
+                }
+            }
+            
+            ViewBag.Aviones = new SelectList(listaAviones, "Value", "Text", oMantenimiento?.IdAvion);
             ViewBag.Empleados = _MantenimientosData.MtdListarEmpleadosActivos();
 
             ViewBag.Tipos = new List<SelectListItem>
@@ -98,15 +153,62 @@ namespace ProyectoAeroline.Controllers
         [HttpPost]
         public IActionResult Modificar(MantenimientosModel oMantenimiento)
         {
-            var respuesta = _MantenimientosData.MtdEditarMantenimiento(oMantenimiento);
+            try
+            {
+                var respuesta = _MantenimientosData.MtdEditarMantenimiento(oMantenimiento);
 
-            if (respuesta == true)
-            {
-                return RedirectToAction("Listar");
+                if (respuesta == true)
+                {
+                    TempData["MensajeMantenimiento"] = "Mantenimiento modificado correctamente.";
+                    return RedirectToAction("Listar");
+                }
+                else
+                {
+                    TempData["ErrorMantenimiento"] = "Error al modificar el mantenimiento.";
+                    
+                    // Recargar combos si hay error
+                    ViewBag.Aviones = _MantenimientosData.MtdListarAvionesActivos();
+                    ViewBag.Empleados = _MantenimientosData.MtdListarEmpleadosActivos();
+
+                    ViewBag.Tipos = new List<SelectListItem>
+                    {
+                        new SelectListItem { Value = "Preventivo", Text = "Preventivo" },
+                        new SelectListItem { Value = "Correctivo", Text = "Correctivo" },
+                        new SelectListItem { Value = "Inspección", Text = "Inspección" }
+                    };
+
+                    ViewBag.Estados = new List<SelectListItem>
+                    {
+                        new SelectListItem { Value = "Pendiente", Text = "Pendiente" },
+                        new SelectListItem { Value = "En proceso", Text = "En proceso" },
+                        new SelectListItem { Value = "Finalizado", Text = "Finalizado" }
+                    };
+                    
+                    return View(oMantenimiento);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return View();
+                TempData["ErrorMantenimiento"] = $"Error al modificar el mantenimiento: {ex.Message}";
+                
+                ViewBag.Aviones = _MantenimientosData.MtdListarAvionesActivos();
+                ViewBag.Empleados = _MantenimientosData.MtdListarEmpleadosActivos();
+
+                ViewBag.Tipos = new List<SelectListItem>
+                {
+                    new SelectListItem { Value = "Preventivo", Text = "Preventivo" },
+                    new SelectListItem { Value = "Correctivo", Text = "Correctivo" },
+                    new SelectListItem { Value = "Inspección", Text = "Inspección" }
+                };
+
+                ViewBag.Estados = new List<SelectListItem>
+                {
+                    new SelectListItem { Value = "Pendiente", Text = "Pendiente" },
+                    new SelectListItem { Value = "En proceso", Text = "En proceso" },
+                    new SelectListItem { Value = "Finalizado", Text = "Finalizado" }
+                };
+                
+                return View(oMantenimiento);
             }
         }
 
@@ -120,14 +222,14 @@ namespace ProyectoAeroline.Controllers
 
             if (mantenimiento == null || mantenimiento.IdMantenimiento == 0)
             {
-                TempData["Error"] = "El mantenimiento no existe o ya fue eliminado.";
+                TempData["ErrorMantenimiento"] = "El mantenimiento no existe o ya fue eliminado.";
                 return RedirectToAction("Listar");
             }
 
             return View(mantenimiento);
         }
 
-        // POST: Usuarios/Eliminar
+        // POST: Mantenimientos/Eliminar
         [HttpPost]
         public IActionResult Eliminar(MantenimientosModel oMantenimiento)
         {
@@ -137,7 +239,7 @@ namespace ProyectoAeroline.Controllers
 
                 if (respuesta)
                 {
-                    TempData["Mensaje"] = "Mantenimiento eliminado correctamente.";
+                    TempData["MensajeMantenimiento"] = "Mantenimiento eliminado correctamente. El estado del avión se actualizará automáticamente si no hay más mantenimientos pendientes.";
                     return RedirectToAction("Listar");
                 }
                 else
@@ -149,8 +251,13 @@ namespace ProyectoAeroline.Controllers
             catch (SqlException ex)
             {
                 // Captura el mensaje del trigger (por ejemplo: "Solo se pueden eliminar mantenimientos en estado 'Finalizado'.")
-                ModelState.AddModelError("", ex.Message);
-                return View(oMantenimiento);
+                TempData["ErrorMantenimiento"] = $"Error al eliminar el mantenimiento: {ex.Message}";
+                return RedirectToAction("Listar");
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMantenimiento"] = $"Error al eliminar el mantenimiento: {ex.Message}";
+                return RedirectToAction("Listar");
             }
         }
     }

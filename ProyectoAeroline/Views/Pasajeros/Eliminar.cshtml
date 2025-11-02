@@ -1,0 +1,234 @@
+@model ProyectoAeroline.Models.PasajerosModel
+
+@{
+    ViewData["Title"] = "Eliminar Pasajero";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 mt-4 animate__animated animate__fadeInUp">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-danger text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">
+                🗑️ <i class="bi bi-trash"></i> <strong>Eliminar Pasajero</strong>
+            </h3>
+            <a asp-action="Listar" class="btn btn-light btn-sm fw-bold">
+                ⬅️ <i class="bi bi-arrow-left-circle"></i> Regresar
+            </a>
+        </div>
+
+        <div class="card-body bg-light">
+            @if (Model.Estado == "Activo")
+            {
+                <div class="alert alert-danger" role="alert">
+                    <h5 class="alert-heading">❌ No se puede eliminar este pasajero</h5>
+                    <p class="mb-0">
+                        <strong>El pasajero tiene estado "Activo" y no puede ser eliminado.</strong><br>
+                        Por favor, cambie el estado a "Inactivo" antes de intentar eliminar.
+                    </p>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning" role="alert">
+                    <h5 class="alert-heading">⚠️ ¿Estás seguro de eliminar este pasajero?</h5>
+                    <p class="mb-0">Esta acción no se puede deshacer. El pasajero será eliminado permanentemente.</p>
+                </div>
+            }
+
+            <form id="formEliminarPasajero" asp-action="Eliminar" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="IdPasajero" id="IdPasajeroHidden" />
+                
+                <div class="row g-3">
+                    <!-- Información del pasajero -->
+                    <div class="col-md-12">
+                        <div class="card bg-light border">
+                            <div class="card-body">
+                                <h5 class="card-title text-primary">📋 Información del Pasajero</h5>
+                                <hr />
+                                
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <strong>🆔 ID Pasajero:</strong>
+                                        <p class="text-muted">@Model.IdPasajero</p>
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <strong>👤 Nombres:</strong>
+                                        <p class="text-muted">@Model.Nombres</p>
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <strong>👤 Apellidos:</strong>
+                                        <p class="text-muted">@Model.Apellidos</p>
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <strong>🌍 País:</strong>
+                                        <p class="text-muted">@Model.Pais</p>
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <strong>📄 Pasaporte:</strong>
+                                        <p class="text-muted"><strong>@Model.Pasaporte</strong></p>
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <strong>📧 Correo:</strong>
+                                        <p class="text-muted">@(Model.Correo ?? "N/A")</p>
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <strong>📍 Dirección:</strong>
+                                        <p class="text-muted">@(Model.Direccion ?? "N/A")</p>
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <strong>📞 Teléfono:</strong>
+                                        <p class="text-muted">@(Model.Telefono?.ToString() ?? "N/A")</p>
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <strong>🌎 Nacionalidad:</strong>
+                                        <p class="text-muted">@(Model.Nacionalidad ?? "N/A")</p>
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <strong>🚨 Contacto Emergencia:</strong>
+                                        <p class="text-muted">@(Model.ContactoEmergencia?.ToString() ?? "N/A")</p>
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <strong>🎫 Tipo de Pasajero:</strong>
+                                        <span class="badge @(Model.TipoPasajero == "VIP" ? "bg-warning" : Model.TipoPasajero == "Corporativo" ? "bg-info" : "bg-secondary") px-3 py-2 rounded-pill">
+                                            @Model.TipoPasajero
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="col-md-6 mb-3">
+                                        <strong>⚙️ Estado:</strong>
+                                        <span class="badge @(Model.Estado == "Activo" ? "bg-success" : "bg-danger") px-3 py-2 rounded-pill">
+                                            @Model.Estado
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group text-end mt-4">
+                    @if (Model.Estado == "Activo")
+                    {
+                        <button type="button" class="btn btn-danger px-4 fancy-btn" disabled title="No se puede eliminar un pasajero con estado Activo">
+                            🗑️ <i class="bi bi-trash"></i> Confirmar Eliminación (Deshabilitado)
+                        </button>
+                    }
+                    else
+                    {
+                        <button type="button" class="btn btn-danger px-4 fancy-btn" onclick="confirmarEliminacion()">
+                            🗑️ <i class="bi bi-trash"></i> Confirmar Eliminación
+                        </button>
+                    }
+                    <a asp-action="Listar" class="btn btn-secondary px-4 fancy-btn ms-2">
+                        ❌ <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function confirmarEliminacion() {
+            const idPasajeroEl = document.getElementById('IdPasajeroHidden');
+            if (!idPasajeroEl) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'No se encontró el ID del pasajero.',
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
+
+            const idPasajero = idPasajeroEl.value;
+            
+            if (!idPasajero || idPasajero <= 0 || idPasajero === '') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'ID de pasajero inválido: ' + idPasajero,
+                    confirmButtonColor: '#dc3545'
+                });
+                return;
+            }
+
+            // Validar estado en el cliente también
+            const estado = '@Model.Estado';
+            if (estado === 'Activo') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'No se puede eliminar',
+                    html: '❌ <strong>El pasajero tiene estado "Activo"</strong><br><br>Por favor, cambie el estado a "Inactivo" antes de intentar eliminar.',
+                    confirmButtonColor: '#dc3545',
+                    confirmButtonText: 'Entendido'
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: '¿Eliminar Pasajero?',
+                html: '⚠️ ¿Estás seguro de eliminar este pasajero?<br><br>Esta acción no se puede deshacer.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                backdrop: 'rgba(0,0,0,0.4)'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.getElementById('formEliminarPasajero');
+                    if (form) {
+                        form.submit();
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'No se encontró el formulario.',
+                            confirmButtonColor: '#dc3545'
+                        });
+                    }
+                }
+            });
+        }
+    </script>
+
+    <style>
+        .fancy-btn {
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+        }
+
+            .fancy-btn:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(220, 53, 69, 0.6);
+            }
+
+        .card {
+            transition: 0.4s ease;
+        }
+
+            .card:hover {
+                transform: scale(1.02);
+                box-shadow: 0 0 25px rgba(220, 53, 69, 0.3);
+            }
+    </style>
+}
+

@@ -1,0 +1,87 @@
+@model IEnumerable<ProyectoAeroline.Models.ReservasModel>
+
+@{
+    ViewData["Title"] = "Listar Reservas";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 mt-4">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-primary text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center">
+            <h3 class="mb-0"><i class="bi bi-calendar-check-fill"></i> Lista de Reservas</h3>
+            <a href="/Reservas/Guardar" class="btn btn-light btn-sm fw-bold">
+                <i class="bi bi-plus-circle"></i> Agregar
+            </a>
+        </div>
+
+        <div class="card-body bg-light">
+            <table id="tablaReservas" class="table table-hover align-middle text-center w-100">
+                <thead class="table-primary">
+                    <tr>
+                        <th>ID</th>
+                        <th>Pasajero</th>
+                        <th>Vuelo</th>
+                        <th>Fecha Reserva</th>
+                        <th>Monto Anticipo</th>
+                        <th>Fecha Vuelo</th>
+                        <th>Observaciones</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.IdReserva</td>
+                            <td>@item.IdPasajero</td>
+                            <td>@item.IdVuelo</td>
+                            <td>@item.FechaReserva.ToString("dd/MM/yyyy")</td>
+                            <td>Q @(item.MontoAnticipo?.ToString("N2") ?? "0.00")</td>
+                            <td>@(item.FechaVuelo?.ToString("dd/MM/yyyy") ?? "N/A")</td>
+                            <td>@item.Observaciones</td>
+                            <td>
+                                <span class="badge @(item.Estado == "Activo" || item.Estado == "Confirmado" ? "bg-success" : item.Estado == "Cancelado" ? "bg-danger" : "bg-warning")">
+                                    @item.Estado
+                                </span>
+                            </td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="@Url.Action("Modificar", "Reservas", new { CodigoReserva = item.IdReserva })"
+                                       class="btn btn-outline-secondary btn-sm" title="Modificar">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a href="@Url.Action("Eliminar", "Reservas", new { CodigoReserva = item.IdReserva })"
+                                       class="btn btn-outline-danger btn-sm"
+                                       title="Eliminar"
+                                       onclick="return confirm('¿Seguro que deseas eliminar esta reserva?');">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#tablaReservas').DataTable({
+                language: { url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json' },
+                pageLength: 10,
+                lengthMenu: [5, 10, 25, 50],
+                responsive: true,
+                ordering: true,
+                columnDefs: [
+                    { orderable: false, targets: [8] } // acciones no ordenables
+                ]
+            });
+        });
+    </script>
+}
+
