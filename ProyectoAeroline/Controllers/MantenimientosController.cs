@@ -4,9 +4,12 @@ using Microsoft.Data.SqlClient;
 using ProyectoAeroline.Data;
 using ProyectoAeroline.Models;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
+using ProyectoAeroline.Attributes;
 
 namespace ProyectoAeroline.Controllers
 {
+    [Authorize]
     public class MantenimientosController : Controller
     {
         // Instancia de la clase con la conexion y stored procedures
@@ -15,7 +18,7 @@ namespace ProyectoAeroline.Controllers
 
 
         // Muestra el formulario principal con la lista de datos
-
+        [RequirePermission("Mantenimientos", "Ver")]
         public IActionResult Listar()
         {
 
@@ -26,6 +29,7 @@ namespace ProyectoAeroline.Controllers
 
 
         // Muestra el formulario llamador Guardar
+        [RequirePermission("Mantenimientos", "Crear")]
         public IActionResult Guardar()
         {
             ViewBag.Aviones = _MantenimientosData.MtdListarAvionesActivos();
@@ -52,6 +56,7 @@ namespace ProyectoAeroline.Controllers
 
         // Almacena los datos del formulario Guardar
         [HttpPost]
+        [RequirePermission("Mantenimientos", "Crear")]
         public IActionResult Guardar(MantenimientosModel oMantenimientos)
         {
             if (ModelState.IsValid)
@@ -101,6 +106,7 @@ namespace ProyectoAeroline.Controllers
 
 
         // Muestra el formulario llamador Modificar
+        [RequirePermission("Mantenimientos", "Editar")]
         public IActionResult Modificar(int CodigoMantenimiento)
         {
             var oMantenimiento = _MantenimientosData.MtdBuscarMantenimiento(CodigoMantenimiento);
@@ -151,6 +157,7 @@ namespace ProyectoAeroline.Controllers
 
         // Almacena los datos del formulario Editar
         [HttpPost]
+        [RequirePermission("Mantenimientos", "Editar")]
         public IActionResult Modificar(MantenimientosModel oMantenimiento)
         {
             try
@@ -215,6 +222,7 @@ namespace ProyectoAeroline.Controllers
 
         // Muestra el formulario llamador Eliminar
         // GET: Mantenimientos/Eliminar/5
+        [RequirePermission("Mantenimientos", "Eliminar")]
         public IActionResult Eliminar(int CodigoMantenimiento)
         {
             // Buscar el mantenimiento por su código
@@ -231,6 +239,7 @@ namespace ProyectoAeroline.Controllers
 
         // POST: Mantenimientos/Eliminar
         [HttpPost]
+        [RequirePermission("Mantenimientos", "Eliminar")]
         public IActionResult Eliminar(MantenimientosModel oMantenimiento)
         {
             try

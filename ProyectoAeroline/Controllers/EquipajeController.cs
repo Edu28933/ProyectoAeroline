@@ -2,14 +2,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ProyectoAeroline.Data;
 using ProyectoAeroline.Models;
+using Microsoft.AspNetCore.Authorization;
+using ProyectoAeroline.Attributes;
 
 namespace ProyectoAeroline.Controllers
 {
+    [Authorize]
     public class EquipajeController : Controller
     {
         EquipajeData _EquipajeData = new EquipajeData();
 
         // --- LISTAR EQUIPAJE ---
+        [RequirePermission("Equipaje", "Ver")]
         public IActionResult Listar()
         {
             var oListaEquipaje = _EquipajeData.MtdConsultarEquipajes();
@@ -17,6 +21,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // --- MOSTRAR FORMULARIO GUARDAR ---
+        [RequirePermission("Equipaje", "Crear")]
         public IActionResult Guardar()
         {
             ViewBag.Boletos = _EquipajeData.MtdListarBoletosActivos()
@@ -37,6 +42,7 @@ namespace ProyectoAeroline.Controllers
 
         // --- GUARDAR EQUIPAJE (POST) ---
         [HttpPost]
+        [RequirePermission("Equipaje", "Crear")]
         public IActionResult Guardar(EquipajeModel oEquipaje)
         {
             if (ModelState.IsValid)
@@ -64,6 +70,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // --- MOSTRAR FORMULARIO MODIFICAR ---
+        [RequirePermission("Equipaje", "Editar")]
         public IActionResult Modificar(int CodigoEquipaje)
         {
             var oEquipaje = _EquipajeData.MtdBuscarEquipaje(CodigoEquipaje);
@@ -86,6 +93,7 @@ namespace ProyectoAeroline.Controllers
 
         // --- MODIFICAR EQUIPAJE (POST) ---
         [HttpPost]
+        [RequirePermission("Equipaje", "Editar")]
         public IActionResult Modificar(EquipajeModel oEquipaje)
         {
             var respuesta = _EquipajeData.MtdEditarEquipaje(oEquipaje);
@@ -101,6 +109,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // --- MOSTRAR FORMULARIO ELIMINAR ---
+        [RequirePermission("Equipaje", "Eliminar")]
         public IActionResult Eliminar(int CodigoEquipaje)
         {
             var equipaje = _EquipajeData.MtdBuscarEquipaje(CodigoEquipaje);
@@ -116,6 +125,7 @@ namespace ProyectoAeroline.Controllers
 
         // --- ELIMINAR EQUIPAJE (POST) ---
         [HttpPost]
+        [RequirePermission("Equipaje", "Eliminar")]
         public IActionResult Eliminar(EquipajeModel oEquipaje)
         {
             try

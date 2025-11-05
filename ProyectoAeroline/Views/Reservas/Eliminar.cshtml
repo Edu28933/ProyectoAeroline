@@ -5,71 +5,151 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<div class="container-fluid px-4 mt-4">
+<div class="container-fluid px-4 mt-4 animate__animated animate__fadeInUp">
     <div class="card shadow-lg border-0 rounded-4">
-        <div class="card-header bg-danger text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center">
+        <div class="card-header bg-gradient-danger text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center header-glow-danger">
             <h3 class="mb-0">
-                <i class="bi bi-trash-fill"></i> Eliminar Reserva
+                🗑️ <i class="bi bi-calendar-check-fill"></i> <strong>Eliminar Reserva</strong>
             </h3>
-            <a href="/Reservas/Listar" class="btn btn-light btn-sm fw-bold">
-                <i class="bi bi-arrow-left-circle"></i> Regresar
+            <a href="/Reservas/Listar" class="btn btn-light btn-sm fw-bold fancy-btn-cancel">
+                🔙 <i class="bi bi-arrow-left-circle"></i> Regresar
             </a>
         </div>
 
-        <div class="card-body bg-light">
-            <h5 class="text-center mb-4 text-danger fw-semibold">
-                ¿Seguro que deseas eliminar esta reserva?
+        <div class="card-body bg-light text-center">
+            <h5 class="text-danger fw-bold mb-4 animate__animated animate__pulse animate__infinite">
+                ⚠️ ¿Estás seguro de que deseas eliminar esta reserva?
             </h5>
 
-            <form asp-action="Eliminar" method="post">
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered shadow-sm align-middle">
+                    <tr><th>🆔 ID Reserva</th><td>@Model.IdReserva</td></tr>
+                    <tr><th>👤 Pasajero</th><td>@Model.IdPasajero</td></tr>
+                    <tr><th>✈️ Vuelo</th><td>@Model.IdVuelo</td></tr>
+                    <tr><th>📅 Fecha Reserva</th><td>@Model.FechaReserva.ToString("dd/MM/yyyy")</td></tr>
+                    <tr><th>💰 Monto Anticipo</th><td>Q @(Model.MontoAnticipo?.ToString("N2") ?? "0.00")</td></tr>
+                    <tr><th>✈️ Fecha Vuelo</th><td>@(Model.FechaVuelo?.ToString("dd/MM/yyyy") ?? "N/A")</td></tr>
+                    <tr>
+                        <th>⚙️ Estado</th>
+                        <td>
+                            <span class="badge @(Model.Estado == "Activo" || Model.Estado == "Confirmado" ? "bg-success" : Model.Estado == "Cancelado" ? "bg-danger" : "bg-warning") px-3 py-2 rounded-pill shadow-sm">
+                                @Model.Estado
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <form id="formEliminarReserva" asp-action="Eliminar" method="post">
                 @Html.AntiForgeryToken()
                 <input type="hidden" asp-for="IdReserva" />
 
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label">ID Reserva</label>
-                        <input class="form-control" value="@Model.IdReserva" readonly />
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">ID Pasajero</label>
-                        <input class="form-control" value="@Model.IdPasajero" readonly />
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">ID Vuelo</label>
-                        <input class="form-control" value="@Model.IdVuelo" readonly />
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Fecha de Reserva</label>
-                        <input class="form-control" value="@Model.FechaReserva.ToString("dd/MM/yyyy")" readonly />
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Monto Anticipo</label>
-                        <input class="form-control" value="Q @(Model.MontoAnticipo?.ToString("N2") ?? "0.00")" readonly />
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Fecha de Vuelo</label>
-                        <input class="form-control" value="@(Model.FechaVuelo?.ToString("dd/MM/yyyy") ?? "N/A")" readonly />
-                    </div>
-                    <div class="col-md-12">
-                        <label class="form-label">Observaciones</label>
-                        <textarea class="form-control" readonly>@Model.Observaciones</textarea>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Estado</label>
-                        <input class="form-control" value="@Model.Estado" readonly />
-                    </div>
-                </div>
-
-                <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-danger px-4 me-2">
-                        <i class="bi bi-trash3-fill"></i> Eliminar definitivamente
-                    </button>
-                    <a href="/Reservas/Listar" class="btn btn-outline-secondary px-4">
-                        <i class="bi bi-x-circle"></i> Cancelar
-                    </a>
-                </div>
+                <button type="button" class="btn btn-danger px-4 me-2 fancy-delete" onclick="confirmarEliminacion()">
+                    💣 <i class="bi bi-trash3-fill"></i> Eliminar
+                </button>
+                <a href="/Reservas/Listar" class="btn btn-outline-secondary px-4 fancy-cancel">
+                    🙅‍♂️ <i class="bi bi-x-circle"></i> Cancelar
+                </a>
             </form>
         </div>
     </div>
 </div>
 
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function confirmarEliminacion() {
+            // Estados que no permiten eliminación
+            const estadosProhibidos = ['Activo', 'Confirmado', 'Pendiente'];
+            const estado = '@Model.Estado';
+            
+            // Validar estado
+            if (estadosProhibidos.includes(estado)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: '⚠️ No se puede eliminar',
+                    html: `❌ <strong>La reserva tiene estado "${estado}"</strong><br><br>Las reservas con estado "${estado}" no pueden ser eliminadas. Solo se pueden eliminar reservas con estado "Cancelado".`,
+                    confirmButtonColor: '#dc3545',
+                    confirmButtonText: 'Entendido'
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: '¿Eliminar Reserva?',
+                html: `📋 La reserva <b>#@Model.IdReserva</b> será eliminada permanentemente.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                backdrop: 'rgba(0,0,0,0.4)'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '✅ Eliminada correctamente',
+                        text: 'La reserva ha sido eliminada del sistema.',
+                        showConfirmButton: false,
+                        timer: 1400
+                    }).then(() => {
+                        document.getElementById('formEliminarReserva').submit();
+                    });
+                }
+            });
+        }
+    </script>
+
+    <style>
+        .bg-gradient-danger {
+            background: linear-gradient(135deg, #dc3545, #ff6b6b);
+        }
+
+        .header-glow-danger {
+            box-shadow: 0 0 25px rgba(255, 0, 0, 0.6);
+        }
+
+        .fancy-delete, .fancy-cancel {
+            border-radius: 30px;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+        }
+
+            .fancy-delete:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(220,53,69,0.6);
+            }
+
+            .fancy-cancel:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(108,117,125,0.5);
+            }
+
+        table th {
+            background-color: #f8d7da;
+            color: #721c24;
+            width: 30%;
+        }
+
+        table td {
+            background-color: #fff;
+        }
+
+        table tr:hover td {
+            background-color: #ffe6e6;
+            transition: 0.2s ease-in-out;
+        }
+
+        .card {
+            transition: 0.4s ease;
+        }
+
+            .card:hover {
+                transform: scale(1.02);
+                box-shadow: 0 0 25px rgba(255,0,0,0.3);
+            }
+    </style>
+}

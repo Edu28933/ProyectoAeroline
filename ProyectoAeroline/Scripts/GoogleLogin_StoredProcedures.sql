@@ -132,7 +132,8 @@ BEGIN
     DECLARE @FechaExpiracion DATETIME2;
     DECLARE @Usado BIT;
     DECLARE @IdUsuario INT;
-    DECLARE @IdRol INT = 2; -- Rol por defecto: Usuario
+    DECLARE @IdRol INT = (SELECT TOP 1 [IdRol] FROM [dbo].[Roles] WHERE [NombreRol] = 'Usuario' AND [FechaEliminacion] IS NULL ORDER BY [IdRol]);
+    IF @IdRol IS NULL SET @IdRol = 5; -- Fallback si no existe el rol Usuario
     DECLARE @Ok BIT = 0;
     DECLARE @NombreFinal NVARCHAR(256);
     

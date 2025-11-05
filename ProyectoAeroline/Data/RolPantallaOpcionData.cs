@@ -20,7 +20,8 @@ namespace ProyectoAeroline.Data
                     // Usar stored procedure
                     SqlCommand cmd = new SqlCommand("sp_RolPantallaOpcionesSeleccionar", conexion)
                     {
-                        CommandType = CommandType.StoredProcedure
+                        CommandType = CommandType.StoredProcedure,
+                        CommandTimeout = 120 // Aumentar timeout a 2 minutos
                     };
 
                     using (var dr = cmd.ExecuteReader())
@@ -65,7 +66,11 @@ namespace ProyectoAeroline.Data
                 using (var conexion = new SqlConnection(conn.GetConnectionString()))
                 {
                     conexion.Open();
-                    SqlCommand cmd = new SqlCommand("sp_RolPantallaOpcionAgregar", conexion);
+                    SqlCommand cmd = new SqlCommand("sp_RolPantallaOpcionAgregar", conexion)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                        CommandTimeout = 120 // Aumentar timeout a 2 minutos
+                    };
                     cmd.Parameters.AddWithValue("@IdRol", oRolPantallaOpcion.IdRol);
                     cmd.Parameters.AddWithValue("@IdPantalla", oRolPantallaOpcion.IdPantalla);
                     cmd.Parameters.AddWithValue("@Ver", oRolPantallaOpcion.Ver);
@@ -73,7 +78,7 @@ namespace ProyectoAeroline.Data
                     cmd.Parameters.AddWithValue("@Editar", oRolPantallaOpcion.Editar);
                     cmd.Parameters.AddWithValue("@Eliminar", oRolPantallaOpcion.Eliminar);
                     cmd.Parameters.AddWithValue("@Estado", (object?)oRolPantallaOpcion.Estado ?? "Activo");
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@UsuarioCreacion", DBNull.Value); // Puedes obtenerlo del contexto si lo necesitas
                     cmd.ExecuteNonQuery();
                 }
 
@@ -98,9 +103,12 @@ namespace ProyectoAeroline.Data
                 using (var conexion = new SqlConnection(conn.GetConnectionString()))
                 {
                     conexion.Open();
-                    SqlCommand cmd = new SqlCommand("sp_RolPantallaOpcionBuscar", conexion);
+                    SqlCommand cmd = new SqlCommand("sp_RolPantallaOpcionBuscar", conexion)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                        CommandTimeout = 120 // Aumentar timeout a 2 minutos
+                    };
                     cmd.Parameters.AddWithValue("@IdRolPantallaOpcion", IdRolPantallaOpcion);
-                    cmd.CommandType = CommandType.StoredProcedure;
 
                     using (var dr = cmd.ExecuteReader())
                     {
@@ -141,7 +149,11 @@ namespace ProyectoAeroline.Data
                 using (var conexion = new SqlConnection(conn.GetConnectionString()))
                 {
                     conexion.Open();
-                    SqlCommand cmd = new SqlCommand("sp_RolPantallaOpcionModificar", conexion);
+                    SqlCommand cmd = new SqlCommand("sp_RolPantallaOpcionModificar", conexion)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                        CommandTimeout = 120 // Aumentar timeout a 2 minutos
+                    };
                     cmd.Parameters.AddWithValue("@IdRolPantallaOpcion", oRolPantallaOpcion.IdRolPantallaOpcion);
                     cmd.Parameters.AddWithValue("@IdRol", oRolPantallaOpcion.IdRol);
                     cmd.Parameters.AddWithValue("@IdPantalla", oRolPantallaOpcion.IdPantalla);
@@ -150,7 +162,7 @@ namespace ProyectoAeroline.Data
                     cmd.Parameters.AddWithValue("@Editar", oRolPantallaOpcion.Editar);
                     cmd.Parameters.AddWithValue("@Eliminar", oRolPantallaOpcion.Eliminar);
                     cmd.Parameters.AddWithValue("@Estado", (object?)oRolPantallaOpcion.Estado ?? "Activo");
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@UsuarioActualizacion", DBNull.Value); // Puedes obtenerlo del contexto si lo necesitas
                     cmd.ExecuteNonQuery();
                 }
 
@@ -175,9 +187,13 @@ namespace ProyectoAeroline.Data
                 using (var conexion = new SqlConnection(conn.GetConnectionString()))
                 {
                     conexion.Open();
-                    SqlCommand cmd = new SqlCommand("sp_RolPantallaOpcionEliminar", conexion);
+                    SqlCommand cmd = new SqlCommand("sp_RolPantallaOpcionEliminar", conexion)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                        CommandTimeout = 120 // Aumentar timeout a 2 minutos
+                    };
                     cmd.Parameters.AddWithValue("@IdRolPantallaOpcion", IdRolPantallaOpcion);
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@UsuarioEliminacion", DBNull.Value); // Puedes obtenerlo del contexto si lo necesitas
                     cmd.ExecuteNonQuery();
                 }
 

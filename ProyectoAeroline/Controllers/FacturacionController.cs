@@ -1,15 +1,19 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ProyectoAeroline.Attributes;
 using ProyectoAeroline.Data;
 using ProyectoAeroline.Models;
 
 namespace ProyectoAeroline.Controllers
 {
+    [Authorize]
     public class FacturacionController : Controller
     {
         FacturacionData _FacturacionData = new FacturacionData();
 
         // --- LISTAR FACTURACIÓN ---
+        [RequirePermission("Facturacion", "Ver")]
         public IActionResult Listar()
         {
             var oListaFacturacion = _FacturacionData.MtdConsultarFacturacion();
@@ -17,36 +21,32 @@ namespace ProyectoAeroline.Controllers
         }
 
         // --- MOSTRAR FORMULARIO GUARDAR ---
+        [RequirePermission("Facturacion", "Crear")]
         public IActionResult Guardar()
         {
-            ViewBag.Boletos = _FacturacionData.MtdListarBoletosActivos()
-                .Select(b => new SelectListItem
-                {
-                    Value = b.IdBoleto.ToString(),
-                    Text = $"Boleto {b.IdBoleto} - Vuelo {b.IdVuelo}"
-                }).ToList();
+            ViewBag.Boletos = _FacturacionData.MtdListarBoletosConPasajero();
 
             ViewBag.TiposPago = new List<SelectListItem>
             {
-                new SelectListItem { Value = "Efectivo", Text = "Efectivo" },
                 new SelectListItem { Value = "Tarjeta de Crédito", Text = "Tarjeta de Crédito" },
                 new SelectListItem { Value = "Tarjeta de Débito", Text = "Tarjeta de Débito" },
-                new SelectListItem { Value = "Transferencia", Text = "Transferencia" },
-                new SelectListItem { Value = "Cheque", Text = "Cheque" }
+                new SelectListItem { Value = "Efectivo", Text = "Efectivo" },
+                new SelectListItem { Value = "Transferencia", Text = "Transferencia" }
             };
 
             ViewBag.Monedas = new List<SelectListItem>
             {
-                new SelectListItem { Value = "USD", Text = "USD - Dólares" },
-                new SelectListItem { Value = "GTQ", Text = "GTQ - Quetzales" },
-                new SelectListItem { Value = "EUR", Text = "EUR - Euros" }
+                new SelectListItem { Value = "GTQ", Text = "GTQ" },
+                new SelectListItem { Value = "EURO", Text = "EURO" },
+                new SelectListItem { Value = "USD", Text = "USD" }
             };
 
             ViewBag.Estados = new List<SelectListItem>
             {
-                new SelectListItem { Value = "Activo", Text = "Activo" },
-                new SelectListItem { Value = "Cancelado", Text = "Cancelado" },
-                new SelectListItem { Value = "Anulado", Text = "Anulado" }
+                new SelectListItem { Value = "Pendiente", Text = "Pendiente" },
+                new SelectListItem { Value = "En proceso", Text = "En proceso" },
+                new SelectListItem { Value = "Cancelada", Text = "Cancelada" },
+                new SelectListItem { Value = "Pagada", Text = "Pagada" }
             };
 
             return View();
@@ -54,110 +54,118 @@ namespace ProyectoAeroline.Controllers
 
         // --- GUARDAR FACTURACIÓN (POST) ---
         [HttpPost]
+        [RequirePermission("Facturacion", "Crear")]
         public IActionResult Guardar(FacturacionModel oFacturacion)
         {
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && oFacturacion.IdBoleto > 0)
             {
-                // Si no se proporciona hora, usar la hora actual
-                if (oFacturacion.HoraEmision == null)
-                {
-                    oFacturacion.HoraEmision = DateTime.Now.TimeOfDay;
-                }
-
                 var respuesta = _FacturacionData.MtdAgregarFacturacion(oFacturacion);
                 if (respuesta)
+                {
+                    TempData["Success"] = "Factura guardada correctamente.";
                     return RedirectToAction("Listar");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Error al guardar la factura. Por favor, intente nuevamente.");
+                }
             }
 
             // Recargar combos si hay error
-            ViewBag.Boletos = _FacturacionData.MtdListarBoletosActivos()
-                .Select(b => new SelectListItem
-                {
-                    Value = b.IdBoleto.ToString(),
-                    Text = $"Boleto {b.IdBoleto} - Vuelo {b.IdVuelo}"
-                }).ToList();
-
-            ViewBag.TiposPago = new List<SelectListItem>
-            {
-                new SelectListItem { Value = "Efectivo", Text = "Efectivo" },
-                new SelectListItem { Value = "Tarjeta de Crédito", Text = "Tarjeta de Crédito" },
-                new SelectListItem { Value = "Tarjeta de Débito", Text = "Tarjeta de Débito" },
-                new SelectListItem { Value = "Transferencia", Text = "Transferencia" },
-                new SelectListItem { Value = "Cheque", Text = "Cheque" }
-            };
-
-            ViewBag.Monedas = new List<SelectListItem>
-            {
-                new SelectListItem { Value = "USD", Text = "USD - Dólares" },
-                new SelectListItem { Value = "GTQ", Text = "GTQ - Quetzales" },
-                new SelectListItem { Value = "EUR", Text = "EUR - Euros" }
-            };
-
-            ViewBag.Estados = new List<SelectListItem>
-            {
-                new SelectListItem { Value = "Activo", Text = "Activo" },
-                new SelectListItem { Value = "Cancelado", Text = "Cancelado" },
-                new SelectListItem { Value = "Anulado", Text = "Anulado" }
-            };
-
+            CargarCombos();
             return View(oFacturacion);
         }
 
-        // --- MOSTRAR FORMULARIO MODIFICAR ---
-        public IActionResult Modificar(int CodigoFactura)
+        // API para obtener datos del boleto (fecha, hora, monto, impuesto)
+        [HttpGet]
+        [RequirePermission("Facturacion", "Ver")]
+        public JsonResult ObtenerDatosBoleto(int idBoleto)
         {
-            var oFacturacion = _FacturacionData.MtdBuscarFacturacion(CodigoFactura);
+            if (idBoleto <= 0)
+                return Json(new { error = "ID de boleto inválido" });
 
-            ViewBag.Boletos = _FacturacionData.MtdListarBoletosActivos()
-                .Select(b => new SelectListItem
-                {
-                    Value = b.IdBoleto.ToString(),
-                    Text = $"Boleto {b.IdBoleto} - Vuelo {b.IdVuelo}"
-                }).ToList();
+            var datos = _FacturacionData.MtdObtenerDatosBoleto(idBoleto);
+            return Json(new
+            {
+                fechaEmision = datos.FechaCompra.ToString("yyyy-MM-dd"),
+                horaEmision = datos.HoraCompra.ToString(@"hh\:mm\:ss"),
+                monto = datos.Precio,
+                impuesto = datos.Impuesto ?? 0,
+                moneda = datos.Moneda,
+                montoFactura = datos.Precio + (datos.Impuesto ?? 0),
+                montoTotal = datos.Precio + (datos.Impuesto ?? 0)
+            });
+        }
+
+        private void CargarCombos()
+        {
+            ViewBag.Boletos = _FacturacionData.MtdListarBoletosConPasajero();
 
             ViewBag.TiposPago = new List<SelectListItem>
             {
-                new SelectListItem { Value = "Efectivo", Text = "Efectivo" },
                 new SelectListItem { Value = "Tarjeta de Crédito", Text = "Tarjeta de Crédito" },
                 new SelectListItem { Value = "Tarjeta de Débito", Text = "Tarjeta de Débito" },
-                new SelectListItem { Value = "Transferencia", Text = "Transferencia" },
-                new SelectListItem { Value = "Cheque", Text = "Cheque" }
+                new SelectListItem { Value = "Efectivo", Text = "Efectivo" },
+                new SelectListItem { Value = "Transferencia", Text = "Transferencia" }
             };
 
             ViewBag.Monedas = new List<SelectListItem>
             {
-                new SelectListItem { Value = "USD", Text = "USD - Dólares" },
-                new SelectListItem { Value = "GTQ", Text = "GTQ - Quetzales" },
-                new SelectListItem { Value = "EUR", Text = "EUR - Euros" }
+                new SelectListItem { Value = "GTQ", Text = "GTQ" },
+                new SelectListItem { Value = "EURO", Text = "EURO" },
+                new SelectListItem { Value = "USD", Text = "USD" }
             };
 
             ViewBag.Estados = new List<SelectListItem>
             {
-                new SelectListItem { Value = "Activo", Text = "Activo" },
-                new SelectListItem { Value = "Cancelado", Text = "Cancelado" },
-                new SelectListItem { Value = "Anulado", Text = "Anulado" }
+                new SelectListItem { Value = "Pendiente", Text = "Pendiente" },
+                new SelectListItem { Value = "En proceso", Text = "En proceso" },
+                new SelectListItem { Value = "Cancelada", Text = "Cancelada" },
+                new SelectListItem { Value = "Pagada", Text = "Pagada" }
             };
+        }
 
+        // --- MOSTRAR FORMULARIO MODIFICAR ---
+        [RequirePermission("Facturacion", "Editar")]
+        public IActionResult Modificar(int CodigoFactura)
+        {
+            var oFacturacion = _FacturacionData.MtdBuscarFacturacion(CodigoFactura);
+            if (oFacturacion == null || oFacturacion.IdFactura == 0)
+            {
+                TempData["Error"] = "La factura no existe.";
+                return RedirectToAction("Listar");
+            }
+
+            CargarCombos();
             return View(oFacturacion);
         }
 
         // --- MODIFICAR FACTURACIÓN (POST) ---
         [HttpPost]
+        [RequirePermission("Facturacion", "Editar")]
         public IActionResult Modificar(FacturacionModel oFacturacion)
         {
-            var respuesta = _FacturacionData.MtdEditarFacturacion(oFacturacion);
+            if (ModelState.IsValid)
+            {
+                var respuesta = _FacturacionData.MtdEditarFacturacion(oFacturacion);
 
-            if (respuesta == true)
-            {
-                return RedirectToAction("Listar");
+                if (respuesta)
+                {
+                    TempData["Success"] = "Factura modificada correctamente.";
+                    return RedirectToAction("Listar");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Error al modificar la factura.");
+                }
             }
-            else
-            {
-                return View();
-            }
+
+            CargarCombos();
+            return View(oFacturacion);
         }
 
         // --- MOSTRAR FORMULARIO ELIMINAR ---
+        [RequirePermission("Facturacion", "Eliminar")]
         public IActionResult Eliminar(int CodigoFactura)
         {
             var facturacion = _FacturacionData.MtdBuscarFacturacion(CodigoFactura);
@@ -173,26 +181,27 @@ namespace ProyectoAeroline.Controllers
 
         // --- ELIMINAR FACTURACIÓN (POST) ---
         [HttpPost]
+        [RequirePermission("Facturacion", "Eliminar")]
         public IActionResult Eliminar(FacturacionModel oFacturacion)
         {
             try
             {
-                bool respuesta = _FacturacionData.MtdEliminarFacturacion(oFacturacion.IdFactura);
+                var resultado = _FacturacionData.MtdEliminarFacturacionValidado(oFacturacion.IdFactura);
 
-                if (respuesta)
+                if (resultado.Success)
                 {
-                    TempData["Mensaje"] = "Factura eliminada correctamente.";
+                    TempData["Success"] = "Factura eliminada correctamente.";
                     return RedirectToAction("Listar");
                 }
                 else
                 {
-                    ModelState.AddModelError("", "No se pudo eliminar la factura.");
+                    TempData["Error"] = resultado.ErrorMessage;
                     return View(oFacturacion);
                 }
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "Error al eliminar: " + ex.Message);
+                TempData["Error"] = "Error al eliminar: " + ex.Message;
                 return View(oFacturacion);
             }
         }

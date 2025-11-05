@@ -1,0 +1,232 @@
+@model ProyectoAeroline.Models.EmpleadosModel
+
+@{
+    ViewData["Title"] = "Perfil de Empleado";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 mt-4 animate__animated animate__fadeInUp">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-gradient text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center header-glow">
+            <h3 class="mb-0">
+                👤 <i class="bi bi-person-badge"></i> <strong>Perfil de Empleado</strong>
+            </h3>
+            <a href="/Empleados/Listar" class="btn btn-light btn-sm fw-bold fancy-btn-cancel">
+                🔙 <i class="bi bi-arrow-left-circle"></i> Regresar
+            </a>
+        </div>
+
+        <div class="card-body bg-light">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>✅ Éxito:</strong> @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>❌ Error:</strong> @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <!-- Vista previa de los datos del empleado -->
+            <div class="mb-4">
+                <div class="row g-4">
+                    <!-- Información Personal -->
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm border-primary">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">👤 Información Personal</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th class="w-50">🆔 ID Empleado:</th>
+                                        <td><strong>#@Model.IdEmpleado</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <th>📝 Nombre:</th>
+                                        <td><strong>@Model.Nombre</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <th>💼 Cargo:</th>
+                                        <td>@Model.Cargo</td>
+                                    </tr>
+                                    <tr>
+                                        <th>⚙️ Estado:</th>
+                                        <td>
+                                            <span class="badge @(Model.Estado == "Activo" ? "bg-success" : "bg-danger") px-3 py-2 rounded-pill">
+                                                @Model.Estado
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>🆔 ID Usuario:</th>
+                                        <td>@Model.IdUsuario</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información de Contacto -->
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm border-success">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">📞 Información de Contacto</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th class="w-50">📧 Correo:</th>
+                                        <td>@Model.Correo</td>
+                                    </tr>
+                                    <tr>
+                                        <th>📱 Teléfono:</th>
+                                        <td>@Model.Telefono</td>
+                                    </tr>
+                                    <tr>
+                                        <th>📍 Dirección:</th>
+                                        <td>@(Model.Direccion ?? "N/A")</td>
+                                    </tr>
+                                    <tr>
+                                        <th>🚨 Contacto Emergencia:</th>
+                                        <td>@Model.ContactoEmergencia</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información Profesional -->
+                    <div class="col-md-6">
+                        <div class="card shadow-sm border-info">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0">💼 Información Profesional</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th class="w-50">📜 Licencia:</th>
+                                        <td>@(Model.Licencia ?? "N/A")</td>
+                                    </tr>
+                                    <tr>
+                                        <th>📅 Fecha Ingreso:</th>
+                                        <td><strong>@Model.FechaIngreso.ToString("dd/MM/yyyy")</strong></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información Financiera -->
+                    <div class="col-md-6">
+                        <div class="card shadow-sm border-warning">
+                            <div class="card-header bg-warning text-dark">
+                                <h5 class="mb-0">💰 Información Financiera</h5>
+                            </div>
+                            <div class="card-body text-center d-flex align-items-center justify-content-center">
+                                <div class="p-4 bg-light rounded-3 border border-warning w-100">
+                                    <h6 class="text-muted mb-2">SALARIO</h6>
+                                    <h2 class="text-warning mb-0">
+                                        <strong>Q @Model.Salario.ToString("N2")</strong>
+                                    </h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="d-flex justify-content-center gap-3 flex-wrap mt-4">
+                <a href="@Url.Action("DescargarPerfil", "Empleados", new { idEmpleado = Model.IdEmpleado })" 
+                   class="btn btn-primary px-4 py-3 fancy-btn-download">
+                    📥 <i class="bi bi-download"></i> Descargar PDF
+                </a>
+
+                @if (!string.IsNullOrWhiteSpace(Model.Correo))
+                {
+                    <form asp-action="EnviarPerfil" method="post" style="display: inline;">
+                        <input type="hidden" name="idEmpleado" value="@Model.IdEmpleado" />
+                        <button type="submit" class="btn btn-success px-4 py-3 fancy-btn-send">
+                            📧 <i class="bi bi-envelope"></i> Enviar a @Model.Correo
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-secondary px-4 py-3" disabled title="El empleado no tiene correo electrónico registrado">
+                        📧 <i class="bi bi-envelope"></i> Sin Correo
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    
+    <style>
+        .bg-gradient {
+            background: linear-gradient(135deg, #007bff, #00b4d8);
+        }
+
+        .header-glow {
+            box-shadow: 0 0 25px rgba(0, 174, 255, 0.6);
+        }
+
+        .fancy-btn, .fancy-btn-download, .fancy-btn-send, .fancy-btn-cancel, .fancy-cancel {
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .fancy-btn:hover, .fancy-btn-download:hover, .fancy-btn-send:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(0, 174, 255, 0.6);
+        }
+
+        .fancy-btn-cancel:hover, .fancy-cancel:hover {
+            transform: scale(1.05);
+        }
+
+        .card {
+            transition: 0.4s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.01);
+            box-shadow: 0 0 25px rgba(0, 123, 255, 0.3);
+        }
+
+        .card.shadow-sm {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card.shadow-sm:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+
+        table.table-borderless th {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        table.table-borderless td {
+            color: #212529;
+        }
+
+        .badge {
+            font-size: 0.875rem;
+            padding: 0.5rem 0.75rem;
+        }
+    </style>
+}
+

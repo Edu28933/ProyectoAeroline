@@ -2,14 +2,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ProyectoAeroline.Data;
 using ProyectoAeroline.Models;
+using Microsoft.AspNetCore.Authorization;
+using ProyectoAeroline.Attributes;
 
 namespace ProyectoAeroline.Controllers
 {
+    [Authorize]
     public class HistorialesController : Controller
     {
         HistorialesData _HistorialesData = new HistorialesData();
 
         // --- LISTAR HISTORIALES ---
+        [RequirePermission("Historiales", "Ver")]
         public IActionResult Listar()
         {
             var oListaHistoriales = _HistorialesData.MtdConsultarHistoriales();
@@ -17,6 +21,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // --- MOSTRAR FORMULARIO GUARDAR ---
+        [RequirePermission("Historiales", "Crear")]
         public IActionResult Guardar()
         {
             ViewBag.Boletos = _HistorialesData.MtdListarBoletosActivos()
@@ -52,6 +57,7 @@ namespace ProyectoAeroline.Controllers
 
         // --- GUARDAR HISTORIAL (POST) ---
         [HttpPost]
+        [RequirePermission("Historiales", "Crear")]
         public IActionResult Guardar(HistorialesModel oHistorial)
         {
             if (ModelState.IsValid)
@@ -94,6 +100,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // --- MOSTRAR FORMULARIO MODIFICAR ---
+        [RequirePermission("Historiales", "Editar")]
         public IActionResult Modificar(int CodigoHistorial)
         {
             var oHistorial = _HistorialesData.MtdBuscarHistorial(CodigoHistorial);
@@ -131,6 +138,7 @@ namespace ProyectoAeroline.Controllers
 
         // --- MODIFICAR HISTORIAL (POST) ---
         [HttpPost]
+        [RequirePermission("Historiales", "Editar")]
         public IActionResult Modificar(HistorialesModel oHistorial)
         {
             var respuesta = _HistorialesData.MtdEditarHistorial(oHistorial);
@@ -146,6 +154,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // --- MOSTRAR FORMULARIO ELIMINAR ---
+        [RequirePermission("Historiales", "Eliminar")]
         public IActionResult Eliminar(int CodigoHistorial)
         {
             var historial = _HistorialesData.MtdBuscarHistorial(CodigoHistorial);
@@ -161,6 +170,7 @@ namespace ProyectoAeroline.Controllers
 
         // --- ELIMINAR HISTORIAL (POST) ---
         [HttpPost]
+        [RequirePermission("Historiales", "Eliminar")]
         public IActionResult Eliminar(HistorialesModel oHistorial)
         {
             try

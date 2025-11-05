@@ -2,14 +2,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ProyectoAeroline.Data;
 using ProyectoAeroline.Models;
+using Microsoft.AspNetCore.Authorization;
+using ProyectoAeroline.Attributes;
 
 namespace ProyectoAeroline.Controllers
 {
+    [Authorize]
     public class EscalasController : Controller
     {
         private readonly EscalasData _EscalasData = new EscalasData();
 
         // ✅ LISTAR
+        [RequirePermission("Escalas", "Ver")]
         public IActionResult Listar()
         {
             var lista = _EscalasData.MtdConsultarEscalas();
@@ -17,6 +21,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // ✅ GET: GUARDAR
+        [RequirePermission("Escalas", "Crear")]
         public IActionResult Guardar()
         {
             CargarCombos();
@@ -26,6 +31,7 @@ namespace ProyectoAeroline.Controllers
         // ✅ POST: GUARDAR
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RequirePermission("Escalas", "Crear")]
         public IActionResult Guardar(EscalasModel oEscala)
         {
             // Inicializar modelo si es null
@@ -121,6 +127,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // ✅ GET: MODIFICAR
+        [RequirePermission("Escalas", "Editar")]
         public IActionResult Modificar(int IdEscala)
         {
             if (IdEscala <= 0)
@@ -140,6 +147,7 @@ namespace ProyectoAeroline.Controllers
         // ✅ POST: MODIFICAR
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RequirePermission("Escalas", "Editar")]
         public IActionResult Modificar(EscalasModel oEscala)
         {
             // Inicializar modelo si es null
@@ -255,6 +263,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // ✅ GET: ELIMINAR
+        [RequirePermission("Escalas", "Eliminar")]
         public IActionResult Eliminar(int IdEscala)
         {
             var oEscala = _EscalasData.MtdBuscarEscala(IdEscala);
@@ -267,6 +276,7 @@ namespace ProyectoAeroline.Controllers
         // ✅ POST: ELIMINAR
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RequirePermission("Escalas", "Eliminar")]
         public IActionResult Eliminar(EscalasModel oEscala)
         {
             if (oEscala == null || oEscala.IdEscala <= 0)

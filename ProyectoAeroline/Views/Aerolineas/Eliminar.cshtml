@@ -65,6 +65,22 @@
     <script>
         // Confirmación con estilo
         function confirmarEliminacion() {
+            // Estados que no permiten eliminación
+            const estadosProhibidos = ['Activo'];
+            const estado = '@Model.Estado';
+            
+            // Validar estado
+            if (estadosProhibidos.includes(estado)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: '⚠️ No se puede eliminar',
+                    html: `❌ <strong>La aerolínea tiene estado "${estado}"</strong><br><br>Por favor, cambie el estado a "Inactivo" antes de intentar eliminar.`,
+                    confirmButtonColor: '#dc3545',
+                    confirmButtonText: 'Entendido'
+                });
+                return;
+            }
+
             Swal.fire({
                 title: '¿Eliminar Aerolínea?',
                 html: `✈️ <b>@Model.Nombre</b> será eliminada permanentemente.`,

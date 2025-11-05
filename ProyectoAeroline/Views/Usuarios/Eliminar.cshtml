@@ -1,67 +1,155 @@
 ﻿@model ProyectoAeroline.Models.UsuariosModel
+
 @{
     ViewData["Title"] = "Eliminar Usuario";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<div class="container-fluid px-4 mt-4">
+<div class="container-fluid px-4 mt-4 animate__animated animate__fadeInUp">
     <div class="card shadow-lg border-0 rounded-4">
-        <div class="card-header bg-danger text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center">
+        <div class="card-header bg-gradient-danger text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center header-glow-danger">
             <h3 class="mb-0">
-                <i class="bi bi-person-x-fill"></i> Eliminar Usuario
+                🗑️ <i class="bi bi-person-x-fill"></i> <strong>Eliminar Usuario</strong>
             </h3>
-            <a href="/Usuarios/Listar" class="btn btn-light btn-sm fw-bold">
-                <i class="bi bi-arrow-left-circle"></i> Regresar
+            <a href="/Usuarios/Listar" class="btn btn-light btn-sm fw-bold fancy-btn-cancel">
+                🔙 <i class="bi bi-arrow-left-circle"></i> Regresar
             </a>
         </div>
 
-        <div class="card-body bg-light">
-            <h5 class="text-center mb-4 text-danger fw-semibold">
-                ¿Seguro que deseas eliminar este usuario?
+        <div class="card-body bg-light text-center">
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>❌ Error:</strong> @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <h5 class="text-danger fw-bold mb-4 animate__animated animate__pulse animate__infinite">
+                ⚠️ ¿Estás seguro de que deseas eliminar este usuario?
             </h5>
 
-            <form asp-action="Eliminar" method="post">
-                @Html.AntiForgeryToken()
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered shadow-sm align-middle">
+                    <tr><th>🆔 ID Usuario</th><td>@Model.IdUsuario</td></tr>
+                    <tr><th>🛡️ Rol</th><td>@Model.IdRol</td></tr>
+                    <tr><th>👤 Nombre</th><td>@Model.Nombre</td></tr>
+                    <tr><th>📧 Correo</th><td>@(Model.Correo ?? "N/A")</td></tr>
+                    <tr>
+                        <th>⚙️ Estado</th>
+                        <td>
+                            <span class="badge @(Model.Estado == "Activo" ? "bg-success" : "bg-danger") px-3 py-2 rounded-pill shadow-sm">
+                                @(Model.Estado == "Activo" ? "🟢 Activo" : "🔴 Inactivo")
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
 
-                <!-- Campo oculto: ESTE ES CLAVE -->
+            <form id="formEliminarUsuario" asp-action="Eliminar" method="post">
+                @Html.AntiForgeryToken()
                 <input type="hidden" asp-for="IdUsuario" />
 
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">ID Usuario</label>
-                        <input class="form-control" value="@Model.IdUsuario" readonly />
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Rol</label>
-                        <input class="form-control" value="@Model.IdRol" readonly />
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Nombre</label>
-                        <input class="form-control" value="@Model.Nombre" readonly />
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Correo</label>
-                        <input class="form-control" value="@(Model.Correo ?? "N/A")" readonly />
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Estado</label>
-                        <input class="form-control" value="@Model.Estado" readonly />
-                    </div>
-                </div>
-
-                <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-danger px-4 me-2">
-                        <i class="bi bi-trash3-fill"></i> Eliminar definitivamente
-                    </button>
-                    <a href="/Usuarios/Listar" class="btn btn-outline-secondary px-4">
-                        <i class="bi bi-x-circle"></i> Cancelar
-                    </a>
-                </div>
+                <button type="button" class="btn btn-danger px-4 me-2 fancy-delete" onclick="confirmarEliminacion()">
+                    💣 <i class="bi bi-trash3-fill"></i> Eliminar
+                </button>
+                <a href="/Usuarios/Listar" class="btn btn-outline-secondary px-4 fancy-cancel">
+                    🙅‍♂️ <i class="bi bi-x-circle"></i> Cancelar
+                </a>
             </form>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function confirmarEliminacion() {
+            // Estados que no permiten eliminación
+            const estadosProhibidos = ['Activo'];
+            const estado = '@Model.Estado';
+            
+            // Validar estado
+            if (estadosProhibidos.includes(estado)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: '⚠️ No se puede eliminar',
+                    html: `❌ <strong>El usuario tiene estado "${estado}"</strong><br><br>Por favor, cambie el estado a "Inactivo" antes de intentar eliminar.`,
+                    confirmButtonColor: '#dc3545',
+                    confirmButtonText: 'Entendido'
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: '¿Eliminar Usuario?',
+                html: `👤 <b>@Model.Nombre</b> será eliminado permanentemente.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                backdrop: 'rgba(0,0,0,0.4)'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Enviar el formulario directamente sin mostrar mensaje de éxito
+                    // El servidor manejará el resultado y mostrará el mensaje apropiado
+                    document.getElementById('formEliminarUsuario').submit();
+                }
+            });
+        }
+    </script>
+
+    <style>
+        .bg-gradient-danger {
+            background: linear-gradient(135deg, #dc3545, #ff6b6b);
+        }
+
+        .header-glow-danger {
+            box-shadow: 0 0 25px rgba(255, 0, 0, 0.6);
+        }
+
+        .fancy-delete, .fancy-cancel {
+            border-radius: 30px;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+        }
+
+            .fancy-delete:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(220,53,69,0.6);
+            }
+
+            .fancy-cancel:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(108,117,125,0.5);
+            }
+
+        table th {
+            background-color: #f8d7da;
+            color: #721c24;
+            width: 30%;
+        }
+
+        table td {
+            background-color: #fff;
+        }
+
+        table tr:hover td {
+            background-color: #ffe6e6;
+            transition: 0.2s ease-in-out;
+        }
+
+        .card {
+            transition: 0.4s ease;
+        }
+
+            .card:hover {
+                transform: scale(1.02);
+                box-shadow: 0 0 25px rgba(255,0,0,0.3);
+            }
+    </style>
+}

@@ -2,14 +2,18 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ProyectoAeroline.Data;
 using ProyectoAeroline.Models;
+using Microsoft.AspNetCore.Authorization;
+using ProyectoAeroline.Attributes;
 
 namespace ProyectoAeroline.Controllers
 {
+    [Authorize]
     public class VuelosController : Controller
     {
         private readonly VuelosData _VuelosData = new VuelosData();
 
         // ✅ LISTAR
+        [RequirePermission("Vuelos", "Ver")]
         public IActionResult Listar()
         {
             var lista = _VuelosData.MtdConsultarVuelos();
@@ -17,6 +21,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // ✅ GET: GUARDAR
+        [RequirePermission("Vuelos", "Crear")]
         public IActionResult Guardar()
         {
             CargarCombos();
@@ -25,6 +30,7 @@ namespace ProyectoAeroline.Controllers
 
         // ✅ POST: GUARDAR
         [HttpPost]
+        [RequirePermission("Vuelos", "Crear")]
         public IActionResult Guardar(VuelosModel oVuelo)
         {
             // Si se seleccionó IdAerolinea pero no se llenó Aerolinea, obtener el nombre
@@ -65,6 +71,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // ✅ GET: MODIFICAR
+        [RequirePermission("Vuelos", "Editar")]
         public IActionResult Modificar(int IdVuelo)
         {
             var oVuelo = _VuelosData.MtdBuscarVuelo(IdVuelo);
@@ -89,6 +96,7 @@ namespace ProyectoAeroline.Controllers
 
         // ✅ POST: MODIFICAR
         [HttpPost]
+        [RequirePermission("Vuelos", "Editar")]
         public IActionResult Modificar(VuelosModel oVuelo)
         {
             // Si se seleccionó IdAerolinea pero no se llenó Aerolinea, obtener el nombre
@@ -129,6 +137,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // ✅ GET: ELIMINAR
+        [RequirePermission("Vuelos", "Eliminar")]
         public IActionResult Eliminar(int IdVuelo)
         {
             var oVuelo = _VuelosData.MtdBuscarVuelo(IdVuelo);
@@ -140,6 +149,7 @@ namespace ProyectoAeroline.Controllers
 
         // ✅ POST: ELIMINAR
         [HttpPost]
+        [RequirePermission("Vuelos", "Eliminar")]
         public IActionResult Eliminar(VuelosModel oVuelo)
         {
             try
@@ -167,6 +177,7 @@ namespace ProyectoAeroline.Controllers
         // ✅ API para el precio dinámico
         [HttpGet]
         [Route("api/vuelos/precio")]
+        [RequirePermission("Vuelos", "Ver")]
         public IActionResult ObtenerPrecio(string origen, string destino)
         {
             if (string.IsNullOrEmpty(origen) || string.IsNullOrEmpty(destino))
@@ -178,6 +189,7 @@ namespace ProyectoAeroline.Controllers
 
         // API para obtener código IATA de aeropuerto
         [HttpGet]
+        [RequirePermission("Vuelos", "Ver")]
         public JsonResult ObtenerCodigoIATA(string nombreAeropuerto)
         {
             if (string.IsNullOrEmpty(nombreAeropuerto))
@@ -189,6 +201,7 @@ namespace ProyectoAeroline.Controllers
 
         // API para obtener capacidad del avión
         [HttpGet]
+        [RequirePermission("Vuelos", "Ver")]
         public JsonResult ObtenerCapacidadAvion(int idAvion)
         {
             if (idAvion <= 0)

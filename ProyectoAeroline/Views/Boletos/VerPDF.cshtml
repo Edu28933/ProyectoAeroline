@@ -1,0 +1,353 @@
+@model ProyectoAeroline.Controllers.VerBoletoViewModel
+
+@{
+    ViewData["Title"] = "Ver Boleto";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid px-4 mt-4 animate__animated animate__fadeInUp">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-gradient text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center header-glow">
+            <h3 class="mb-0">
+                🎫 <i class="bi bi-ticket-perforated"></i> <strong>Boleto de Vuelo</strong>
+            </h3>
+            <a href="/Boletos/Listar" class="btn btn-light btn-sm fw-bold fancy-btn-cancel">
+                🔙 <i class="bi bi-arrow-left-circle"></i> Regresar
+            </a>
+        </div>
+
+        <div class="card-body bg-light">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>✅ Éxito:</strong> @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>❌ Error:</strong> @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <!-- Vista previa de los datos del boleto -->
+            <div class="mb-4">
+                <div class="row g-4">
+                    <!-- Información del Boleto -->
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm border-primary">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">🎫 Información del Boleto</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th class="w-50">🆔 ID Boleto:</th>
+                                        <td><strong>#@Model.Boleto?.IdBoleto</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <th>📅 Fecha de Compra:</th>
+                                        <td>@Model.Boleto?.FechaCompra.ToString("dd/MM/yyyy HH:mm")</td>
+                                    </tr>
+                                    <tr>
+                                        <th>⚙️ Estado:</th>
+                                        <td>
+                                            <span class="badge @(Model.Boleto?.Estado == "Pendiente" ? "bg-warning text-dark" : Model.Boleto?.Estado == "Confirmado" ? "bg-success" : Model.Boleto?.Estado == "Utilizado" ? "bg-info" : "bg-secondary") px-3 py-2 rounded-pill">
+                                                @Model.Boleto?.Estado
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>💺 Número de Asiento:</th>
+                                        <td><strong>@(Model.Boleto?.NumeroAsiento ?? "N/A")</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <th>🎫 Clase:</th>
+                                        <td>@(Model.Boleto?.Clase ?? "N/A")</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información del Pasajero -->
+                    <div class="col-md-6">
+                        <div class="card h-100 shadow-sm border-success">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0">👤 Información del Pasajero</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th class="w-50">Nombre Completo:</th>
+                                        <td><strong>@(Model.Pasajero?.Nombres ?? "") @(Model.Pasajero?.Apellidos ?? "")</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <th>📄 Pasaporte:</th>
+                                        <td>@(Model.Pasajero?.Pasaporte ?? "N/A")</td>
+                                    </tr>
+                                    <tr>
+                                        <th>📧 Correo:</th>
+                                        <td>@(Model.Pasajero?.Correo ?? "N/A")</td>
+                                    </tr>
+                                    <tr>
+                                        <th>📱 Teléfono:</th>
+                                        <td>@(Model.Pasajero?.Telefono?.ToString() ?? "N/A")</td>
+                                    </tr>
+                                    <tr>
+                                        <th>🌍 Nacionalidad:</th>
+                                        <td>@(Model.Pasajero?.Nacionalidad ?? "N/A")</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información del Vuelo -->
+                    <div class="col-md-12">
+                        <div class="card shadow-sm border-info">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0">✈️ Información del Vuelo</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <table class="table table-borderless">
+                                            <tr>
+                                                <th class="w-50">✈️ Aerolínea:</th>
+                                                <td><strong>@(Model.Vuelo?.Aerolinea ?? "N/A")</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <th>🔢 Número de Vuelo:</th>
+                                                <td>@(Model.Vuelo?.NumeroVuelo ?? "N/A")</td>
+                                            </tr>
+                                            <tr>
+                                                <th>🛫 Origen:</th>
+                                                <td>
+                                                    <strong>@(Model.Vuelo?.AeropuertoOrigen ?? "N/A")</strong>
+                                                    @if (!string.IsNullOrEmpty(Model.Vuelo?.CodigoIATAOrigen))
+                                                    {
+                                                        <span class="badge bg-secondary">@Model.Vuelo.CodigoIATAOrigen</span>
+                                                    }
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>🛬 Destino:</th>
+                                                <td>
+                                                    <strong>@(Model.Vuelo?.AeropuertoDestino ?? "N/A")</strong>
+                                                    @if (!string.IsNullOrEmpty(Model.Vuelo?.CodigoIATADestino))
+                                                    {
+                                                        <span class="badge bg-secondary">@Model.Vuelo.CodigoIATADestino</span>
+                                                    }
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <table class="table table-borderless">
+                                            <tr>
+                                                <th class="w-50">🕐 Fecha Salida:</th>
+                                                <td><strong>@(Model.Vuelo?.FechaHoraSalida?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <th>🕑 Fecha Llegada:</th>
+                                                <td><strong>@(Model.Vuelo?.FechaHoraLlegada?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")</strong></td>
+                                            </tr>
+                                            <tr>
+                                                <th>💺 Asientos Disponibles:</th>
+                                                <td>@(Model.Vuelo?.AsientosDisponibles?.ToString() ?? "N/A")</td>
+                                            </tr>
+                                            <tr>
+                                                <th>💰 Moneda:</th>
+                                                <td>@(Model.Vuelo?.Moneda ?? "N/A")</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información de Precios -->
+                    <div class="col-md-12">
+                        <div class="card shadow-sm border-warning">
+                            <div class="card-header bg-warning text-dark">
+                                <h5 class="mb-0">💰 Información de Precios</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <table class="table table-borderless">
+                                            <tr>
+                                                <th class="w-50">💵 Precio Base:</th>
+                                                <td><strong>Q @(Model.Boleto?.Precio.ToString("N2") ?? "0.00")</strong></td>
+                                            </tr>
+                                            @if (Model.Boleto?.Descuento > 0)
+                                            {
+                                                <tr>
+                                                    <th>🎁 Descuento:</th>
+                                                    <td class="text-success">- Q @(Model.Boleto.Descuento.Value.ToString("N2"))</td>
+                                                </tr>
+                                            }
+                                            @if (Model.Boleto?.Impuesto > 0)
+                                            {
+                                                <tr>
+                                                    <th>📊 Impuesto:</th>
+                                                    <td>+ Q @(Model.Boleto.Impuesto.Value.ToString("N2"))</td>
+                                                </tr>
+                                            }
+                                            @if (Model.Boleto?.Cantidad > 0)
+                                            {
+                                                <tr>
+                                                    <th>🔢 Cantidad:</th>
+                                                    <td>@Model.Boleto.Cantidad</td>
+                                                </tr>
+                                            }
+                                        </table>
+                                    </div>
+                                    <div class="col-md-6 text-center d-flex align-items-center justify-content-center">
+                                        <div class="p-4 bg-light rounded-3 border border-warning">
+                                            <h6 class="text-muted mb-2">TOTAL A PAGAR</h6>
+                                            <h2 class="text-warning mb-0">
+                                                <strong>Q @(Model.Boleto?.Total.ToString("N2") ?? "0.00")</strong>
+                                            </h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="d-flex justify-content-center gap-3 flex-wrap mt-4">
+                <a href="@Url.Action("DescargarBoleto", "Boletos", new { idBoleto = Model.IdBoleto })" 
+                   class="btn btn-primary px-4 py-3 fancy-btn-download">
+                    📥 <i class="bi bi-download"></i> Descargar PDF
+                </a>
+
+                <button type="button" class="btn btn-success px-4 py-3 fancy-btn-send" 
+                        data-bs-toggle="modal" data-bs-target="#modalEnviarEmail">
+                    📧 <i class="bi bi-envelope"></i> Enviar por Email
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para enviar email -->
+<div class="modal fade" id="modalEnviarEmail" tabindex="-1" aria-labelledby="modalEnviarEmailLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-gradient text-white">
+                <h5 class="modal-title" id="modalEnviarEmailLabel">
+                    📧 <i class="bi bi-envelope"></i> Enviar Boleto por Email
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="EnviarBoleto" method="post" id="formEnviarEmail">
+                <div class="modal-body">
+                    <input type="hidden" name="idBoleto" value="@Model.IdBoleto" />
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label fw-bold">
+                            📧 <i class="bi bi-envelope"></i> Correo Electrónico
+                        </label>
+                        <input type="email" 
+                               class="form-control rounded-3" 
+                               id="email" 
+                               name="email" 
+                               placeholder="ejemplo@correo.com" 
+                               required>
+                        <small class="form-text text-muted">
+                            Se enviará el PDF del boleto y un enlace para confirmar.
+                        </small>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>ℹ️ Información:</strong><br>
+                        El email incluirá el PDF del boleto adjunto y un botón para confirmar el boleto.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary fancy-cancel" data-bs-dismiss="modal">
+                        🙅‍♂️ Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-success fancy-btn">
+                        📤 <i class="bi bi-send"></i> Enviar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    
+    <style>
+        .bg-gradient {
+            background: linear-gradient(135deg, #007bff, #00b4d8);
+        }
+
+        .header-glow {
+            box-shadow: 0 0 25px rgba(0, 174, 255, 0.6);
+        }
+
+        .fancy-btn, .fancy-btn-download, .fancy-btn-send, .fancy-btn-cancel, .fancy-cancel {
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .fancy-btn:hover, .fancy-btn-download:hover, .fancy-btn-send:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(0, 174, 255, 0.6);
+        }
+
+        .fancy-btn-cancel:hover, .fancy-cancel:hover {
+            transform: scale(1.05);
+        }
+
+        .card {
+            transition: 0.4s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.01);
+            box-shadow: 0 0 25px rgba(0, 123, 255, 0.3);
+        }
+
+        .modal-header.bg-gradient {
+            background: linear-gradient(135deg, #007bff, #00b4d8);
+        }
+
+        .card.shadow-sm {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card.shadow-sm:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+
+        table.table-borderless th {
+            font-weight: 600;
+            color: #495057;
+        }
+
+        table.table-borderless td {
+            color: #212529;
+        }
+
+        .badge {
+            font-size: 0.875rem;
+            padding: 0.5rem 0.75rem;
+        }
+    </style>
+}
+

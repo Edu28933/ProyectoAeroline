@@ -2,19 +2,24 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ProyectoAeroline.Data;
 using ProyectoAeroline.Models;
+using Microsoft.AspNetCore.Authorization;
+using ProyectoAeroline.Attributes;
 
 namespace ProyectoAeroline.Controllers
 {
+    [Authorize]
     public class AerolineasController : Controller
     {
         AerolineasData _AerolineasData = new AerolineasData();
 
+        [RequirePermission("Aerolineas", "Ver")]
         public IActionResult Listar()
         {
             var lista = _AerolineasData.MtdConsultarAerolineas();
             return View(lista);
         }
 
+        [RequirePermission("Aerolineas", "Crear")]
         public IActionResult Guardar()
         {
             var oAerolinea = new AerolineasModel();
@@ -28,6 +33,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         [HttpPost]
+        [RequirePermission("Aerolineas", "Crear")]
         public IActionResult Guardar(AerolineasModel oAerolinea)
         {
             // Asignar valores automáticos si no están establecidos
@@ -57,6 +63,7 @@ namespace ProyectoAeroline.Controllers
             return View(oAerolinea);
         }
 
+        [RequirePermission("Aerolineas", "Editar")]
         public IActionResult Modificar(int IdAerolinea)
         {
             var oAerolinea = _AerolineasData.MtdBuscarAerolinea(IdAerolinea);
@@ -69,6 +76,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         [HttpPost]
+        [RequirePermission("Aerolineas", "Editar")]
         public IActionResult Modificar(AerolineasModel oAerolinea)
         {
             // Asignar valores automáticos siempre según país y ciudad
@@ -102,6 +110,7 @@ namespace ProyectoAeroline.Controllers
             return View(oAerolinea);
         }
 
+        [RequirePermission("Aerolineas", "Eliminar")]
         public IActionResult Eliminar(int IdAerolinea)
         {
             var oAerolinea = _AerolineasData.MtdBuscarAerolinea(IdAerolinea);
@@ -109,6 +118,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         [HttpPost]
+        [RequirePermission("Aerolineas", "Eliminar")]
         public IActionResult Eliminar(AerolineasModel oAerolinea)
         {
             var respuesta = _AerolineasData.MtdEliminarAerolinea(oAerolinea.IdAerolinea);
@@ -120,6 +130,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // Método JSON para Ajax: obtener ciudades por país
+        [RequirePermission("Aerolineas", "Ver")]
         public JsonResult ObtenerCiudades(string pais)
         {
             var ciudades = ObtenerCiudadesPorPais(pais);
@@ -127,6 +138,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // Método JSON para Ajax: obtener código IATA según país
+        [RequirePermission("Aerolineas", "Ver")]
         public JsonResult ObtenerCodigoIATA(string pais)
         {
             var iata = ObtenerCodigoIATAPorPais(pais);
@@ -134,6 +146,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // Método JSON para Ajax: obtener dirección según país y ciudad
+        [RequirePermission("Aerolineas", "Ver")]
         public JsonResult ObtenerDireccion(string pais, string ciudad)
         {
             var direccion = ObtenerDireccionPorPaisYCiudad(pais, ciudad);
@@ -141,6 +154,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // Método JSON para Ajax: obtener teléfono según país
+        [RequirePermission("Aerolineas", "Ver")]
         public JsonResult ObtenerTelefono(string pais)
         {
             var telefono = ObtenerTelefonoPorPais(pais);

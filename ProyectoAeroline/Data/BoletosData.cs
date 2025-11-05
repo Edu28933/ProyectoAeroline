@@ -471,5 +471,81 @@ namespace ProyectoAeroline.Data
             return vuelo;
         }
 
+        // --- OBTENER INFORMACIÓN COMPLETA DEL BOLETO PARA PDF ---
+        public class BoletoCompletoInfo
+        {
+            public BoletosModel? Boleto { get; set; }
+            public VuelosModel? Vuelo { get; set; }
+            public PasajerosModel? Pasajero { get; set; }
+        }
+
+        public BoletoCompletoInfo MtdObtenerBoletoCompleto(int idBoleto)
+        {
+            var info = new BoletoCompletoInfo();
+            var conn = new Conexion();
+
+            try
+            {
+                using (var conexion = new SqlConnection(conn.GetConnectionString()))
+                {
+                    conexion.Open();
+                    
+                    // Obtener boleto
+                    var boleto = MtdBuscarBoleto(idBoleto);
+                    if (boleto == null || boleto.IdBoleto == 0)
+                        return null;
+
+                    info.Boleto = boleto;
+
+                    // Obtener vuelo completo
+                    var vueloData = new VuelosData();
+                    var vuelo = vueloData.MtdBuscarVuelo(boleto.IdVuelo);
+                    info.Vuelo = vuelo ?? new VuelosModel();
+
+                    // Obtener pasajero completo
+                    var pasajeroData = new PasajerosData();
+                    var pasajero = pasajeroData.MtdBuscarPasajero(boleto.IdPasajero);
+                    info.Pasajero = pasajero ?? new PasajerosModel();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al obtener información completa del boleto: {ex.Message}");
+                return null;
+            }
+
+            return info;
+        }
+
+        // --- ACTUALIZAR ESTADO DEL BOLETO A CONFIRMADO ---
+        public bool MtdConfirmarBoleto(int idBoleto)
+        {
+            bool respuesta = false;
+            var conn = new Conexion();
+
+            try
+            {
+                using (var conexion = new SqlConnection(conn.GetConnectionString()))
+                {
+                    conexion.Open();
+                    var cmd = new SqlCommand(@"
+                        UPDATE Boletos 
+                        SET Estado = 'Confirmado'
+                        WHERE IdBoleto = @IdBoleto AND Estado = 'Pendiente'", conexion);
+                    cmd.Parameters.AddWithValue("@IdBoleto", idBoleto);
+                    
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    respuesta = rowsAffected > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al confirmar boleto: {ex.Message}");
+                respuesta = false;
+            }
+
+            return respuesta;
+        }
+
     }
 }

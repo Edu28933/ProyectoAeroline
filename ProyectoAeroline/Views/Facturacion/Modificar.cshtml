@@ -14,9 +14,12 @@
     </div>
 
     <div class="card-body p-4">
-        @if (ViewBag.Error != null)
+        @if (TempData["Error"] != null)
         {
-            <div class="alert alert-danger">@ViewBag.Error</div>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
         }
 
         <div class="card-body bg-light rounded-bottom-4">
@@ -26,14 +29,9 @@
 
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label asp-for="IdFactura" class="control-label">ID Factura</label>
-                        <input asp-for="IdFactura" class="form-control" readonly />
-                    </div>
-
-                    <div class="col-md-6">
-                        <label asp-for="IdBoleto" class="form-label fw-bold">Boleto</label>
-                        <select asp-for="IdBoleto" class="form-select" required>
-                            <option value="">Seleccione un boleto</option>
+                        <label asp-for="IdBoleto" class="form-label fw-bold">📋 Boleto</label>
+                        <select asp-for="IdBoleto" class="form-select rounded-3" id="IdBoleto" required onchange="cargarDatosBoleto()">
+                            <option value="">-- Seleccione un boleto --</option>
                             @foreach (var boleto in ViewBag.Boletos as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)
                             {
                                 <option value="@boleto.Value" selected="@(boleto.Value == Model.IdBoleto.ToString())">@boleto.Text</option>
@@ -43,27 +41,29 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="FechaEmision" class="form-label fw-bold">Fecha de Emisión</label>
-                        <input asp-for="FechaEmision" class="form-control" type="date" value="@Model.FechaEmision.ToString("yyyy-MM-dd")" required />
+                        <label asp-for="FechaEmision" class="form-label fw-bold">📅 Fecha de Emisión</label>
+                        <input asp-for="FechaEmision" class="form-control rounded-3" type="date" value="@Model.FechaEmision.ToString("yyyy-MM-dd")" id="FechaEmision" readonly style="background-color: #e9ecef;" required />
+                        <small class="text-muted">Se asigna automáticamente desde el boleto</small>
                         <span asp-validation-for="FechaEmision" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="HoraEmision" class="form-label fw-bold">Hora de Emisión</label>
-                        <input asp-for="HoraEmision" class="form-control" type="time" value="@(Model.HoraEmision?.ToString(@"hh\:mm"))" />
+                        <label asp-for="HoraEmision" class="form-label fw-bold">🕐 Hora de Emisión</label>
+                        <input asp-for="HoraEmision" class="form-control rounded-3" type="time" value="@(Model.HoraEmision?.ToString(@"hh\:mm"))" id="HoraEmision" readonly style="background-color: #e9ecef;" />
+                        <small class="text-muted">Se asigna automáticamente desde el boleto</small>
                         <span asp-validation-for="HoraEmision" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="Descripcion" class="form-label fw-bold">Descripción</label>
-                        <input asp-for="Descripcion" class="form-control" />
+                        <label asp-for="Descripcion" class="form-label fw-bold">📝 Descripción</label>
+                        <input asp-for="Descripcion" class="form-control rounded-3" placeholder="Descripción de la factura" />
                         <span asp-validation-for="Descripcion" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="TipoPago" class="form-label fw-bold">Tipo de Pago</label>
-                        <select asp-for="TipoPago" class="form-select">
-                            <option value="">Seleccione tipo de pago</option>
+                        <label asp-for="TipoPago" class="form-label fw-bold">💳 Tipo de Pago</label>
+                        <select asp-for="TipoPago" class="form-select rounded-3" required>
+                            <option value="">-- Seleccione tipo de pago --</option>
                             @foreach (var tipo in ViewBag.TiposPago as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)
                             {
                                 <option value="@tipo.Value" selected="@(tipo.Value == Model.TipoPago)">@tipo.Text</option>
@@ -73,51 +73,57 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="Moneda" class="form-label fw-bold">Moneda</label>
-                        <select asp-for="Moneda" class="form-select">
-                            <option value="">Seleccione moneda</option>
+                        <label asp-for="Moneda" class="form-label fw-bold">💰 Moneda</label>
+                        <select asp-for="Moneda" class="form-select rounded-3" id="Moneda" required>
+                            <option value="">-- Seleccione moneda --</option>
                             @foreach (var moneda in ViewBag.Monedas as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)
                             {
                                 <option value="@moneda.Value" selected="@(moneda.Value == Model.Moneda)">@moneda.Text</option>
                             }
                         </select>
+                        <small class="text-muted">Se asigna automáticamente desde el boleto</small>
                         <span asp-validation-for="Moneda" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="Monto" class="form-label fw-bold">Monto</label>
-                        <input asp-for="Monto" class="form-control" type="number" step="0.01" />
+                        <label asp-for="Monto" class="form-label fw-bold">💵 Monto</label>
+                        <input asp-for="Monto" class="form-control rounded-3" type="number" step="0.01" value="@Model.Monto" id="Monto" readonly style="background-color: #e9ecef;" />
+                        <small class="text-muted">Se obtiene automáticamente del boleto</small>
                         <span asp-validation-for="Monto" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="Impuesto" class="form-label fw-bold">Impuesto</label>
-                        <input asp-for="Impuesto" class="form-control" type="number" step="0.01" />
+                        <label asp-for="Impuesto" class="form-label fw-bold">📊 Impuesto</label>
+                        <input asp-for="Impuesto" class="form-control rounded-3" type="number" step="0.01" value="@Model.Impuesto" id="Impuesto" readonly style="background-color: #e9ecef;" />
+                        <small class="text-muted">Se obtiene automáticamente del boleto</small>
                         <span asp-validation-for="Impuesto" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="MontoFactura" class="form-label fw-bold">Monto Factura</label>
-                        <input asp-for="MontoFactura" class="form-control" type="number" step="0.01" required />
+                        <label asp-for="MontoFactura" class="form-label fw-bold">🧾 Monto Factura</label>
+                        <input asp-for="MontoFactura" class="form-control rounded-3" type="number" step="0.01" value="@Model.MontoFactura" id="MontoFactura" readonly style="background-color: #e9ecef;" required />
+                        <small class="text-muted">Se calcula automáticamente (Monto + Impuesto)</small>
                         <span asp-validation-for="MontoFactura" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="MontoTotal" class="form-label fw-bold">Monto Total</label>
-                        <input asp-for="MontoTotal" class="form-control" type="number" step="0.01" />
-                        <small class="text-muted">Monto Factura + Impuesto</small>
+                        <label asp-for="MontoTotal" class="form-label fw-bold">💼 Monto Total</label>
+                        <input asp-for="MontoTotal" class="form-control rounded-3" type="number" step="0.01" value="@Model.MontoTotal" id="MontoTotal" readonly style="background-color: #e9ecef;" />
+                        <small class="text-muted">Se calcula automáticamente</small>
                         <span asp-validation-for="MontoTotal" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="NumeroAutorizacion" class="form-label fw-bold">Número de Autorización</label>
-                        <input asp-for="NumeroAutorizacion" class="form-control" type="number" />
+                        <label asp-for="NumeroAutorizacion" class="form-label fw-bold">🔐 Número de Autorización</label>
+                        <input asp-for="NumeroAutorizacion" class="form-control rounded-3" type="number" value="@Model.NumeroAutorizacion" id="NumeroAutorizacion" readonly style="background-color: #e9ecef;" />
+                        <small class="text-muted">Generado automáticamente de forma correlativa</small>
                         <span asp-validation-for="NumeroAutorizacion" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="Estado" class="form-label fw-bold">Estado</label>
-                        <select asp-for="Estado" class="form-select">
+                        <label asp-for="Estado" class="form-label fw-bold">⚙️ Estado</label>
+                        <select asp-for="Estado" class="form-select rounded-3" required>
+                            <option value="">-- Seleccione estado --</option>
                             @foreach (var estado in ViewBag.Estados as List<Microsoft.AspNetCore.Mvc.Rendering.SelectListItem>)
                             {
                                 <option value="@estado.Value" selected="@(estado.Value == Model.Estado)">@estado.Text</option>
@@ -128,10 +134,10 @@
                 </div>
 
                 <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-primary px-4">
+                    <button type="submit" class="btn btn-primary px-4 rounded-3">
                         <i class="bi bi-save"></i> Guardar cambios
                     </button>
-                    <a href="/Facturacion/Listar" class="btn btn-outline-secondary ms-2 px-4">
+                    <a href="/Facturacion/Listar" class="btn btn-outline-secondary ms-2 px-4 rounded-3">
                         <i class="bi bi-x-circle"></i> Cancelar
                     </a>
                 </div>
@@ -145,16 +151,38 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
     <script>
-        // Calcular monto total automáticamente
-        document.getElementById('MontoFactura').addEventListener('input', calcularTotal);
-        document.getElementById('Impuesto').addEventListener('input', calcularTotal);
+        function cargarDatosBoleto() {
+            const idBoleto = document.getElementById('IdBoleto').value;
+            
+            if (!idBoleto || idBoleto <= 0) {
+                return;
+            }
 
-        function calcularTotal() {
-            const montoFactura = parseFloat(document.getElementById('MontoFactura').value) || 0;
-            const impuesto = parseFloat(document.getElementById('Impuesto').value) || 0;
-            const total = montoFactura + impuesto;
-            document.getElementById('MontoTotal').value = total.toFixed(2);
+            // Llamar al API para obtener datos del boleto
+            fetch(`/Facturacion/ObtenerDatosBoleto?idBoleto=${idBoleto}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert('Error: ' + data.error);
+                        return;
+                    }
+
+                    // Llenar campos automáticamente
+                    document.getElementById('FechaEmision').value = data.fechaEmision;
+                    document.getElementById('HoraEmision').value = data.horaEmision;
+                    document.getElementById('Monto').value = data.monto;
+                    document.getElementById('Impuesto').value = data.impuesto;
+                    document.getElementById('MontoFactura').value = data.montoFactura;
+                    document.getElementById('MontoTotal').value = data.montoTotal;
+                    
+                    // Establecer moneda
+                    const monedaSelect = document.getElementById('Moneda');
+                    monedaSelect.value = data.moneda;
+                })
+                .catch(error => {
+                    console.error('Error al cargar datos del boleto:', error);
+                    alert('Error al cargar los datos del boleto. Por favor, intente nuevamente.');
+                });
         }
     </script>
 }
-

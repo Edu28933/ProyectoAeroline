@@ -29,6 +29,47 @@
     color: #e5e7eb;
     border-right: 1px solid rgba(255,255,255,.08);
     overflow-y: auto;
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Overlay para móviles */
+.sb-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1029;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.sb-overlay.show {
+    display: block;
+    opacity: 1;
+}
+
+/* En móviles, el sidebar está oculto por defecto */
+@media (max-width: 991.98px) {
+    .sb-sidebar {
+        transform: translateX(-100%);
+        z-index: 1050;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .sb-sidebar.show {
+        transform: translateX(0);
+    }
+
+    .sb-content {
+        margin-left: 0 !important;
+    }
+
+    body.sb-collapsed .sb-content {
+        margin-left: 0 !important;
+    }
 }
 
 .sb-brand-text {
@@ -77,6 +118,8 @@
     margin-left: var(--sb-width);
     min-height: calc(100vh - 56px);
     background-color: #f8f9fa;
+    transition: margin-left 0.3s ease-in-out;
+    width: 100%;
 }
 
 /* ===== ESTADO COLAPSADO (se aplica en <body>) ===== */
@@ -86,6 +129,13 @@ body.sb-collapsed .sb-sidebar {
 
 body.sb-collapsed .sb-content {
     margin-left: var(--sb-width-collapsed);
+}
+
+/* Responsive para tablets */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    :root {
+        --sb-width: 240px;
+    }
 }
 
 /* escondemos textos cuando est� colapsado */

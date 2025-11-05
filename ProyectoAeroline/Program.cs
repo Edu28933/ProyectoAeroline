@@ -45,6 +45,7 @@ builder.Services.AddScoped<IEmailService, EmailService>(); // envío de correos 
 builder.Services.AddScoped<UsuariosData>(); // acceso a datos de usuarios y Google login
 builder.Services.AddScoped<RolPantallaOpcionData>(); // acceso a permisos
 builder.Services.AddScoped<ProyectoAeroline.Services.IPermisosService, ProyectoAeroline.Services.PermisosService>(); // servicio de permisos
+builder.Services.AddScoped<ProyectoAeroline.Services.IPdfService, ProyectoAeroline.Services.PdfService>(); // servicio de generación de PDFs
 
 // Cookies de autenticación
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

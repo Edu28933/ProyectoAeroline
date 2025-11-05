@@ -1,16 +1,83 @@
 (function () {
     const key = 'sb-collapsed';
     const btn = document.getElementById('btnToggleSidebar');
+    const sidebar = document.querySelector('.sb-sidebar');
+    let overlay = document.querySelector('.sb-overlay');
+    let isMobile = window.innerWidth < 992;
 
-    // Restaurar estado guardado
+    // Crear overlay si no existe
+    if (!overlay) {
+        const overlayDiv = document.createElement('div');
+        overlayDiv.className = 'sb-overlay';
+        overlayDiv.addEventListener('click', closeSidebar);
+        document.body.appendChild(overlayDiv);
+        overlay = overlayDiv;
+    }
+
+    // Funci贸n para abrir sidebar en m贸viles
+    function openSidebar() {
+        if (sidebar) {
+            sidebar.classList.add('show');
+            if (overlay) overlay.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    // Funci贸n para cerrar sidebar en m贸viles
+    function closeSidebar() {
+        if (sidebar) {
+            sidebar.classList.remove('show');
+            if (overlay) overlay.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+    }
+
+    // Detectar cambios de tama帽o de pantalla
+    function handleResize() {
+        const wasMobile = isMobile;
+        isMobile = window.innerWidth < 992;
+        
+        if (wasMobile !== isMobile) {
+            if (!isMobile) {
+                // Ya no es m贸vil, cerrar overlay y resetear
+                closeSidebar();
+            }
+        }
+    }
+
+    window.addEventListener('resize', handleResize);
+
+    // Restaurar estado guardado (solo en desktop)
     const saved = localStorage.getItem(key);
-    if (saved === '1') document.body.classList.add('sb-collapsed');
+    if (saved === '1' && !isMobile) {
+        document.body.classList.add('sb-collapsed');
+    }
 
-    // Toggle con bot髇
+    // Toggle con bot贸n
     if (btn) {
         btn.addEventListener('click', () => {
-            document.body.classList.toggle('sb-collapsed');
-            localStorage.setItem(key, document.body.classList.contains('sb-collapsed') ? '1' : '0');
+            if (isMobile) {
+                // En m贸viles, abrir/cerrar drawer
+                if (sidebar && sidebar.classList.contains('show')) {
+                    closeSidebar();
+                } else {
+                    openSidebar();
+                }
+            } else {
+                // En desktop, colapsar/expandir
+                document.body.classList.toggle('sb-collapsed');
+                localStorage.setItem(key, document.body.classList.contains('sb-collapsed') ? '1' : '0');
+            }
+        });
+    }
+
+    // Cerrar sidebar al hacer clic en un enlace en m贸viles
+    if (sidebar && isMobile) {
+        const links = sidebar.querySelectorAll('.sb-link');
+        links.forEach(link => {
+            link.addEventListener('click', () => {
+                setTimeout(closeSidebar, 300);
+            });
         });
     }
 })();

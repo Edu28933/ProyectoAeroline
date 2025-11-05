@@ -51,7 +51,7 @@ namespace ProyectoAeroline.Attributes
 
             if (!tienePermiso)
             {
-                // No tiene permiso, redirigir o mostrar error
+                // No tiene permiso, mostrar vista de acceso denegado
                 var controllerName = context.RouteData.Values["controller"]?.ToString() ?? "Home";
                 
                 // Obtener TempData correctamente
@@ -59,8 +59,8 @@ namespace ProyectoAeroline.Attributes
                 var tempData = tempDataFactory.GetTempData(context.HttpContext);
                 tempData["Error"] = $"No tienes permiso para {_operacion} en {_nombrePantalla}";
                 
-                // Redirigir a Listar del mismo controlador, o a Home si no existe
-                context.Result = new RedirectToActionResult("Listar", controllerName, null);
+                // Redirigir siempre a la vista de Acceso Denegado
+                context.Result = new RedirectToActionResult("AccesoDenegado", "Home", null);
             }
         }
     }

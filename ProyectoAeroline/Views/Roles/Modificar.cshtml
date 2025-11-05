@@ -1,52 +1,51 @@
 @model ProyectoAeroline.Models.RolesModel
 
 @{
-    ViewData["Title"] = "Modificar";
+    ViewData["Title"] = "Modificar Rol";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<div class="card shadow-lg border-0 rounded-4 mt-4">
-    <div class="card-header bg-primary text-white rounded-top-4 d-flex justify-content-between align-items-center">
-        <h4 class="mb-0"><i class="bi bi-pencil-square"></i> Modificar rol</h4>
-        <a href="/Roles/Listar" class="btn btn-light btn-sm fw-bold">
-            <i class="bi bi-arrow-left-circle"></i> Regresar
-        </a>
-    </div>
+<div class="container-fluid px-4 mt-4 animate__animated animate__fadeInUp">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-gradient text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center header-glow">
+            <h3 class="mb-0">
+                ✏️ <i class="bi bi-shield-check"></i> <strong>Modificar Rol</strong>
+            </h3>
+            <a asp-action="Listar" class="btn btn-light btn-sm fw-bold fancy-btn">
+                ⬅️ <i class="bi bi-arrow-left-circle"></i> Regresar
+            </a>
+        </div>
 
-    <div class="card-body p-4">
-        @if (ViewBag.Error != null)
-        {
-            <div class="alert alert-danger">@ViewBag.Error</div>
-        }
+        <div class="card-body bg-light">
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @ViewBag.Error
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
 
-        <div class="card-body bg-light rounded-bottom-4">
-            <form asp-action="Modificar" method="post" class="needs-validation" novalidate>
+            <form asp-action="Modificar" method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-                
+
                 <input type="hidden" asp-for="IdRol" />
 
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label asp-for="IdRol" class="form-label fw-bold">ID Rol</label>
-                        <input asp-for="IdRol" class="form-control" readonly />
+                        <label asp-for="IdRol" class="form-label fw-bold">🆔 ID Rol</label>
+                        <input asp-for="IdRol" class="form-control rounded-3" readonly />
                         <span asp-validation-for="IdRol" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-12">
-                        <label asp-for="NombreRol" class="form-label fw-bold">Nombre del Rol <span class="text-danger">*</span></label>
-                        <input asp-for="NombreRol" class="form-control" placeholder="Nombre del rol" required />
+                        <label asp-for="NombreRol" class="form-label fw-bold">📝 Nombre del Rol <span class="text-danger">*</span></label>
+                        <input asp-for="NombreRol" class="form-control rounded-3" placeholder="Nombre del rol" required />
                         <span asp-validation-for="NombreRol" class="text-danger"></span>
                     </div>
 
-                    <div class="col-md-12">
-                        <label asp-for="Descripcion" class="form-label fw-bold">Descripción</label>
-                        <textarea asp-for="Descripcion" class="form-control" rows="3" placeholder="Descripción del rol..."></textarea>
-                        <span asp-validation-for="Descripcion" class="text-danger"></span>
-                    </div>
-
                     <div class="col-md-6">
-                        <label asp-for="Estado" class="form-label fw-bold">Estado</label>
-                        <select asp-for="Estado" class="form-select">
+                        <label asp-for="Estado" class="form-label fw-bold">⚙️ Estado</label>
+                        <select asp-for="Estado" class="form-select rounded-3">
                             <option value="Activo">Activo</option>
                             <option value="Inactivo">Inactivo</option>
                         </select>
@@ -54,12 +53,12 @@
                     </div>
                 </div>
 
-                <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-success px-4">
-                        <i class="bi bi-save"></i> Guardar cambios
+                <div class="form-group text-end mt-4">
+                    <button type="submit" class="btn btn-success px-4 fancy-btn">
+                        💾 <i class="bi bi-save"></i> Guardar Cambios
                     </button>
-                    <a href="/Roles/Listar" class="btn btn-outline-secondary ms-2 px-4">
-                        <i class="bi bi-x-circle"></i> Cancelar
+                    <a asp-action="Listar" class="btn btn-secondary px-4 fancy-btn ms-2">
+                        ❌ <i class="bi bi-x-circle"></i> Cancelar
                     </a>
                 </div>
             </form>
@@ -68,8 +67,52 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}
+    @await Html.PartialAsync("_ValidationScriptsPartial")
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+    <style>
+        .bg-gradient {
+            background: linear-gradient(135deg, #007bff, #00b4d8);
+        }
+
+        .header-glow {
+            box-shadow: 0 0 25px rgba(0, 174, 255, 0.6);
+        }
+
+        .fancy-btn {
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+        }
+
+            .fancy-btn:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(0, 174, 255, 0.6);
+            }
+
+        .form-control,
+        .form-select {
+            transition: 0.3s ease;
+        }
+
+            .form-control:focus,
+            .form-select:focus {
+                box-shadow: 0 0 10px rgba(0, 174, 255, 0.4);
+                border-color: #00b4d8;
+            }
+
+        .card {
+            transition: 0.4s ease;
+        }
+
+            .card:hover {
+                transform: scale(1.02);
+                box-shadow: 0 0 25px rgba(0, 123, 255, 0.3);
+            }
+
+        label {
+            color: #0077b6;
+        }
+    </style>
+}

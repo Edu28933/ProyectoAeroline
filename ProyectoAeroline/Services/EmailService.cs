@@ -3,6 +3,7 @@ using System.Net.Mail;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace ProyectoAeroline.Services
 {
@@ -58,6 +59,52 @@ namespace ProyectoAeroline.Services
             catch (System.Exception ex)
             {
                 _log.LogError(ex, "Error enviando correo a {to}", toEmail);
+                throw;
+            }
+        }
+
+        public async Task SendWithAttachmentAsync(string toEmail, string subject, string htmlBody, byte[] attachmentBytes, string attachmentFileName)
+        {
+            var host = _cfg["Smtp:Host"];
+            var port = int.TryParse(_cfg["Smtp:Port"], out var p) ? p : 587;
+            var user = _cfg["Smtp:User"];
+            var pass = _cfg["Smtp:Pass"];
+            var fromEmail = _cfg["Smtp:FromEmail"] ?? user;
+            var fromName = _cfg["Smtp:FromName"] ?? "Notificaciones";
+
+            using var msg = new MailMessage
+            {
+                From = new MailAddress(fromEmail!, fromName),
+                Subject = subject,
+                Body = htmlBody,
+                IsBodyHtml = true
+            };
+            msg.To.Add(new MailAddress(toEmail));
+
+            // Agregar adjunto
+            // IMPORTANTE: No usar 'using' aquí. El Attachment toma posesión del stream
+            // y lo cerrará cuando el MailMessage sea disposed
+            if (attachmentBytes != null && attachmentBytes.Length > 0)
+            {
+                var stream = new MemoryStream(attachmentBytes);
+                var attachment = new Attachment(stream, attachmentFileName, "application/pdf");
+                msg.Attachments.Add(attachment);
+            }
+
+            using var client = new SmtpClient(host)
+            {
+                Port = port,
+                EnableSsl = true,
+                Credentials = new NetworkCredential(user, pass)
+            };
+
+            try
+            {
+                await client.SendMailAsync(msg);
+            }
+            catch (System.Exception ex)
+            {
+                _log.LogError(ex, "Error enviando correo con adjunto a {to}", toEmail);
                 throw;
             }
         }

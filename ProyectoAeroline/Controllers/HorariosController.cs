@@ -2,14 +2,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ProyectoAeroline.Data;
 using ProyectoAeroline.Models;
+using Microsoft.AspNetCore.Authorization;
+using ProyectoAeroline.Attributes;
 
 namespace ProyectoAeroline.Controllers
 {
+    [Authorize]
     public class HorariosController : Controller
     {
         private readonly HorariosData _HorariosData = new HorariosData();
 
         // ✅ LISTAR
+        [RequirePermission("Horarios", "Ver")]
         public IActionResult Listar()
         {
             var lista = _HorariosData.MtdConsultarHorarios();
@@ -17,6 +21,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // ✅ GET: GUARDAR
+        [RequirePermission("Horarios", "Crear")]
         public IActionResult Guardar()
         {
             CargarCombos();
@@ -26,6 +31,7 @@ namespace ProyectoAeroline.Controllers
         // ✅ POST: GUARDAR
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RequirePermission("Horarios", "Crear")]
         public IActionResult Guardar(HorariosModel oHorario)
         {
             // Inicializar modelo si es null
@@ -114,6 +120,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // ✅ GET: MODIFICAR
+        [RequirePermission("Horarios", "Editar")]
         public IActionResult Modificar(int IdHorario)
         {
             if (IdHorario <= 0)
@@ -133,6 +140,7 @@ namespace ProyectoAeroline.Controllers
         // ✅ POST: MODIFICAR
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RequirePermission("Horarios", "Editar")]
         public IActionResult Modificar(HorariosModel oHorario)
         {
             // Inicializar modelo si es null
@@ -240,6 +248,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // ✅ GET: ELIMINAR
+        [RequirePermission("Horarios", "Eliminar")]
         public IActionResult Eliminar(int IdHorario)
         {
             var oHorario = _HorariosData.MtdBuscarHorario(IdHorario);
@@ -252,6 +261,7 @@ namespace ProyectoAeroline.Controllers
         // ✅ POST: ELIMINAR
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RequirePermission("Horarios", "Eliminar")]
         public IActionResult Eliminar(HorariosModel oHorario)
         {
             if (oHorario == null || oHorario.IdHorario <= 0)

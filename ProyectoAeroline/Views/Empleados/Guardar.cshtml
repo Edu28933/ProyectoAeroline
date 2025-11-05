@@ -1,49 +1,51 @@
 ﻿@model ProyectoAeroline.Models.EmpleadosModel
 
 @{
-    ViewData["Title"] = "Guardar";
+    ViewData["Title"] = "Guardar Empleado";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
+<div class="container-fluid px-4 mt-4 animate__animated animate__fadeInUp">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-gradient text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center header-glow">
+            <h3 class="mb-0">
+                👤 <i class="bi bi-person-plus-fill"></i> <strong>Registrar Nuevo Empleado</strong>
+            </h3>
+            <a href="/Empleados/Listar" class="btn btn-light btn-sm fw-bold fancy-btn-cancel">
+                🔙 <i class="bi bi-arrow-left-circle"></i> Regresar
+            </a>
+        </div>
 
-@*<h1 class="mb-3">Guardar</h1>
-<hr />*@
-
-<div class="card shadow-lg border-0 rounded-4 mt-4">
-    <div class="card-header bg-dark text-white rounded-top-4 d-flex justify-content-between align-items-center">
-        <h4 class="mb-0"><i class="bi bi-person-plus-fill"></i> Registrar nuevo empleado</h4>
-        <a href="/Empleados/Listar" class="btn btn-outline-light btn-sm">
-            <i class="bi bi-arrow-left"></i> Regresar
-        </a>
-    </div>
-
-    <div class="card-body p-4">
-        @if (ViewBag.Error != null)
-        {
-            <div class="alert alert-danger">@ViewBag.Error</div>
-        }
-
-        <div class="card-body bg-light rounded-bottom-4">
+        <div class="card-body bg-light">
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>❌ Error:</strong> @ViewBag.Error
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
             <form asp-action="Guardar" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label asp-for="IdUsuario" class="form-label fw-bold">Usuario</label>
-                        <input asp-for="IdUsuario" class="form-control" placeholder="Id de usuario" />
+                        <label asp-for="IdUsuario" class="form-label fw-bold">👤 Usuario</label>
+                        <select asp-for="IdUsuario" class="form-select rounded-3" asp-items="ViewBag.Usuarios" required>
+                            <option value="">-- Seleccione un usuario --</option>
+                        </select>
                         <span asp-validation-for="IdUsuario" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="Nombre" class="form-label fw-bold">Nombre completo</label>
-                        <input asp-for="Nombre" class="form-control" placeholder="Nombre del empleado" />
+                        <label asp-for="Nombre" class="form-label fw-bold">📛 Nombre Completo</label>
+                        <input asp-for="Nombre" class="form-control rounded-3" placeholder="Nombre del empleado" required />
                         <span asp-validation-for="Nombre" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="Cargo" class="form-label fw-bold"></label>
-                        <select asp-for="Cargo" id="Cargo" class="form-select">
-                            <option value="">Seleccione un cargo</option>
+                        <label asp-for="Cargo" class="form-label fw-bold">💼 Cargo</label>
+                        <select asp-for="Cargo" id="Cargo" class="form-select rounded-3" required>
+                            <option value="">-- Seleccione un cargo --</option>
                             <option value="Piloto">Piloto</option>
                             <option value="Copiloto">Copiloto</option>
                             <option value="Azafata">Azafata</option>
@@ -63,61 +65,63 @@
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="Licencia" class="form-label fw-bold">Licencia</label>
-                        <input asp-for="Licencia" class="form-control" placeholder="Número de licencia" />
+                        <label asp-for="Licencia" class="form-label fw-bold">📜 Licencia</label>
+                        <input asp-for="Licencia" class="form-control rounded-3" placeholder="Número de licencia" />
                         <span asp-validation-for="Licencia" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="Telefono" class="form-label fw-bold">Teléfono</label>
-                        <input asp-for="Telefono" class="form-control" placeholder="Teléfono" />
+                        <label asp-for="Telefono" class="form-label fw-bold">📱 Teléfono</label>
+                        <input asp-for="Telefono" class="form-control rounded-3" placeholder="Teléfono" type="number" required />
                         <span asp-validation-for="Telefono" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="Correo" class="form-label fw-bold">Correo</label>
-                        <input asp-for="Correo" class="form-control" placeholder="Correo electrónico" />
+                        <label asp-for="Correo" class="form-label fw-bold">📧 Correo</label>
+                        <input asp-for="Correo" class="form-control rounded-3" placeholder="correo@ejemplo.com" type="email" />
                         <span asp-validation-for="Correo" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="Salario" class="form-label fw-bold"></label>
-                        <input asp-for="Salario" id="Salario" class="form-control" type="number" step="0.01" />
+                        <label asp-for="Salario" class="form-label fw-bold">💰 Salario</label>
+                        <input asp-for="Salario" id="Salario" class="form-control rounded-3" type="number" step="0.01" required readonly style="background-color: #e9ecef; cursor: not-allowed;" />
+                        <small class="form-text text-muted">💡 El salario se asigna automáticamente según el cargo seleccionado.</small>
                         <span asp-validation-for="Salario" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="Direccion" class="form-label fw-bold">Dirección</label>
-                        <input asp-for="Direccion" class="form-control" placeholder="Dirección del empleado" />
+                        <label asp-for="Direccion" class="form-label fw-bold">📍 Dirección</label>
+                        <input asp-for="Direccion" class="form-control rounded-3" placeholder="Dirección del empleado" />
                         <span asp-validation-for="Direccion" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="FechaIngreso" class="form-label fw-bold"></label>
-                        <input asp-for="FechaIngreso" id="FechaIngreso" class="form-control" type="date" />
+                        <label asp-for="FechaIngreso" class="form-label fw-bold">📅 Fecha Ingreso</label>
+                        <input asp-for="FechaIngreso" id="FechaIngreso" class="form-control rounded-3" type="date" required />
                         <span asp-validation-for="FechaIngreso" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="ContactoEmergencia" class="form-label fw-bold">Contacto de emergencia</label>
-                        <input asp-for="ContactoEmergencia" class="form-control" placeholder="Teléfono de emergencia" />
+                        <label asp-for="ContactoEmergencia" class="form-label fw-bold">🚨 Contacto de Emergencia</label>
+                        <input asp-for="ContactoEmergencia" class="form-control rounded-3" placeholder="Teléfono de emergencia" type="number" required />
                         <span asp-validation-for="ContactoEmergencia" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-6">
-                        <label asp-for="Estado" class="form-label fw-bold">Estado</label>
-                        <select asp-for="Estado" class="form-select">
-                            <option value="Activo">Activo</option>
-                            <option value="Inactivo">Inactivo</option>
+                        <label asp-for="Estado" class="form-label fw-bold">⚙️ Estado</label>
+                        <select asp-for="Estado" class="form-select rounded-3" required>
+                            <option value="">-- Seleccione un estado --</option>
+                            <option value="Activo">🟢 Activo</option>
+                            <option value="Inactivo">🔴 Inactivo</option>
                         </select>
                         <span asp-validation-for="Estado" class="text-danger"></span>
                     </div>
 
                     <div class="col-md-6">
-                        <label class="form-label fw-bold">Fotografía</label>
+                        <label class="form-label fw-bold">📸 Fotografía</label>
                         <div class="d-flex align-items-center">
                             <input type="file" id="FotoArchivoInput" class="d-none" asp-for="FotoArchivo" accept="image/*" />
-                            <label for="FotoArchivoInput" class="btn btn-dark btn-sm me-2 custom-file-upload">
+                            <label for="FotoArchivoInput" class="btn btn-dark btn-sm me-2 custom-file-upload rounded-3">
                                 <i class="bi bi-upload"></i> Seleccionar archivo
                             </label>
                             <span id="archivoSeleccionadoNombre" class="text-muted fst-italic">Sin archivo</span>
@@ -130,11 +134,11 @@
                 </div>
 
                 <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-success px-4">
-                        <i class="bi bi-save"></i> Guardar
+                    <button type="submit" class="btn btn-success px-4 py-3 fancy-btn">
+                        💾 <i class="bi bi-save"></i> Guardar
                     </button>
-                    <a href="/Empleados/Listar" class="btn btn-outline-secondary ms-2 px-4">
-                        <i class="bi bi-x-circle"></i> Cancelar
+                    <a href="/Empleados/Listar" class="btn btn-outline-secondary ms-2 px-4 py-3 fancy-cancel">
+                        🙅‍♂️ <i class="bi bi-x-circle"></i> Cancelar
                     </a>
                 </div>
             </form>
@@ -145,9 +149,55 @@
 
 
 @section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <style>
+        .bg-gradient {
+            background: linear-gradient(135deg, #007bff, #00b4d8);
+        }
+
+        .header-glow {
+            box-shadow: 0 0 25px rgba(0, 174, 255, 0.6);
+        }
+
+        .fancy-btn, .fancy-btn-cancel, .fancy-cancel {
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .fancy-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(0, 174, 255, 0.6);
+        }
+
+        .fancy-btn-cancel:hover, .fancy-cancel:hover {
+            transform: scale(1.05);
+        }
+
+        .form-control.rounded-3, .form-select.rounded-3 {
+            border-radius: 15px !important;
+            transition: all 0.3s ease;
+        }
+
+        .form-control.rounded-3:focus, .form-select.rounded-3:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.25);
+        }
+
+        .card {
+            transition: 0.4s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.01);
+            box-shadow: 0 0 25px rgba(0, 123, 255, 0.3);
+        }
+    </style>
 
     <script>
         document.getElementById('FotoArchivoInput').addEventListener('change', function(event) {

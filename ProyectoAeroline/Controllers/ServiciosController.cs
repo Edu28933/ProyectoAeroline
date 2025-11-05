@@ -2,14 +2,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ProyectoAeroline.Data;
 using ProyectoAeroline.Models;
+using Microsoft.AspNetCore.Authorization;
+using ProyectoAeroline.Attributes;
 
 namespace ProyectoAeroline.Controllers
 {
+    [Authorize]
     public class ServiciosController : Controller
     {
         ServiciosData _ServiciosData = new ServiciosData();
 
         // --- LISTAR SERVICIOS ---
+        [RequirePermission("Servicios", "Ver")]
         public IActionResult Listar()
         {
             var oListaServicios = _ServiciosData.MtdConsultarServicios();
@@ -17,6 +21,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // --- MOSTRAR FORMULARIO GUARDAR ---
+        [RequirePermission("Servicios", "Crear")]
         public IActionResult Guardar()
         {
             ViewBag.Boletos = _ServiciosData.MtdListarBoletosActivos()
@@ -48,6 +53,7 @@ namespace ProyectoAeroline.Controllers
 
         // --- GUARDAR SERVICIO (POST) ---
         [HttpPost]
+        [RequirePermission("Servicios", "Crear")]
         public IActionResult Guardar(ServiciosModel oServicio)
         {
             if (ModelState.IsValid)
@@ -92,6 +98,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // --- MOSTRAR FORMULARIO MODIFICAR ---
+        [RequirePermission("Servicios", "Editar")]
         public IActionResult Modificar(int CodigoServicio)
         {
             var oServicio = _ServiciosData.MtdBuscarServicio(CodigoServicio);
@@ -125,6 +132,7 @@ namespace ProyectoAeroline.Controllers
 
         // --- MODIFICAR SERVICIO (POST) ---
         [HttpPost]
+        [RequirePermission("Servicios", "Editar")]
         public IActionResult Modificar(ServiciosModel oServicio)
         {
             // Calcular CostoTotal si no se proporciona
@@ -146,6 +154,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // --- MOSTRAR FORMULARIO ELIMINAR ---
+        [RequirePermission("Servicios", "Eliminar")]
         public IActionResult Eliminar(int CodigoServicio)
         {
             var servicio = _ServiciosData.MtdBuscarServicio(CodigoServicio);
@@ -161,6 +170,7 @@ namespace ProyectoAeroline.Controllers
 
         // --- ELIMINAR SERVICIO (POST) ---
         [HttpPost]
+        [RequirePermission("Servicios", "Eliminar")]
         public IActionResult Eliminar(ServiciosModel oServicio)
         {
             try

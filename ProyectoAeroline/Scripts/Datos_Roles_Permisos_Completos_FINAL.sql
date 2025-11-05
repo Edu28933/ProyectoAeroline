@@ -1,0 +1,500 @@
+-- =============================================
+-- Script: Datos Completos - Roles, Pantallas y Permisos (VERSIÓN CORREGIDA)
+-- Descripción: 
+--   - Borra datos existentes de Roles, Pantallas y RolPantallaOpcion (lógica)
+--   - Crea los nuevos roles: SuperAdmin, Admin, Recepcion, Auditoria, Usuario, Mantenimiento, Consulta
+--   Crea todas las pantallas del sistema
+--   - Configura permisos detallados para cada rol según la lógica especificada
+-- Fecha: 2025-01-11
+-- =============================================
+
+USE [AerolineaPruebaDB]
+GO
+
+SET NOCOUNT ON;
+
+BEGIN TRANSACTION;
+
+-- =============================================
+-- 1. ELIMINAR DATOS EXISTENTES (lógica)
+-- =============================================
+
+PRINT '1. Eliminando datos existentes...';
+
+-- Eliminar permisos (RolPantallaOpcion) primero debido a foreign keys
+UPDATE [dbo].[RolPantallaOpcion]
+SET [FechaEliminacion] = GETDATE(), 
+    [FechaActualizacion] = GETDATE(),
+    [HoraActualizacion] = CAST(GETDATE() AS TIME(7)),
+    [UsuarioActualizacion] = 'SYSTEM'
+WHERE [FechaEliminacion] IS NULL;
+
+-- Eliminar pantallas (lógica)
+UPDATE [dbo].[Pantallas]
+SETarrega [FechaEliminacion] = GETDATE(),
+    [FechaActualizacion] = GETDATE(),
+    [HoraActualizacion] = CAST(GETDATE() AS TIME(7)),
+    [UsuarioActualizacion] = 'SYSTEM'
+WHERE [FechaEliminacion] IS NULL;
+
+-- Eliminar roles (lógica)
+UPDATE [dbo].[Roles]
+SET [FechaEliminacion] = GETDATE(),
+    [FechaActualizacion] = GETDATE(),
+    [HoraActualizacion] = CAST(GETDATE() AS TIME(7)),
+    [UsuarioActualizacion] = 'SYSTEM'
+WHERE [FechaEliminacion] IS NULL;
+
+PRINT '   Datos existentes eliminados lógicamente.';
+
+-- =============================================
+-- 2. VERIFICAR/INSERTAR OPCIONES
+-- =============================================
+
+PRINT '2. Verificando opciones de permiso...';
+
+IF NOT EXISTS (SELECT 1 FROM [dbo].[Opciones] WHERE [NombreOpcion] = 'Ver')
+BEGIN
+    INSERT INTO [dbo].[Opciones] ([NombreOpcion], [FechaCreacion], [HoraCreacion])
+    VALUES ('Ver', GETDATE(), CAST(GETDATE() AS TIME(7)));
+END
+
+IF NOT EXISTS (SELECT 1 FROM [dbo].[Opciones] WHERE [NombreOpcion] = 'Crear')
+BEGIN
+    INSERT INTO [dbo].[Opciones] ([NombreOpcion], [FechaCreacion], [HoraCreacion])
+    VALUES ('Crear', GETDATE(), CAST(GETDATE() AS TIME(7)));
+END
+
+IF NOT EXISTS (SELECT 1 FROM [dbo].[Opciones] WHERE [NombreOpcion] = 'Editar')
+BEGIN
+    INSERT INTO [dbo].[Opciones] ([NombreOpcion], [FechaCreacion], [HoraCreacion])
+    VALUES ('Editar', GETDATE(), CAST(GETDATE() AS TIME(7)));
+END
+
+IF NOT EXISTS (SELECT 1 FROM [dbo].[Opciones] WHERE [NombreOpcion] = 'Eliminar')
+BEGIN
+    INSERT INTO [dbo].[Opciones] ([NombreOpcion], [FechaCreacion], [HoraCreacion])
+    VALUES ('Eliminar', GETDATE(), CAST(GETDATE() AS TIME(7)));
+END
+
+-- Obtener IDs de opciones
+DECLARE @IdOpcionVer INT = (SELECT [IdOpcion] FROM [dbo].[Opciones] WHERE [NombreOpcion] = 'Ver');
+DECLARE @IdOpcionCrear INT = (SELECT [IdOpcion] FROM [dbo].[Opciones] WHERE [NombreOpcion] = 'Crear');
+DECLARE @IdOpcionEditar INT = (SELECT [IdOpcion] FROM [dbo].[Opciones] WHERE [NombreOpcion] = 'Editar');
+DECLARE @IdOpcionEliminar INT = (SELECT [IdOpcion] FROM [dbo].[Opciones] WHERE [NombreOpcion] = 'Eliminar');
+
+PRINT '   Opciones verificadas. IDs: Ver=' + CAST(@IdOpcionVer AS VARCHAR) + ', Crear=' + CAST(@IdOpcionCrear AS VARCHAR) + ', Editar=' + CAST(@IdOpcionEditar AS VARCHAR) + ', Eliminar=' + CAST(@IdOpcionEliminar AS VARCHAR);
+
+-- =============================================
+-- 3. INSERTAR ROLES
+-- =============================================
+
+PRINT '3. Insertando nuevos roles...';
+
+-- Declarar variables para IDs de roles
+DECLARE @IdRolSuperAdmin INT;
+DECLARE @IdRolAdmin INT;
+DECLARE @IdRolRecepcion INT;
+DECLARE @IdRolAuditoria INT;
+DECLARE @IdRolUsuario INT;
+DECLARE @IdRolMantenimiento INT;
+DECLARE @IdRolConsulta INT;
+
+-- Insertar roles directamente (intentando con IDENTITY_INSERT primero)
+BEGIN TRY
+    SET IDENTITY_INSERT [dbo].[Roles] ON;
+    
+    INSERT INTO [dbo].[Roles] ([IdRol], [NombreRol], [UsuarioCreacion], [FechaCreacion], [HoraCreacion])
+    VALUES
+    (1, 'SuperAdmin', 'SYSTEM', GETDATE(), CAST(GETDATE() AS TIME(7))),
+    (2, 'Admin', 'SYSTEM', GETDATE(), CAST(GETDATE() AS TIME(7))),
+    (3, 'Recepcion', 'SYSTEM', GETDATE(), CAST(GETDATE() AS TIME(7))),
+    (4, 'Auditoria', 'SYSTEM', GETDATE(), CAST(GETDATE() AS TIME(7))),
+    (5, 'Usuario', 'SYSTEM', GETDATE(), CAST(GETDATE() AS TIME(7))),
+    (6, 'Mantenimiento', 'SYSTEM', GETDATE(), CAST(GETDATE() AS TIME(7))),
+    (7, 'Consulta', 'SYSTEM', GETDATE(), CAST(GETDATE() AS TIME(7)));
+
+    SET IDENTITY_INSERT [dbo].[Roles] OFF;
+    
+    SET @IdRolSuperAdmin = 1;
+    SET @IdRolAdmin = 2;
+    SET @IdRolRecepcion = 3;
+    SET @IdRolAuditoria = 4;
+    SET @IdRolUsuario = 5;
+    SET @IdRolMantenimiento = 6;
+    SET @IdRolConsulta = 7;
+END TRY
+BEGIN CATCH
+    -- Si falla porque IdRol es IDENTITY o no se puede usar IDENTITY_INSERT, insertar sin especificar ID
+    IF @@TRANCOUNT > 0
+        SET IDENTITY_INSERT [dbo].[Roles] OFF;
+    
+    INSERT INTO [dbo].[Roles] ([NombreRol], [UsuarioCreacion], [FechaCreacion], [HoraCreacion])
+    VALUES
+    ('SuperAdmin', 'SYSTEM', GETDATE(), CAST(GETDATE() AS TIME(7))),
+    ('Admin', 'SYSTEM', GETDATE(), CAST(GETDATE() AS TIME(7))),
+    ('Recepcion', 'SYSTEM', GETDATE(), CAST(GETDATE() AS TIME(7))),
+    ('Auditoria', 'SYSTEM', GETDATE(), CAST(GETDATE() AS TIME(7))),
+    ('Usuario', 'SYSTEM', GETDATE(), CAST(GETDATE() AS TIME(7))),
+    ('Mantenimiento', 'SYSTEM', GETDATE(), CAST(GETDATE() AS TIME(7))),
+    ('Consulta', 'SYSTEM', GETDATE(), CAST(GETDATE() AS TIME(7)));
+    
+    -- Obtener IDs generados
+    SET @IdRolSuperAdmin = (SELECT [IdRol] FROM [dbo].[Roles] WHERE [NombreRol] = 'SuperAdmin' AND [FechaEliminacion] IS NULL);
+    SET @IdRolAdmin = (SELECT [IdRol] FROM [dbo].[Roles] WHERE [NombreRol] = 'Admin' AND [FechaEliminacion] IS NULL);
+    SET @IdRolRecepcion = (SELECT [IdRol] FROM [dbo].[Roles] WHERE [NombreRol] = 'Recepcion' AND [FechaEliminacion] IS NULL);
+    SET @IdRolAuditoria = (SELECT [IdRol] FROM [dbo].[Roles] WHERE [NombreRol] = 'Auditoria' AND [FechaEliminacion] IS NULL);
+    SET @IdRolUsuario = (SELECT [IdRol] FROM [dbo].[Roles] WHERE [NombreRol] = 'Usuario' AND [FechaEliminacion] IS NULL);
+    SET @IdRolMantenimiento = (SELECT [IdRol] FROM [dbo].[Roles] WHERE [NombreRol] = 'Mantenimiento' AND [FechaEliminacion] IS NULL);
+    SET @IdRolConsulta = (SELECT [IdRol] FROM [dbo].[Roles] WHERE [NombreRol] = 'Consulta' AND [FechaEliminacion] IS NULL);
+END CATCH
+
+PRINT '   Roles insertados. IDs: SuperAdmin=' + CAST(@IdRolSuperAdmin AS VARCHAR) + ', Admin=' + CAST(@IdRolAdmin AS VARCHAR) + ', Recepcion=' + CAST(@IdRolRecepcion AS VARCHAR) + ', Auditoria=' + CAST(@IdRolAuditoria AS VARCHAR) + ', Usuario=' + CAST(@IdRolUsuario AS VARCHAR) + ', Mantenimiento=' + CAST(@IdRolMantenimiento AS VARCHAR) + ', Consulta=' + CAST(@IdRolConsulta AS VARCHAR);
+
+-- =============================================
+-- 4. INSERTAR/ACTUALIZAR PANTALLAS
+-- =============================================
+
+PRINT '4. Insertando/actualizando pantallas...';
+
+-- Crear tabla temporal con todas las pantallas
+DECLARE @PantallasTemp TABLE (NombrePantalla NVARCHAR(100));
+INSERT INTO @PantallasTemp (NombrePantalla) VALUES
+('Empleados'), ('Usuarios'), ('Roles'), ('Pantallas'), ('RolPantallaOpcion'),
+('Aeropuertos'), ('Aviones'), ('Mantenimientos'), ('Aerolineas'), ('Vuelos'),
+('Horarios'), ('Escalas'), ('Pasajeros'), ('Boletos'), ('Equipaje'),
+('Servicios'), ('Reservas'), ('Facturacion'), ('Historiales');
+
+-- Usar MERGE para insertar o actualizar pantallas
+MERGE [dbo].[Pantallas] AS Target
+USING @PantallasTemp AS Source
+ON Target.[NombrePantalla] = Source.[NombrePantalla]
+WHEN NOT MATCHED BY Target THEN
+    INSERT ([NombrePantalla], [UsuarioCreacion], [FechaCreacion], [HoraCreacion])
+    VALUES (Source.[NombrePantalla], 'SYSTEM', GETDATE(), CAST(GETDATE() AS TIME(7)))
+WHEN MATCHED THEN
+    UPDATE SET
+        [FechaEliminacion] = NULL,
+        [FechaActualizacion] = GETDATE(),
+        [HoraActualizacion] = CAST(GETDATE() AS TIME(7)),
+        [UsuarioActualizacion] = 'SYSTEM';
+
+PRINT '   Pantallas insertadas/actualizadas.';
+
+-- Obtener IDs de pantallas
+DECLARE @IdPantallaEmpleados INT = (SELECT [IdPantalla] FROM [dbo].[Pantallas] WHERE [NombrePantalla] = 'Empleados' AND [FechaEliminacion] IS NULL);
+DECLARE @IdPantallaUsuarios INT = (SELECT [IdPantalla] FROM [dbo].[Pantallas] WHERE [NombrePantalla] = 'Usuarios' AND [FechaEliminacion] IS NULL);
+DECLARE @IdPantallaRoles INT = (SELECT [IdPantalla] FROM [dbo].[Pantallas] WHERE [NombrePantalla] = 'Roles' AND [FechaEliminacion] IS NULL);
+DECLARE @IdPantallaPantallas INT = (SELECT [IdPantalla] FROM [dbo].[Pantallas] WHERE [NombrePantalla] = 'Pantallas' AND [FechaEliminacion] IS NULL);
+DECLARE @IdPantallaRolPantallaOpcion INT = (SELECT [IdPantalla] FROM [dbo].[Pantallas] WHERE [NombrePantalla] = 'RolPantallaOpcion' AND [FechaEliminacion] IS NULL);
+DECLARE @IdPantallaAeropuertos INT = (SELECT [IdPantalla] FROM [dbo].[Pantallas] WHERE [NombrePantalla] = 'Aeropuertos' AND [FechaEliminacion] IS NULL);
+DECLARE @IdPantallaAviones INT = (SELECT [IdPantalla] FROM [dbo].[Pantallas] WHERE [NombrePantalla] = 'Aviones' AND [FechaEliminacion] IS NULL);
+DECLARE @IdPantallaMantenimientos INT = (SELECT [IdPantalla] FROM [dbo].[Pantallas] WHERE [NombrePantalla] = 'Mantenimientos' AND [FechaEliminacion] IS NULL);
+DECLARE @IdPantallaAerolineas INT = (SELECT [IdPantalla] FROM [dbo].[Pantallas] WHERE [NombrePantalla] = 'Aerolineas' AND [FechaEliminacion] IS NULL);
+DECLARE @IdPantallaVuelos INT = (SELECT [IdPantalla] FROM [dbo].[Pantallas] WHERE [NombrePantalla] = 'Vuelos' AND [FechaEliminacion] IS NULL);
+DECLARE @IdPantallaHorarios INT = (SELECT [IdPantalla] FROM [dbo].[Pantallas] WHERE [NombrePantalla] = 'Horarios' AND [FechaEliminacion] IS NULL);
+DECLARE @IdPantallaEscalas INT = (SELECT [IdPantalla] FROM [dbo].[Pantallas] WHERE [NombrePantalla] = 'Escalas' AND [FechaEliminacion] IS NULL);
+DECLARE @IdPantallaPasajeros INT = (SELECT [IdPantalla] FROM [dbo].[Pantallas] WHERE [NombrePantalla] = 'Pasajeros' AND [FechaEliminacion] IS NULL);
+DECLARE @IdPantallaBoletos INT = (SELECT [IdPantalla] FROM [dbo].[Pantallas] WHERE [NombrePantalla] = 'Boletos' AND [FechaEliminacion] IS NULL);
+DECLARE @IdPantallaEquipaje INT = (SELECT [IdPantalla] FROM [dbo].[Pantallas] WHERE [NombrePantalla] = 'Equipaje' AND [FechaEliminacion] IS NULL);
+DECLARE @IdPantallaServicios INT = (SELECT [IdPantalla] FROM [dbo].[Pantallas] WHERE [NombrePantalla] = 'Servicios' AND [FechaEliminacion] IS NULL);
+DECLARE @IdPantallaReservas INT = (SELECT [IdPantalla] FROM [dbo].[Pantallas] WHERE [NombrePantalla] = 'Reservas' AND [FechaEliminacion] IS NULL);
+DECLARE @IdPantallaFacturacion INT = (SELECT [IdPantalla] FROM [dbo].[Pantallas] WHERE [NombrePantalla] = 'Facturacion' AND [FechaEliminacion] IS NULL);
+DECLARE @IdPantallaHistoriales INT = (SELECT [IdPantalla] FROM [dbo].[Pantallas] WHERE [NombrePantalla] = 'Historiales' AND [FechaEliminacion] IS NULL);
+
+-- =============================================
+-- 5. CONFIGURAR PERMISOS (USANDO TABLA TEMPORAL)
+-- =============================================
+
+PRINT '5. Configurando permisos...';
+
+-- Crear tabla temporal para almacenar todos los permisos a insertar
+DECLARE @PermisosTemp TABLE (
+    IdRol INT,
+    IdPantalla INT,
+    IdOpcion INT
+);
+
+-- Función helper inline para agregar permisos a la tabla temporal
+-- Patrón: AgregarPermiso(@IdRol, @IdPantalla, @IdOpcion)
+
+-- =============================================
+-- 6. AGREGAR PERMISOS A TABLA TEMPORAL
+-- =============================================
+
+-- =============================================
+-- 6.1. ROL 1: SuperAdmin - TODAS LAS PANTALLAS: L/G/M/E
+-- =============================================
+PRINT '   Configurando permisos para SuperAdmin...';
+
+DECLARE @CurrentPantallaId INT;
+DECLARE Pantallas_SuperAdmin_Cursor CURSOR FOR
+SELECT [IdPantalla] FROM [dbo].[Pantallas] WHERE [FechaEliminacion] IS NULL;
+
+OPEN Pantallas_SuperAdmin_Cursor;
+FETCH NEXT FROM Pantallas_SuperAdmin_Cursor INTO @CurrentPantallaId;
+
+WHILE @@FETCH_STATUS = 0
+BEGIN
+    INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolSuperAdmin, @CurrentPantallaId, @IdOpcionVer);
+    INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolSuperAdmin, @CurrentPantallaId, @IdOpcionCrear);
+    INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolSuperAdmin, @CurrentPantallaId, @IdOpcionEditar);
+    INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolSuperAdmin, @CurrentPantallaId, @IdOpcionEliminar);
+    FETCH NEXT FROM Pantallas_SuperAdmin_Cursor INTO @CurrentPantallaId;
+END;
+
+CLOSE Pantallas_SuperAdmin_Cursor;
+DEALLOCATE Pantallas_SuperAdmin_Cursor;
+
+PRINT '      Permisos SuperAdmin agregados a tabla temporal.';
+
+-- =============================================
+-- 6.2. ROL 2: Admin
+-- =============================================
+PRINT '   Configurando permisos para Admin...';
+
+-- Sistema: Usuarios L/G/M/E, Empleados L/G/M/E
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaUsuarios, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaUsuarios, @IdOpcionCrear);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaUsuarios, @IdOpcionEditar);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaUsuarios, @IdOpcionEliminar);
+
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaEmpleados, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaEmpleados, @IdOpcionCrear);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaEmpleados, @IdOpcionEditar);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaEmpleados, @IdOpcionEliminar);
+
+-- Sistema: Roles L, Pantallas L, Permisos L
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaRoles, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaPantallas, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaRolPantallaOpcion, @IdOpcionVer);
+
+-- Admin (Operación): Aeropuertos, Aerolineas, Aviones, Mantenimientos, Vuelos, Horarios, Escalas: L/G/M/E
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaAeropuertos, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaAeropuertos, @IdOpcionCrear);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaAeropuertos, @IdOpcionEditar);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaAeropuertos, @IdOpcionEliminar);
+
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaAerolineas, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaAerolineas, @IdOpcionCrear);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaAerolineas, @IdOpcionEditar);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaAerolineas, @IdOpcionEliminar);
+
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaAviones, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaAviones, @IdOpcionCrear);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaAviones, @IdOpcionEditar);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaAviones, @IdOpcionEliminar);
+
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaMantenimientos, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaMantenimientos, @IdOpcionCrear);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaMantenimientos, @IdOpcionEditar);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaMantenimientos, @IdOpcionEliminar);
+
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaVuelos, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaVuelos, @IdOpcionCrear);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaVuelos, @IdOpcionEditar);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaVuelos, @IdOpcionEliminar);
+
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaHorarios, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaHorarios, @IdOpcionCrear);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaHorarios, @IdOpcionEditar);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaHorarios, @IdOpcionEliminar);
+
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaEscalas, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaEscalas, @IdOpcionCrear);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaEscalas, @IdOpcionEditar);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaEscalas, @IdOpcionEliminar);
+
+-- Atención: Pasajeros, Reservas, Boletos, Servicios, Equipaje: L/G/M/E
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaPasajeros, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaPasajeros, @IdOpcionCrear);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaPasajeros, @IdOpcionEditar);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaPasajeros, @IdOpcionEliminar);
+
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaReservas, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaReservas, @IdOpcionCrear);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaReservas, @IdOpcionEditar);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaReservas, @IdOpcionEliminar);
+
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaBoletos, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaBoletos, @IdOpcionCrear);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaBoletos, @IdOpcionEditar);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaBoletos, @IdOpcionEliminar);
+
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaServicios, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaServicios, @IdOpcionCrear);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaServicios, @IdOpcionEditar);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaServicios, @IdOpcionEliminar);
+
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaEquipaje, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaEquipaje, @IdOpcionCrear);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaEquipaje, @IdOpcionEditar);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaEquipaje, @IdOpcionEliminar);
+
+-- Finanzas: Facturacion L/G/M/E
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaFacturacion, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaFacturacion, @IdOpcionCrear);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaFacturacion, @IdOpcionEditar);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaFacturacion, @IdOpcionEliminar);
+
+-- Auditoría: Historiales L/G/M/E
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaHistoriales, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaHistoriales, @IdOpcionCrear);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaHistoriales, @IdOpcionEditar);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAdmin, @IdPantallaHistoriales, @IdOpcionEliminar);
+
+PRINT '      Permisos Admin agregados a tabla temporal.';
+
+-- =============================================
+-- 6.3. ROL 3: Recepcion
+-- =============================================
+PRINT '   Configurando permisos para Recepcion...';
+
+-- Atención: Pasajeros L/G/M, Reservas L/G/M, Boletos L/G/M, Servicios L/G/M, Equipaje L
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolRecepcion, @IdPantallaPasajeros, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolRecepcion, @IdPantallaPasajeros, @IdOpcionCrear);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolRecepcion, @IdPantallaPasajeros, @IdOpcionEditar);
+
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolRecepcion, @IdPantallaReservas, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolRecepcion, @IdPantallaReservas, @IdOpcionCrear);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolRecepcion, @IdPantallaReservas, @IdOpcionEditar);
+
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolRecepcion, @IdPantallaBoletos, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolRecepcion, @IdPantallaBoletos, @IdOpcionCrear);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolRecepcion, @IdPantallaBoletos, @IdOpcionEditar);
+
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolRecepcion, @IdPantallaServicios, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolRecepcion, @IdPantallaServicios, @IdOpcionCrear);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolRecepcion, @IdPantallaServicios, @IdOpcionEditar);
+
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolRecepcion, @IdPantallaEquipaje, @IdOpcionVer);
+
+-- Admin: Aeropuertos L, Aerolineas L, Vuelos L, Horarios L, Escalas L (sin Aviones ni Mantenimientos)
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolRecepcion, @IdPantallaAeropuertos, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolRecepcion, @IdPantallaAerolineas, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolRecepcion, @IdPantallaVuelos, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolRecepcion, @IdPantallaHorarios, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolRecepcion, @IdPantallaEscalas, @IdOpcionVer);
+
+-- Finanzas: Facturacion L
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolRecepcion, @IdPantallaFacturacion, @IdOpcionVer);
+
+PRINT '      Permisos Recepcion agregados a tabla temporal.';
+
+-- =============================================
+-- 6.4. ROL 4: Auditoria - TODAS LAS PANTALLAS: L ÚNICAMENTE
+-- =============================================
+PRINT '   Configurando permisos para Auditoria...';
+
+DECLARE Pantallas_Auditoria_Cursor CURSOR FOR
+SELECT [IdPantalla] FROM [dbo].[Pantallas] WHERE [FechaEliminacion] IS NULL;
+
+OPEN Pantallas_Auditoria_Cursor;
+FETCH NEXT FROM Pantallas_Auditoria_Cursor INTO @CurrentPantallaId;
+
+WHILE @@FETCH_STATUS = 0
+BEGIN
+    INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolAuditoria, @CurrentPantallaId, @IdOpcionVer);
+    FETCH NEXT FROM Pantallas_Auditoria_Cursor INTO @CurrentPantallaId;
+END;
+
+CLOSE Pantallas_Auditoria_Cursor;
+DEALLOCATE Pantallas_Auditoria_Cursor;
+
+PRINT '      Permisos Auditoria agregados a tabla temporal.';
+
+-- =============================================
+-- 6.5. ROL 5: Usuario
+-- =============================================
+PRINT '   Configurando permisos para Usuario...';
+
+-- Boletos: G (Crear)
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolUsuario, @IdPantallaBoletos, @IdOpcionCrear);
+
+-- Usuarios: M (Editar) - para modificar su propio usuario
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolUsuario, @IdPantallaUsuarios, @IdOpcionEditar);
+
+PRINT '      Permisos Usuario agregados a tabla temporal.';
+
+-- =============================================
+-- 6.6. ROL 6: Mantenimiento
+-- =============================================
+PRINT '   Configurando permisos para Mantenimiento...';
+
+-- Admin: Aviones L/G/M/E, Mantenimientos L/G/M/E
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolMantenimiento, @IdPantallaAviones, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolMantenimiento, @IdPantallaAviones, @IdOpcionCrear);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolMantenimiento, @IdPantallaAviones, @IdOpcionEditar);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolMantenimiento, @IdPantallaAviones, @IdOpcionEliminar);
+
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolMantenimiento, @IdPantallaMantenimientos, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolMantenimiento, @IdPantallaMantenimientos, @IdOpcionCrear);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolMantenimiento, @IdPantallaMantenimientos, @IdOpcionEditar);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolMantenimiento, @IdPantallaMantenimientos, @IdOpcionEliminar);
+
+-- Admin: Vuelos L, Horarios L, Escalas L
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolMantenimiento, @IdPantallaVuelos, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolMantenimiento, @IdPantallaHorarios, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolMantenimiento, @IdPantallaEscalas, @IdOpcionVer);
+
+-- Atención: Equipaje L
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolMantenimiento, @IdPantallaEquipaje, @IdOpcionVer);
+
+PRINT '      Permisos Mantenimiento agregados a tabla temporal.';
+
+-- =============================================
+-- 6.7. ROL 7: Consulta
+-- =============================================
+PRINT '   Configurando permisos para Consulta...';
+
+-- Solo lectura (L) en: Vuelos, Horarios, Aerolineas, Aeropuertos, Escalas, Pasajeros
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolConsulta, @IdPantallaVuelos, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolConsulta, @IdPantallaHorarios, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolConsulta, @IdPantallaAerolineas, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolConsulta, @IdPantallaAeropuertos, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolConsulta, @IdPantallaEscalas, @IdOpcionVer);
+INSERT INTO @PermisosTemp (IdRol, IdPantalla, IdOpcion) VALUES (@IdRolConsulta, @IdPantallaPasajeros, @IdOpcionVer);
+
+PRINT '      Permisos Consulta agregados a tabla temporal.';
+
+-- =============================================
+-- 7. INSERTAR PERMISOS DESDE TABLA TEMPORAL
+-- =============================================
+
+PRINT '6. Insertando permisos en RolPantallaOpcion...';
+
+-- Usar MERGE para insertar/actualizar permisos desde la tabla temporal
+MERGE [dbo].[RolPantallaOpcion] AS Target
+USING @PermisosTemp AS Source
+ON Target.[IdRol] = Source.[IdRol] 
+   AND Target.[IdPantalla] = Source.[IdPantalla] 
+   AND Target.[IdOpcion] = Source.[IdOpcion]
+WHEN NOT MATCHED THEN
+    INSERT ([IdRol], [IdPantalla], [IdOpcion], [UsuarioCreacion], [FechaCreacion], [HoraCreacion])
+    VALUES (Source.[IdRol], Source.[IdPantalla], Source.[IdOpcion], 'SYSTEM', GETDATE(), CAST(GETDATE() AS TIME(7)))
+WHEN MATCHED AND Target.[FechaEliminacion] IS NOT NULL THEN
+    UPDATE SET 
+        [FechaEliminacion] = NULL,
+        [FechaActualizacion] = GETDATE(),
+        [HoraActualizacion] = CAST(GETDATE() AS TIME(7)),
+        [UsuarioActualizacion] = 'SYSTEM';
+
+DECLARE @TotalPermisos INT = (SELECT COUNT(*) FROM @PermisosTemp);
+PRINT '   ' + CAST(@TotalPermisos AS VARCHAR) + ' permisos insertados/actualizados en RolPantallaOpcion.';
+
+-- =============================================
+-- FINALIZAR TRANSACCIÓN
+-- =============================================
+
+COMMIT TRANSACTION;
+
+PRINT '============================================';
+PRINT 'SCRIPT EJECUTADO EXITOSAMENTE';
+PRINT '============================================';
+PRINT 'Roles creados: 7 (SuperAdmin, Admin, Recepcion, Auditoria, Usuario, Mantenimiento, Consulta)';
+PRINT 'Pantallas creadas/actualizadas: 19';
+PRINT 'Permisos configurados correctamente para cada rol';
+PRINT '============================================';
+
+GO
+

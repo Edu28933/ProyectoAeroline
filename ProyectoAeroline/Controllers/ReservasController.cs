@@ -2,14 +2,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ProyectoAeroline.Data;
 using ProyectoAeroline.Models;
+using Microsoft.AspNetCore.Authorization;
+using ProyectoAeroline.Attributes;
 
 namespace ProyectoAeroline.Controllers
 {
+    [Authorize]
     public class ReservasController : Controller
     {
         ReservasData _ReservasData = new ReservasData();
 
         // --- LISTAR RESERVAS ---
+        [RequirePermission("Reservas", "Ver")]
         public IActionResult Listar()
         {
             var oListaReservas = _ReservasData.MtdConsultarReservas();
@@ -17,6 +21,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // --- MOSTRAR FORMULARIO GUARDAR ---
+        [RequirePermission("Reservas", "Crear")]
         public IActionResult Guardar()
         {
             ViewBag.Pasajeros = _ReservasData.MtdListarPasajerosActivos()
@@ -46,6 +51,7 @@ namespace ProyectoAeroline.Controllers
 
         // --- GUARDAR RESERVA (POST) ---
         [HttpPost]
+        [RequirePermission("Reservas", "Crear")]
         public IActionResult Guardar(ReservasModel oReserva)
         {
             if (ModelState.IsValid)
@@ -82,6 +88,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // --- MOSTRAR FORMULARIO MODIFICAR ---
+        [RequirePermission("Reservas", "Editar")]
         public IActionResult Modificar(int CodigoReserva)
         {
             var oReserva = _ReservasData.MtdBuscarReserva(CodigoReserva);
@@ -113,6 +120,7 @@ namespace ProyectoAeroline.Controllers
 
         // --- MODIFICAR RESERVA (POST) ---
         [HttpPost]
+        [RequirePermission("Reservas", "Editar")]
         public IActionResult Modificar(ReservasModel oReserva)
         {
             var respuesta = _ReservasData.MtdEditarReserva(oReserva);
@@ -128,6 +136,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // --- MOSTRAR FORMULARIO ELIMINAR ---
+        [RequirePermission("Reservas", "Eliminar")]
         public IActionResult Eliminar(int CodigoReserva)
         {
             var reserva = _ReservasData.MtdBuscarReserva(CodigoReserva);
@@ -143,6 +152,7 @@ namespace ProyectoAeroline.Controllers
 
         // --- ELIMINAR RESERVA (POST) ---
         [HttpPost]
+        [RequirePermission("Reservas", "Eliminar")]
         public IActionResult Eliminar(ReservasModel oReserva)
         {
             try

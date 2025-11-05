@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ProyectoAeroline.Attributes;
 using ProyectoAeroline.Data;
 using ProyectoAeroline.Models;
 
 namespace ProyectoAeroline.Controllers
 {
+    [Authorize]
     public class AeropuertosController : Controller
     {
         // Instancia de la clase con la conexion y stored procedures
@@ -12,7 +15,7 @@ namespace ProyectoAeroline.Controllers
 
 
         // Muestra el formulario principal con la lista de datos
-
+        [RequirePermission("Aeropuertos", "Ver")]
         public IActionResult Listar()
         {
 
@@ -23,6 +26,7 @@ namespace ProyectoAeroline.Controllers
 
 
         // Muestra el formulario llamador Guardar
+        [RequirePermission("Aeropuertos", "Crear")]
         public IActionResult Guardar()
         {
             //Cargar Aerolíneas Activas
@@ -44,6 +48,7 @@ namespace ProyectoAeroline.Controllers
 
         // Almacena los datos del formulario Guardar
         [HttpPost]
+        [RequirePermission("Aeropuertos", "Crear")]
         public IActionResult Guardar(AeropuertosModel oAeropuertos)
         {
             // Asignar valores automáticos si no están establecidos
@@ -82,6 +87,7 @@ namespace ProyectoAeroline.Controllers
 
 
         // Muestra el formulario llamador Modificar
+        [RequirePermission("Aeropuertos", "Editar")]
         public IActionResult Modificar(int CodigoAeropuerto)
         {
             // CBOX PARA PODER LLAMAR A LA BDD POR MEDIO DE UN USP Y LLENARSE CON LOS EMPLEADOS ACTIVOS
@@ -101,6 +107,7 @@ namespace ProyectoAeroline.Controllers
 
         // Almacena los datos del formulario Editar
         [HttpPost]
+        [RequirePermission("Aeropuertos", "Editar")]
         public IActionResult Modificar(AeropuertosModel oAeropuerto)
         {
             // Asignar valores automáticos si no están establecidos o si cambió el país/ciudad
@@ -143,6 +150,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // Método JSON para Ajax: obtener ciudades por país
+        [RequirePermission("Aeropuertos", "Ver")]
         public JsonResult ObtenerCiudades(string pais)
         {
             var ciudades = ObtenerCiudadesPorPais(pais);
@@ -150,6 +158,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // Método JSON para Ajax: obtener código IATA según país
+        [RequirePermission("Aeropuertos", "Ver")]
         public JsonResult ObtenerCodigoIATA(string pais)
         {
             var iata = ObtenerCodigoIATAPorPais(pais);
@@ -157,6 +166,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // Método JSON para Ajax: obtener dirección según país y ciudad
+        [RequirePermission("Aeropuertos", "Ver")]
         public JsonResult ObtenerDireccion(string pais, string ciudad)
         {
             var direccion = ObtenerDireccionPorPaisYCiudad(pais, ciudad);
@@ -164,6 +174,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // Método JSON para Ajax: obtener teléfono según país
+        [RequirePermission("Aeropuertos", "Ver")]
         public JsonResult ObtenerTelefono(string pais)
         {
             var telefono = ObtenerTelefonoPorPais(pais);
@@ -171,6 +182,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // Método JSON para Ajax: obtener nombre del aeropuerto según ciudad
+        [RequirePermission("Aeropuertos", "Ver")]
         public JsonResult ObtenerNombreAeropuerto(string ciudad)
         {
             var nombre = ObtenerNombreAeropuertoPorCiudad(ciudad);
@@ -369,6 +381,7 @@ namespace ProyectoAeroline.Controllers
 
         // Muestra el formulario llamador Eliminar
         // GET: Empleados/Eliminar/5
+        [RequirePermission("Aeropuertos", "Eliminar")]
         public IActionResult Eliminar(int CodigoAeropuerto)
         {
             var oAeropuerto = _AeropuertosData.MtdBuscarAeropuerto(CodigoAeropuerto);
@@ -377,6 +390,7 @@ namespace ProyectoAeroline.Controllers
 
         // POST: Usuarios/Eliminar
         [HttpPost]
+        [RequirePermission("Aeropuertos", "Eliminar")]
         public IActionResult Eliminar(AeropuertosModel oAeropuerto)
         {
             var respuesta = _AeropuertosData.MtdEliminarAeropuerto(oAeropuerto.IdAeropuerto);

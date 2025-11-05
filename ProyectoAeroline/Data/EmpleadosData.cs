@@ -1,6 +1,7 @@
 ﻿using ProyectoAeroline.Models;
 using Microsoft.Data.SqlClient;
 using System.Data;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ProyectoAeroline.Data
 {
@@ -209,6 +210,44 @@ namespace ProyectoAeroline.Data
             }
 
             return respuesta;
+        }
+
+        // --- LISTAR USUARIOS ACTIVOS PARA COMBOBOX ---
+        public List<SelectListItem> MtdListarUsuariosActivos()
+        {
+            var lista = new List<SelectListItem>();
+            var conn = new Conexion();
+
+            try
+            {
+                using (var conexion = new SqlConnection(conn.GetConnectionString()))
+                {
+                    conexion.Open();
+                    SqlCommand cmd = new SqlCommand(@"
+                        SELECT IdUsuario, Nombre, Estado 
+                        FROM Usuarios 
+                        WHERE FechaEliminacion IS NULL AND Estado = 'Activo'
+                        ORDER BY Nombre", conexion);
+
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            lista.Add(new SelectListItem
+                            {
+                                Value = dr["IdUsuario"].ToString(),
+                                Text = $"{dr["IdUsuario"]} - {dr["Nombre"]}"
+                            });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al listar usuarios activos: {ex.Message}");
+            }
+
+            return lista;
         }
     }
 }

@@ -5,98 +5,151 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<div class="container-fluid px-4 mt-4">
+<div class="container-fluid px-4 mt-4 animate__animated animate__fadeInUp">
     <div class="card shadow-lg border-0 rounded-4">
-        <div class="card-header bg-danger text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center">
+        <div class="card-header bg-gradient-danger text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center header-glow-danger">
             <h3 class="mb-0">
-                <i class="bi bi-ticket-x-fill"></i> Eliminar Boleto
+                🗑️ <i class="bi bi-ticket-perforated"></i> <strong>Eliminar Boleto</strong>
             </h3>
-            <a href="/Boletos/Listar" class="btn btn-light btn-sm fw-bold">
-                <i class="bi bi-arrow-left-circle"></i> Regresar
+            <a href="/Boletos/Listar" class="btn btn-light btn-sm fw-bold fancy-btn-cancel">
+                🔙 <i class="bi bi-arrow-left-circle"></i> Regresar
             </a>
         </div>
 
-        <div class="card-body bg-light">
-            <h5 class="text-center mb-4 text-danger fw-semibold">
-                ¿Seguro que deseas eliminar este boleto?
+        <div class="card-body bg-light text-center">
+            <h5 class="text-danger fw-bold mb-4 animate__animated animate__pulse animate__infinite">
+                ⚠️ ¿Estás seguro de que deseas eliminar este boleto?
             </h5>
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3 text-center fw-semibold"></div>
 
-            <form asp-action="Eliminar" method="post">
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered shadow-sm align-middle">
+                    <tr><th>🆔 ID Boleto</th><td>@Model.IdBoleto</td></tr>
+                    <tr><th>✈️ Vuelo</th><td>@Model.IdVuelo</td></tr>
+                    <tr><th>👤 Pasajero</th><td>@Model.IdPasajero</td></tr>
+                    <tr><th>💺 Asiento</th><td>@Model.NumeroAsiento</td></tr>
+                    <tr><th>🎫 Clase</th><td>@Model.Clase</td></tr>
+                    <tr><th>💵 Precio</th><td>Q @Model.Precio.ToString("N2")</td></tr>
+                    <tr>
+                        <th>⚙️ Estado</th>
+                        <td>
+                            <span class="badge @(Model.Estado == "Activo" ? "bg-success" : Model.Estado == "Pendiente" ? "bg-warning text-dark" : Model.Estado == "Confirmado" ? "bg-info" : Model.Estado == "Utilizado" ? "bg-primary" : "bg-danger") px-3 py-2 rounded-pill shadow-sm">
+                                @Model.Estado
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <form id="formEliminarBoleto" asp-action="Eliminar" method="post">
                 @Html.AntiForgeryToken()
-
-                <!-- Campo oculto -->
                 <input type="hidden" asp-for="IdBoleto" />
 
-                <div class="mb-3">
-                    <label asp-for="IdBoleto" class="form-label"></label>
-                    <input asp-for="IdBoleto" class="form-control" readonly />
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="IdVuelo" class="form-label"></label>
-                    <input asp-for="IdVuelo" class="form-control" readonly />
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="IdPasajero" class="form-label"></label>
-                    <input asp-for="IdPasajero" class="form-control" readonly />
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="NumeroAsiento" class="form-label"></label>
-                    <input asp-for="NumeroAsiento" class="form-control" readonly />
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="Clase" class="form-label"></label>
-                    <input asp-for="Clase" class="form-control" readonly />
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="Precio" class="form-label"></label>
-                    <input asp-for="Precio" class="form-control" readonly />
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="Cantidad" class="form-label"></label>
-                    <input asp-for="Cantidad" class="form-control" readonly />
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="Descuento" class="form-label"></label>
-                    <input asp-for="Descuento" class="form-control" readonly />
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="Impuesto" class="form-label"></label>
-                    <input asp-for="Impuesto" class="form-control" readonly />
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="Total" class="form-label"></label>
-                    <input asp-for="Total" class="form-control" readonly />
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="Reembolso" class="form-label"></label>
-                    <input asp-for="Reembolso" class="form-control" readonly />
-                </div>
-
-                <div class="mb-3">
-                    <label asp-for="Estado" class="form-label"></label>
-                    <input asp-for="Estado" class="form-control" readonly />
-                </div>
-
-                <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-danger px-4 me-2">
-                        <i class="bi bi-trash3-fill"></i> Eliminar definitivamente
-                    </button>
-                    <a href="/Boletos/Listar" class="btn btn-outline-secondary px-4">
-                        <i class="bi bi-x-circle"></i> Cancelar
-                    </a>
-                </div>
+                <button type="button" class="btn btn-danger px-4 me-2 fancy-delete" onclick="confirmarEliminacion()">
+                    💣 <i class="bi bi-trash3-fill"></i> Eliminar
+                </button>
+                <a href="/Boletos/Listar" class="btn btn-outline-secondary px-4 fancy-cancel">
+                    🙅‍♂️ <i class="bi bi-x-circle"></i> Cancelar
+                </a>
             </form>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function confirmarEliminacion() {
+            // Estados que no permiten eliminación
+            const estadosProhibidos = ['Pendiente', 'Confirmado', 'Utilizado', 'Activo'];
+            const estado = '@Model.Estado';
+            
+            // Validar estado
+            if (estadosProhibidos.includes(estado)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: '⚠️ No se puede eliminar',
+                    html: `❌ <strong>El boleto tiene estado "${estado}"</strong><br><br>Los boletos con estado "${estado}" no pueden ser eliminados. Solo se pueden eliminar boletos con estado "Reembolsado" o "Anulado".`,
+                    confirmButtonColor: '#dc3545',
+                    confirmButtonText: 'Entendido'
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: '¿Eliminar Boleto?',
+                html: `🎫 El boleto <b>#@Model.IdBoleto</b> será eliminado permanentemente.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                backdrop: 'rgba(0,0,0,0.4)'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '✅ Eliminado correctamente',
+                        text: 'El boleto ha sido eliminado del sistema.',
+                        showConfirmButton: false,
+                        timer: 1400
+                    }).then(() => {
+                        document.getElementById('formEliminarBoleto').submit();
+                    });
+                }
+            });
+        }
+    </script>
+
+    <style>
+        .bg-gradient-danger {
+            background: linear-gradient(135deg, #dc3545, #ff6b6b);
+        }
+
+        .header-glow-danger {
+            box-shadow: 0 0 25px rgba(255, 0, 0, 0.6);
+        }
+
+        .fancy-delete, .fancy-cancel {
+            border-radius: 30px;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+        }
+
+            .fancy-delete:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(220,53,69,0.6);
+            }
+
+            .fancy-cancel:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(108,117,125,0.5);
+            }
+
+        table th {
+            background-color: #f8d7da;
+            color: #721c24;
+            width: 30%;
+        }
+
+        table td {
+            background-color: #fff;
+        }
+
+        table tr:hover td {
+            background-color: #ffe6e6;
+            transition: 0.2s ease-in-out;
+        }
+
+        .card {
+            transition: 0.4s ease;
+        }
+
+            .card:hover {
+                transform: scale(1.02);
+                box-shadow: 0 0 25px rgba(255,0,0,0.3);
+            }
+    </style>
+}

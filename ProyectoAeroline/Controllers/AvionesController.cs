@@ -4,9 +4,12 @@ using Microsoft.CodeAnalysis.Options;
 using Microsoft.Data.SqlClient;
 using ProyectoAeroline.Data;
 using ProyectoAeroline.Models;
+using Microsoft.AspNetCore.Authorization;
+using ProyectoAeroline.Attributes;
 
 namespace ProyectoAeroline.Controllers
 {
+    [Authorize]
     public class AvionesController : Controller
     {
         // Instancia de la clase con la conexion y stored procedures
@@ -22,7 +25,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // Muestra el formulario principal con la lista de datos
-
+        [RequirePermission("Aviones", "Ver")]
         public IActionResult Listar()
         {
 
@@ -33,6 +36,7 @@ namespace ProyectoAeroline.Controllers
 
 
         // Muestra el formulario llamador Guardar
+        [RequirePermission("Aviones", "Crear")]
         public IActionResult Guardar()
         {
             // Obtener aerolíneas activas desde el usp
@@ -61,6 +65,7 @@ namespace ProyectoAeroline.Controllers
 
         // Almacena los datos del formulario Guardar
         [HttpPost]
+        [RequirePermission("Aviones", "Crear")]
         public IActionResult Guardar(AvionesModel oAviones)
         {
             if (!ModelState.IsValid)
@@ -81,6 +86,7 @@ namespace ProyectoAeroline.Controllers
 
 
         // Muestra el formulario llamador Modificar
+        [RequirePermission("Aviones", "Editar")]
         public IActionResult Modificar(int CodigoAvion)
         {
 
@@ -115,6 +121,7 @@ namespace ProyectoAeroline.Controllers
 
         // Almacena los datos del formulario Editar
         [HttpPost]
+        [RequirePermission("Aviones", "Editar")]
         public IActionResult Modificar(AvionesModel oAvion)
         {
             oAvion.FechaUltimoMantenimiento = null;
@@ -128,6 +135,7 @@ namespace ProyectoAeroline.Controllers
 
         // Muestra el formulario llamador Eliminar
         // GET: Aviones/Eliminar/5
+        [RequirePermission("Aviones", "Eliminar")]
         public IActionResult Eliminar(int CodigoAvion)
         {
             var oAvion = _AvionesData.MtdBuscarAvion(CodigoAvion);
@@ -136,6 +144,7 @@ namespace ProyectoAeroline.Controllers
 
         // POST: Usuarios/Eliminar
         [HttpPost]
+        [RequirePermission("Aviones", "Eliminar")]
         public IActionResult Eliminar(AvionesModel oAvion)
         {
             try

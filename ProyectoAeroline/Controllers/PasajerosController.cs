@@ -2,14 +2,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using ProyectoAeroline.Data;
 using ProyectoAeroline.Models;
+using Microsoft.AspNetCore.Authorization;
+using ProyectoAeroline.Attributes;
 
 namespace ProyectoAeroline.Controllers
 {
+    [Authorize]
     public class PasajerosController : Controller
     {
         PasajerosData _PasajerosData = new PasajerosData();
 
         // ✅ GET: LISTAR
+        [RequirePermission("Pasajeros", "Ver")]
         public IActionResult Listar()
         {
             var oListaPasajeros = _PasajerosData.MtdConsultarPasajeros();
@@ -17,6 +21,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // ✅ GET: GUARDAR
+        [RequirePermission("Pasajeros", "Crear")]
         public IActionResult Guardar()
         {
             CargarCombos(null);
@@ -26,6 +31,7 @@ namespace ProyectoAeroline.Controllers
         // ✅ POST: GUARDAR
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RequirePermission("Pasajeros", "Crear")]
         public IActionResult Guardar(PasajerosModel oPasajero)
         {
             if (!ModelState.IsValid)
@@ -77,6 +83,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // ✅ GET: MODIFICAR
+        [RequirePermission("Pasajeros", "Editar")]
         public IActionResult Modificar(int IdPasajero)
         {
             if (IdPasajero <= 0)
@@ -99,6 +106,7 @@ namespace ProyectoAeroline.Controllers
         // ✅ POST: MODIFICAR
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RequirePermission("Pasajeros", "Editar")]
         public IActionResult Modificar(PasajerosModel oPasajero)
         {
             if (!ModelState.IsValid)
@@ -148,6 +156,7 @@ namespace ProyectoAeroline.Controllers
         }
 
         // ✅ GET: ELIMINAR
+        [RequirePermission("Pasajeros", "Eliminar")]
         public IActionResult Eliminar(int IdPasajero)
         {
             if (IdPasajero <= 0)
@@ -169,6 +178,7 @@ namespace ProyectoAeroline.Controllers
         // ✅ POST: ELIMINAR
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RequirePermission("Pasajeros", "Eliminar")]
         public IActionResult Eliminar(PasajerosModel oPasajero)
         {
             if (oPasajero == null || oPasajero.IdPasajero <= 0)

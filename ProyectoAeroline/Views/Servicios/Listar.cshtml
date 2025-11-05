@@ -5,12 +5,14 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<div class="container-fluid px-4 mt-4">
+<div class="container-fluid px-4 mt-4 animate__animated animate__fadeInUp">
     <div class="card shadow-lg border-0 rounded-4">
-        <div class="card-header bg-primary text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center">
-            <h3 class="mb-0"><i class="bi bi-stars"></i> Lista de Servicios</h3>
-            <a href="/Servicios/Guardar" class="btn btn-light btn-sm fw-bold">
-                <i class="bi bi-plus-circle"></i> Agregar
+        <div class="card-header bg-gradient text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center header-glow">
+            <h3 class="mb-0">
+                ⭐ <i class="bi bi-stars"></i> <strong>Lista de Servicios</strong>
+            </h3>
+            <a href="/Servicios/Guardar" class="btn btn-light btn-sm fw-bold fancy-btn">
+                ➕ <i class="bi bi-plus-circle"></i> Agregar
             </a>
         </div>
 
@@ -18,18 +20,17 @@
             <table id="tablaServicios" class="table table-hover align-middle text-center w-100">
                 <thead class="table-primary">
                     <tr>
-                        <th>ID</th>
-                        <th>Boleto</th>
-                        <th>Fecha</th>
-                        <th>Tipo de Servicio</th>
-                        <th>Costo</th>
-                        <th>Cantidad</th>
-                        <th>Costo Total</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
+                        <th>🆔 ID</th>
+                        <th>🎫 Boleto</th>
+                        <th>📅 Fecha</th>
+                        <th>🎯 Tipo de Servicio</th>
+                        <th>💵 Costo</th>
+                        <th>🔢 Cantidad</th>
+                        <th>💰 Costo Total</th>
+                        <th>⚙️ Estado</th>
+                        <th>🪄 Acciones</th>
                     </tr>
                 </thead>
-
                 <tbody>
                     @foreach (var item in Model)
                     {
@@ -42,22 +43,21 @@
                             <td>@item.Cantidad</td>
                             <td><strong>Q @(item.CostoTotal?.ToString("N2") ?? "0.00")</strong></td>
                             <td>
-                                <span class="badge @(item.Estado == "Activo" ? "bg-success" : "bg-danger")">
-                                    @item.Estado
+                                <span class="badge @(item.Estado == "Activo" ? "bg-success" : "bg-danger") px-3 py-2 rounded-pill shadow-sm">
+                                    @(item.Estado == "Activo" ? "🟢 Activo" : "🔴 Inactivo")
                                 </span>
                             </td>
                             <td>
-                                <div class="btn-group">
+                                <div class="btn-group" role="group">
                                     <a href="@Url.Action("Modificar", "Servicios", new { CodigoServicio = item.IdServicio })"
-                                       class="btn btn-outline-secondary btn-sm" title="Modificar">
-                                        <i class="bi bi-pencil-square"></i>
+                                       class="btn btn-outline-primary btn-sm fancy-action" title="Editar Servicio">
+                                        🛠️ <i class="bi bi-pencil-square"></i>
                                     </a>
-                                    <a href="@Url.Action("Eliminar", "Servicios", new { CodigoServicio = item.IdServicio })"
-                                       class="btn btn-outline-danger btn-sm"
-                                       title="Eliminar"
-                                       onclick="return confirm('¿Seguro que deseas eliminar este servicio?');">
-                                        <i class="bi bi-trash"></i>
-                                    </a>
+                                    <button type="button" class="btn btn-outline-danger btn-sm fancy-action"
+                                            onclick="confirmarEliminacion('@item.IdServicio', '@item.TipoServicio')"
+                                            title="Eliminar Servicio">
+                                        🗑️ <i class="bi bi-trash"></i>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -69,19 +69,101 @@
 </div>
 
 @section Scripts {
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" />
+
     <script>
         $(document).ready(function () {
             $('#tablaServicios').DataTable({
-                language: { url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json' },
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+                },
                 pageLength: 10,
                 lengthMenu: [5, 10, 25, 50],
                 responsive: true,
                 ordering: true,
                 columnDefs: [
-                    { orderable: false, targets: [8] } // acciones no ordenables
+                    { orderable: false, targets: [8] }
                 ]
             });
         });
-    </script>
-}
 
+        function confirmarEliminacion(id, tipoServicio) {
+            Swal.fire({
+                title: '¿Eliminar Servicio?',
+                html: `⭐ El servicio <b>${tipoServicio}</b> será eliminado permanentemente.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                backdrop: 'rgba(0,0,0,0.4)'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = `/Servicios/Eliminar?CodigoServicio=${id}`;
+                }
+            });
+        }
+    </script>
+
+    <style>
+        .bg-gradient {
+            background: linear-gradient(135deg, #007bff, #00b4d8);
+        }
+
+        .header-glow {
+            box-shadow: 0 0 25px rgba(0, 174, 255, 0.6);
+        }
+
+        .fancy-btn,
+        .fancy-action {
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+        }
+
+            .fancy-btn:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(0, 174, 255, 0.6);
+            }
+
+            .fancy-action:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            }
+
+        table thead {
+            background: linear-gradient(135deg, #90e0ef, #0077b6);
+            color: white;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        table tbody tr:hover {
+            background-color: #caf0f8 !important;
+            transform: scale(1.01);
+            transition: 0.2s ease-in-out;
+        }
+
+        .card {
+            transition: 0.4s ease;
+        }
+
+            .card:hover {
+                transform: scale(1.02);
+                box-shadow: 0 0 25px rgba(0, 123, 255, 0.3);
+            }
+
+        .badge {
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+    </style>
+}

@@ -1,93 +1,163 @@
 @model ProyectoAeroline.Models.RolPantallaOpcionModel
+
 @{
     ViewData["Title"] = "Eliminar Permiso";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<div class="container-fluid px-4 mt-4">
+<div class="container-fluid px-4 mt-4 animate__animated animate__fadeInUp">
     <div class="card shadow-lg border-0 rounded-4">
-        <div class="card-header bg-danger text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center">
+        <div class="card-header bg-gradient-danger text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center header-glow-danger">
             <h3 class="mb-0">
-                <i class="bi bi-key-x"></i> Eliminar Permiso
+                🗑️ <i class="bi bi-key"></i> <strong>Eliminar Permiso</strong>
             </h3>
-            <a href="/RolPantallaOpcion/Listar" class="btn btn-light btn-sm fw-bold">
-                <i class="bi bi-arrow-left-circle"></i> Regresar
+            <a href="/RolPantallaOpcion/Listar" class="btn btn-light btn-sm fw-bold fancy-btn-cancel">
+                🔙 <i class="bi bi-arrow-left-circle"></i> Regresar
             </a>
         </div>
 
-        <div class="card-body bg-light">
-            <h5 class="text-center mb-4 text-danger fw-semibold">
-                ¿Seguro que deseas eliminar este permiso?
+        <div class="card-body bg-light text-center">
+            <h5 class="text-danger fw-bold mb-4 animate__animated animate__pulse animate__infinite">
+                ⚠️ ¿Estás seguro de que deseas eliminar este permiso?
             </h5>
 
-            <form asp-action="Eliminar" method="post">
-                @Html.AntiForgeryToken()
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered shadow-sm align-middle">
+                    <tr><th>🆔 ID Permiso</th><td>@Model.IdRolPantallaOpcion</td></tr>
+                    <tr><th>🛡️ Rol</th><td>@(Model.NombreRol ?? $"Rol {Model.IdRol}")</td></tr>
+                    <tr><th>🖥️ Pantalla</th><td>@(Model.NombrePantalla ?? $"Pantalla {Model.IdPantalla}")</td></tr>
+                    <tr>
+                        <th>🔐 Permisos</th>
+                        <td>
+                            <div class="d-flex gap-2 justify-content-center">
+                                <span class="badge @(Model.Ver ? "bg-success" : "bg-secondary")">Ver: @(Model.Ver ? "Sí" : "No")</span>
+                                <span class="badge @(Model.Crear ? "bg-success" : "bg-secondary")">Crear: @(Model.Crear ? "Sí" : "No")</span>
+                                <span class="badge @(Model.Editar ? "bg-success" : "bg-secondary")">Editar: @(Model.Editar ? "Sí" : "No")</span>
+                                <span class="badge @(Model.Eliminar ? "bg-success" : "bg-secondary")">Eliminar: @(Model.Eliminar ? "Sí" : "No")</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>⚙️ Estado</th>
+                        <td>
+                            <span class="badge @(Model.Estado == "Activo" ? "bg-success" : "bg-danger") px-3 py-2 rounded-pill shadow-sm">
+                                @(Model.Estado == "Activo" ? "🟢 Activo" : "🔴 Inactivo")
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
 
-                <!-- Campo oculto: ESTE ES CLAVE -->
+            <form id="formEliminarPermiso" asp-action="Eliminar" method="post">
+                @Html.AntiForgeryToken()
                 <input type="hidden" asp-for="IdRolPantallaOpcion" />
 
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">ID Permiso</label>
-                        <input class="form-control" value="@Model.IdRolPantallaOpcion" readonly />
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Rol</label>
-                        <input class="form-control" value="@(Model.NombreRol ?? $"Rol {Model.IdRol}")" readonly />
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Pantalla</label>
-                        <input class="form-control" value="@(Model.NombrePantalla ?? $"Pantalla {Model.IdPantalla}")" readonly />
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">Estado</label>
-                        <input class="form-control" value="@Model.Estado" readonly />
-                    </div>
-
-                    <div class="col-md-12">
-                        <label class="form-label fw-bold">Permisos</label>
-                        <div class="row">
-                            <div class="col-md-3">
-                                <strong>Ver:</strong> 
-                                <span class="badge @(Model.Ver ? "bg-success" : "bg-secondary")">
-                                    @(Model.Ver ? "Sí" : "No")
-                                </span>
-                            </div>
-                            <div class="col-md-3">
-                                <strong>Crear:</strong> 
-                                <span class="badge @(Model.Crear ? "bg-success" : "bg-secondary")">
-                                    @(Model.Crear ? "Sí" : "No")
-                                </span>
-                            </div>
-                            <div class="col-md-3">
-                                <strong>Editar:</strong> 
-                                <span class="badge @(Model.Editar ? "bg-success" : "bg-secondary")">
-                                    @(Model.Editar ? "Sí" : "No")
-                                </span>
-                            </div>
-                            <div class="col-md-3">
-                                <strong>Eliminar:</strong> 
-                                <span class="badge @(Model.Eliminar ? "bg-success" : "bg-secondary")">
-                                    @(Model.Eliminar ? "Sí" : "No")
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-danger px-4 me-2">
-                        <i class="bi bi-trash3-fill"></i> Eliminar definitivamente
-                    </button>
-                    <a href="/RolPantallaOpcion/Listar" class="btn btn-outline-secondary px-4">
-                        <i class="bi bi-x-circle"></i> Cancelar
-                    </a>
-                </div>
+                <button type="button" class="btn btn-danger px-4 me-2 fancy-delete" onclick="confirmarEliminacion()">
+                    💣 <i class="bi bi-trash3-fill"></i> Eliminar
+                </button>
+                <a href="/RolPantallaOpcion/Listar" class="btn btn-outline-secondary px-4 fancy-cancel">
+                    🙅‍♂️ <i class="bi bi-x-circle"></i> Cancelar
+                </a>
             </form>
         </div>
     </div>
 </div>
 
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function confirmarEliminacion() {
+            // Estados que no permiten eliminación
+            const estadosProhibidos = ['Activo'];
+            const estado = '@Model.Estado';
+            
+            // Validar estado
+            if (estadosProhibidos.includes(estado)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: '⚠️ No se puede eliminar',
+                    html: `❌ <strong>El permiso tiene estado "${estado}"</strong><br><br>Por favor, cambie el estado a "Inactivo" antes de intentar eliminar.`,
+                    confirmButtonColor: '#dc3545',
+                    confirmButtonText: 'Entendido'
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: '¿Eliminar Permiso?',
+                html: `🔐 El permiso para <b>@(Model.NombreRol ?? $"Rol {Model.IdRol}")</b> en <b>@(Model.NombrePantalla ?? $"Pantalla {Model.IdPantalla}")</b> será eliminado permanentemente.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                backdrop: 'rgba(0,0,0,0.4)'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '✅ Eliminado correctamente',
+                        text: 'El permiso ha sido eliminado del sistema.',
+                        showConfirmButton: false,
+                        timer: 1400
+                    }).then(() => {
+                        document.getElementById('formEliminarPermiso').submit();
+                    });
+                }
+            });
+        }
+    </script>
+
+    <style>
+        .bg-gradient-danger {
+            background: linear-gradient(135deg, #dc3545, #ff6b6b);
+        }
+
+        .header-glow-danger {
+            box-shadow: 0 0 25px rgba(255, 0, 0, 0.6);
+        }
+
+        .fancy-delete, .fancy-cancel {
+            border-radius: 30px;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+        }
+
+            .fancy-delete:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(220,53,69,0.6);
+            }
+
+            .fancy-cancel:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(108,117,125,0.5);
+            }
+
+        table th {
+            background-color: #f8d7da;
+            color: #721c24;
+            width: 30%;
+        }
+
+        table td {
+            background-color: #fff;
+        }
+
+        table tr:hover td {
+            background-color: #ffe6e6;
+            transition: 0.2s ease-in-out;
+        }
+
+        .card {
+            transition: 0.4s ease;
+        }
+
+            .card:hover {
+                transform: scale(1.02);
+                box-shadow: 0 0 25px rgba(255,0,0,0.3);
+            }
+    </style>
+}

@@ -60,10 +60,13 @@ namespace ProyectoAeroline.Data
                 using (var conexion = new SqlConnection(conn.GetConnectionString()))
                 {
                     conexion.Open();
-                    SqlCommand cmd = new SqlCommand("sp_PantallaAgregar", conexion);
+                    SqlCommand cmd = new SqlCommand("sp_PantallaAgregar", conexion)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                        CommandTimeout = 120 // Aumentar timeout a 2 minutos
+                    };
                     cmd.Parameters.AddWithValue("@NombrePantalla", oPantalla.NombrePantalla);
                     cmd.Parameters.AddWithValue("@UsuarioCreacion", DBNull.Value); // Puedes obtenerlo del contexto si lo necesitas
-                    cmd.CommandType = CommandType.StoredProcedure;
                     cmd.ExecuteNonQuery();
                 }
 
@@ -126,11 +129,14 @@ namespace ProyectoAeroline.Data
                 using (var conexion = new SqlConnection(conn.GetConnectionString()))
                 {
                     conexion.Open();
-                    SqlCommand cmd = new SqlCommand("sp_PantallaModificar", conexion);
+                    SqlCommand cmd = new SqlCommand("sp_PantallaModificar", conexion)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                        CommandTimeout = 120 // Aumentar timeout a 2 minutos
+                    };
                     cmd.Parameters.AddWithValue("@IdPantalla", oPantalla.IdPantalla);
                     cmd.Parameters.AddWithValue("@NombrePantalla", oPantalla.NombrePantalla);
                     cmd.Parameters.AddWithValue("@UsuarioActualizacion", DBNull.Value); // Puedes obtenerlo del contexto si lo necesitas
-                    cmd.CommandType = CommandType.StoredProcedure;
                     cmd.ExecuteNonQuery();
                 }
 
@@ -155,9 +161,13 @@ namespace ProyectoAeroline.Data
                 using (var conexion = new SqlConnection(conn.GetConnectionString()))
                 {
                     conexion.Open();
-                    SqlCommand cmd = new SqlCommand("sp_PantallaEliminar", conexion);
+                    SqlCommand cmd = new SqlCommand("sp_PantallaEliminar", conexion)
+                    {
+                        CommandType = CommandType.StoredProcedure,
+                        CommandTimeout = 120 // Aumentar timeout a 2 minutos
+                    };
                     cmd.Parameters.AddWithValue("@IdPantalla", IdPantalla);
-                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@UsuarioEliminacion", DBNull.Value); // Puedes obtenerlo del contexto si lo necesitas
                     cmd.ExecuteNonQuery();
                 }
 

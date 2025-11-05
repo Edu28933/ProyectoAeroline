@@ -1,48 +1,50 @@
 ﻿@model ProyectoAeroline.Models.EmpleadosModel
 
 @{
-    ViewData["Title"] = "Modificar";
+    ViewData["Title"] = "Modificar Empleado";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-@*<h1>Modificar</h1>*@
-<div class="card shadow-lg border-0 rounded-4 mt-4">
-    <div class="card-header bg-primary text-white rounded-top-4 d-flex justify-content-between align-items-center">
-        <h4 class="mb-0"><i class="bi bi-pencil-square"></i> Modificar empleado</h4>
-        <a href="/Empleados/Listar" class="btn btn-light btn-sm fw-bold">
-            <i class="bi bi-arrow-left-circle"></i> Regresar
-        </a>
-    </div>
+<div class="container-fluid px-4 mt-4 animate__animated animate__fadeInUp">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-gradient text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center header-glow">
+            <h3 class="mb-0">
+                ✏️ <i class="bi bi-pencil-square"></i> <strong>Modificar Empleado</strong>
+            </h3>
+            <a href="/Empleados/Listar" class="btn btn-light btn-sm fw-bold fancy-btn-cancel">
+                🔙 <i class="bi bi-arrow-left-circle"></i> Regresar
+            </a>
+        </div>
 
-    <div class="card-body p-4">
-        @if (ViewBag.Error != null)
-        {
-            <div class="alert alert-danger">@ViewBag.Error</div>
-        }
-
-        <div class="card-body bg-light rounded-bottom-4">
+        <div class="card-body bg-light">
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>❌ Error:</strong> @ViewBag.Error
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
             <form asp-action="Modificar" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <input type="hidden" asp-for="IdEmpleado" />
+                
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label asp-for="IdEmpleado" class="control-label"></label>
-                        <input asp-for="IdEmpleado" class="form-control" />
-                        <span asp-validation-for="IdEmpleado" class="text-danger"></span>
-                    </div>
-                    <div class="col-md-6">
-                        <label asp-for="IdUsuario" class="control-label"></label>
-                        <input asp-for="IdUsuario" class="form-control" />
+                        <label asp-for="IdUsuario" class="form-label fw-bold">👤 Usuario</label>
+                        <select asp-for="IdUsuario" class="form-select rounded-3" asp-items="ViewBag.Usuarios" required>
+                            <option value="">-- Seleccione un usuario --</option>
+                        </select>
                         <span asp-validation-for="IdUsuario" class="text-danger"></span>
                     </div>
                     <div class="col-md-6">
-                        <label asp-for="Nombre" class="control-label"></label>
-                        <input asp-for="Nombre" class="form-control" />
+                        <label asp-for="Nombre" class="form-label fw-bold">📛 Nombre Completo</label>
+                        <input asp-for="Nombre" class="form-control rounded-3" placeholder="Nombre del empleado" required />
                         <span asp-validation-for="Nombre" class="text-danger"></span>
                     </div>
                     <div class="col-md-6">
-                        <label asp-for="Cargo" class="form-label fw-bold"></label>
-                        <select asp-for="Cargo" id="Cargo" class="form-select">
-                            <option value="">Seleccione un cargo</option>
+                        <label asp-for="Cargo" class="form-label fw-bold">💼 Cargo</label>
+                        <select asp-for="Cargo" id="Cargo" class="form-select rounded-3" required>
+                            <option value="">-- Seleccione un cargo --</option>
                             <option value="Piloto">Piloto</option>
                             <option value="Copiloto">Copiloto</option>
                             <option value="Azafata">Azafata</option>
@@ -61,85 +63,92 @@
                         <span asp-validation-for="Cargo" class="text-danger"></span>
                     </div>
                     <div class="col-md-6">
-                        <label asp-for="Licencia" class="control-label"></label>
-                        <input asp-for="Licencia" class="form-control" />
+                        <label asp-for="Licencia" class="form-label fw-bold">📜 Licencia</label>
+                        <input asp-for="Licencia" class="form-control rounded-3" placeholder="Número de licencia" />
                         <span asp-validation-for="Licencia" class="text-danger"></span>
                     </div>
                     <div class="col-md-6">
-                        <label asp-for="Telefono" class="control-label"></label>
-                        <input asp-for="Telefono" class="form-control" />
+                        <label asp-for="Telefono" class="form-label fw-bold">📱 Teléfono</label>
+                        <input asp-for="Telefono" class="form-control rounded-3" type="number" required />
                         <span asp-validation-for="Telefono" class="text-danger"></span>
                     </div>
                     <div class="col-md-6">
-                        <label asp-for="Correo" class="control-label"></label>
-                        <input asp-for="Correo" class="form-control" />
+                        <label asp-for="Correo" class="form-label fw-bold">📧 Correo</label>
+                        <input asp-for="Correo" class="form-control rounded-3" placeholder="correo@ejemplo.com" type="email" />
                         <span asp-validation-for="Correo" class="text-danger"></span>
                     </div>
                     <div class="col-md-6">
-                        <label asp-for="Salario" class="form-label fw-bold"></label>
-                        <input asp-for="Salario" id="Salario" class="form-control" type="number" step="0.01" />
+                        <label asp-for="Salario" class="form-label fw-bold">💰 Salario</label>
+                        <input asp-for="Salario" id="Salario" class="form-control rounded-3" type="number" step="0.01" required readonly style="background-color: #e9ecef; cursor: not-allowed;" />
+                        <small class="form-text text-muted">💡 El salario se asigna automáticamente según el cargo seleccionado.</small>
                         <span asp-validation-for="Salario" class="text-danger"></span>
                     </div>
                     <div class="col-md-6">
-                        <label asp-for="Direccion" class="control-label"></label>
-                        <input asp-for="Direccion" class="form-control" />
+                        <label asp-for="Direccion" class="form-label fw-bold">📍 Dirección</label>
+                        <input asp-for="Direccion" class="form-control rounded-3" placeholder="Dirección del empleado" />
                         <span asp-validation-for="Direccion" class="text-danger"></span>
                     </div>
                     <div class="col-md-6">
-                        <label asp-for="FechaIngreso" class="control-label"></label>
-                        <input asp-for="FechaIngreso" class="form-control" />
+                        <label asp-for="FechaIngreso" class="form-label fw-bold">📅 Fecha Ingreso</label>
+                        <input asp-for="FechaIngreso" id="FechaIngreso" class="form-control rounded-3" type="date" required />
                         <span asp-validation-for="FechaIngreso" class="text-danger"></span>
                     </div>
                     <div class="col-md-6">
-                        <label asp-for="ContactoEmergencia" class="control-label"></label>
-                        <input asp-for="ContactoEmergencia" class="form-control" />
+                        <label asp-for="ContactoEmergencia" class="form-label fw-bold">🚨 Contacto de Emergencia</label>
+                        <input asp-for="ContactoEmergencia" class="form-control rounded-3" placeholder="Teléfono de emergencia" type="number" required />
                         <span asp-validation-for="ContactoEmergencia" class="text-danger"></span>
                     </div>
                     <div class="col-md-6">
-                        <label asp-for="Estado" class="control-label"></label>
-                        <input asp-for="Estado" class="form-control" />
+                        <label asp-for="Estado" class="form-label fw-bold">⚙️ Estado</label>
+                        <select asp-for="Estado" class="form-select rounded-3" required>
+                            <option value="">-- Seleccione un estado --</option>
+                            <option value="Activo">🟢 Activo</option>
+                            <option value="Inactivo">🔴 Inactivo</option>
+                        </select>
                         <span asp-validation-for="Estado" class="text-danger"></span>
                     </div>
 
                     <!-- Foto actual -->
-                    <div class="col-md-6 d-flex align-items-start justify-content-around">
-                        <!-- Foto actual -->
-                        <div class="text-center me-3">
-                            <label class="form-label fw-bold">Fotografía actual</label><br />
-                            @if (!string.IsNullOrEmpty(Model.FotoRuta))
-                            {
-                                <img src="@Model.FotoRuta"
-                                     alt="Foto actual"
-                                     class="rounded shadow-sm border foto-empleado"
-                                     width="120" height="120" />
-                            }
-                            else
-                            {
-                                <img src="/img/Empleados/default-user.png"
-                                     alt="Sin foto"
-                                     class="rounded shadow-sm border foto-empleado"
-                                     width="120" height="120" />
-                                <div class="text-muted mt-1">Sin fotografía</div>
-                            }
-                        </div>
+                    <div class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-6 text-center">
+                                <label class="form-label fw-bold">📸 Fotografía Actual</label><br />
+                                @if (!string.IsNullOrEmpty(Model.FotoRuta))
+                                {
+                                    <img src="@Model.FotoRuta"
+                                         alt="Foto actual"
+                                         class="rounded shadow-sm border foto-empleado"
+                                         width="150" height="150"
+                                         style="object-fit: cover;" />
+                                }
+                                else
+                                {
+                                    <div class="bg-light rounded shadow-sm border d-inline-flex align-items-center justify-content-center" style="width: 150px; height: 150px;">
+                                        <div class="text-muted">Sin fotografía</div>
+                                    </div>
+                                }
+                            </div>
 
-                        <!-- Subir nueva foto -->
-                        <div class="text-start">
-                            <label for="Foto" class="form-label fw-bold">Subir nueva fotografía</label>
-						    @*<input type="file" name="Foto" id="Foto" class="form-control" accept="image/*" />*@
-                            <input asp-for="FotoArchivo" class="form-control" accept="image/*" />
-                            <div class="form-text mt-1">Formatos permitidos: JPG, PNG</div>
+                            <!-- Subir nueva foto -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">📸 Subir Nueva Fotografía</label>
+                                <input asp-for="FotoArchivo" class="form-control rounded-3" accept="image/*" />
+                                <div class="form-text mt-1">Formatos permitidos: JPG, PNG</div>
+                                
+                                <div class="mt-2 text-center">
+                                    <img id="vistaPreviaFoto" src="#" alt="Vista previa" class="rounded shadow-sm border" style="max-width: 180px; display: none;" />
+                                </div>
+                            </div>
                         </div>
                     </div>
-
                 </div>
  
                 <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-success px-4">
-                        <i class="bi bi-save"></i> Guardar cambios
+                    <button type="submit" class="btn btn-success px-4 py-3 fancy-btn">
+                        💾 <i class="bi bi-save"></i> Guardar Cambios
                     </button>
-                    <a href="/Empleados/Listar" class="btn btn-outline-secondary ms-2 px-4">
-                        <i class="bi bi-x-circle"></i> Cancelar
+                    <a href="/Empleados/Listar" class="btn btn-outline-secondary ms-2 px-4 py-3 fancy-cancel">
+                        🙅‍♂️ <i class="bi bi-x-circle"></i> Cancelar
                     </a>
                 </div>
             </form>
@@ -149,10 +158,36 @@
 
 
 @section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    
     <script>
         const fechaIngreso = document.getElementById("FechaIngreso");
-        const hoy = new Date().toISOString().split("T")[0];
-        fechaIngreso.min = hoy;
+        if (fechaIngreso) {
+            const hoy = new Date().toISOString().split("T")[0];
+            fechaIngreso.min = hoy;
+        }
+
+        // Vista previa de foto
+        const fotoInput = document.querySelector('input[type="file"]');
+        if (fotoInput) {
+            fotoInput.addEventListener('change', function(event) {
+                var previewImage = document.getElementById('vistaPreviaFoto');
+                
+                if (this.files && this.files[0]) {
+                    var reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        previewImage.src = e.target.result;
+                        previewImage.style.display = 'block';
+                    };
+                    
+                    reader.readAsDataURL(this.files[0]);
+                } else {
+                    previewImage.src = '#';
+                    previewImage.style.display = 'none';
+                }
+            });
+        }
 
         const salarioInput = document.getElementById("Salario");
         const cargoSelect = document.getElementById("Cargo");
@@ -180,4 +215,47 @@
         });
     </script>
 
+    <style>
+        .bg-gradient {
+            background: linear-gradient(135deg, #007bff, #00b4d8);
+        }
+
+        .header-glow {
+            box-shadow: 0 0 25px rgba(0, 174, 255, 0.6);
+        }
+
+        .fancy-btn, .fancy-btn-cancel, .fancy-cancel {
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .fancy-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(0, 174, 255, 0.6);
+        }
+
+        .fancy-btn-cancel:hover, .fancy-cancel:hover {
+            transform: scale(1.05);
+        }
+
+        .form-control.rounded-3, .form-select.rounded-3 {
+            border-radius: 15px !important;
+            transition: all 0.3s ease;
+        }
+
+        .form-control.rounded-3:focus, .form-select.rounded-3:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.25);
+        }
+
+        .card {
+            transition: 0.4s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.01);
+            box-shadow: 0 0 25px rgba(0, 123, 255, 0.3);
+        }
+    </style>
 }

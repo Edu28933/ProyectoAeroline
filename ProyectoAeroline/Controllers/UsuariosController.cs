@@ -30,6 +30,7 @@ namespace ProyectoAeroline.Controllers
         [RequirePermission("Usuarios", "Crear")]
         public IActionResult Guardar()
         {
+            ViewBag.Roles = _UsuariosData.MtdListarRolesActivos();
             return View();
         }
 
@@ -41,12 +42,28 @@ namespace ProyectoAeroline.Controllers
         [RequirePermission("Usuarios", "Crear")]
         public IActionResult Guardar(UsuariosModel oUsuario)
         {
+            // Validar que el nombre de usuario no se repita
+            if (_UsuariosData.MtdVerificarNombreExiste(oUsuario.Nombre))
+            {
+                ModelState.AddModelError("Nombre", "El nombre de usuario ya existe. Por favor, elija otro nombre.");
+                ViewBag.Roles = _UsuariosData.MtdListarRolesActivos();
+                return View(oUsuario);
+            }
+
             var respuesta = _UsuariosData.MtdAgregarUsuario(oUsuario);
 
             if (respuesta)
+            {
+                TempData["Success"] = "Usuario guardado correctamente.";
                 return RedirectToAction("Listar");
+            }
             else
-                return View();
+            {
+                // Recargar combos si hay error
+                ViewBag.Roles = _UsuariosData.MtdListarRolesActivos();
+                ModelState.AddModelError("", "Error al guardar el usuario. Por favor, intente nuevamente.");
+                return View(oUsuario);
+            }
         }
 
         // --------------------------------------------------------------
@@ -80,6 +97,7 @@ namespace ProyectoAeroline.Controllers
                 return RedirectToAction("Listar");
             }
 
+            ViewBag.Roles = _UsuariosData.MtdListarRolesActivos();
             return View(oUsuario);
         }
 
@@ -91,12 +109,38 @@ namespace ProyectoAeroline.Controllers
         [RequirePermission("Usuarios", "Editar")]
         public IActionResult Modificar(UsuariosModel oUsuario)
         {
+            // Validar que el nombre de usuario no se repita (excluyendo el usuario actual)
+            if (_UsuariosData.MtdVerificarNombreExiste(oUsuario.Nombre, oUsuario.IdUsuario))
+            {
+                ModelState.AddModelError("Nombre", "El nombre de usuario ya existe. Por favor, elija otro nombre.");
+                ViewBag.Roles = _UsuariosData.MtdListarRolesActivos();
+                return View(oUsuario);
+            }
+
+            // Si la contraseña está vacía, obtener la contraseña actual del usuario
+            if (string.IsNullOrWhiteSpace(oUsuario.Contraseña))
+            {
+                var usuarioActual = _UsuariosData.MtdBuscarUsuario(oUsuario.IdUsuario);
+                if (usuarioActual != null)
+                {
+                    oUsuario.Contraseña = usuarioActual.Contraseña;
+                }
+            }
+
             var respuesta = _UsuariosData.MtdEditarUsuario(oUsuario);
 
             if (respuesta)
+            {
+                TempData["Success"] = "Usuario modificado correctamente.";
                 return RedirectToAction("Listar");
+            }
             else
+            {
+                // Recargar combos si hay error
+                ViewBag.Roles = _UsuariosData.MtdListarRolesActivos();
+                ModelState.AddModelError("", "Error al modificar el usuario. Por favor, intente nuevamente.");
                 return View(oUsuario);
+            }
         }
 
         // --------------------------------------------------------------
@@ -107,6 +151,13 @@ namespace ProyectoAeroline.Controllers
         public IActionResult Eliminar(int CodigoUsuario)
         {
             var oUsuario = _UsuariosData.MtdBuscarUsuario(CodigoUsuario);
+            
+            if (oUsuario == null || oUsuario.IdUsuario == 0)
+            {
+                TempData["Error"] = "El usuario no existe.";
+                return RedirectToAction("Listar");
+            }
+            
             return View(oUsuario);
         }
 
@@ -118,12 +169,24 @@ namespace ProyectoAeroline.Controllers
         [RequirePermission("Usuarios", "Eliminar")]
         public IActionResult Eliminar(UsuariosModel oUsuario)
         {
-            var respuesta = _UsuariosData.MtdEliminarUsuario(oUsuario.IdUsuario);
+            var (success, errorMessage) = _UsuariosData.MtdEliminarUsuario(oUsuario.IdUsuario);
 
-            if (respuesta)
+            if (success)
+            {
+                TempData["Success"] = "Usuario eliminado correctamente.";
                 return RedirectToAction("Listar");
+            }
             else
-                return View(oUsuario);
+            {
+                // Mostrar el mensaje de error específico
+                TempData["Error"] = !string.IsNullOrEmpty(errorMessage) 
+                    ? errorMessage 
+                    : "No se pudo eliminar el usuario. Por favor, verifique que no tenga empleados asociados y que su estado sea 'Inactivo'.";
+                
+                // Recargar el usuario para mostrarlo en la vista
+                var usuarioActualizado = _UsuariosData.MtdBuscarUsuario(oUsuario.IdUsuario);
+                return View(usuarioActualizado ?? oUsuario);
+            }
         }
 
         // --------------------------------------------------------------

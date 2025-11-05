@@ -5,46 +5,48 @@
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
-<div class="container-fluid px-4 mt-4">
+<div class="container-fluid px-4 mt-4 animate__animated animate__fadeInUp">
     <div class="card shadow-lg border-0 rounded-4">
-        <div class="card-header bg-primary text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center">
-            <h3 class="mb-0"><i class="bi bi-tools"></i> Lista de Mantenimientos</h3>
-            <a href="/Mantenimientos/Guardar" class="btn btn-light btn-sm fw-bold">
-                <i class="bi bi-plus-circle"></i> Agregar
+        <div class="card-header bg-gradient text-white py-3 rounded-top-4 d-flex justify-content-between align-items-center header-glow">
+            <h3 class="mb-0">
+                🔧 <i class="bi bi-tools"></i> <strong>Lista de Mantenimientos</strong>
+            </h3>
+            <a href="/Mantenimientos/Guardar" class="btn btn-light btn-sm fw-bold fancy-btn">
+                ➕ <i class="bi bi-plus-circle"></i> Agregar
             </a>
         </div>
 
-        @if (TempData["MensajeMantenimiento"] != null)
-        {
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <strong>✅ Éxito:</strong> @TempData["MensajeMantenimiento"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        }
-
-        @if (TempData["ErrorMantenimiento"] != null)
-        {
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <strong>❌ Error:</strong> @TempData["ErrorMantenimiento"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        }
-
         <div class="card-body bg-light">
+            @if (TempData["MensajeMantenimiento"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>✅ Éxito:</strong> @TempData["MensajeMantenimiento"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
+            @if (TempData["ErrorMantenimiento"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>❌ Error:</strong> @TempData["ErrorMantenimiento"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            }
+
             <table id="tablaMantenimientos" class="table table-hover align-middle text-center w-100">
                 <thead class="table-primary">
                     <tr>
-                        <th>ID</th>
-                        <th>Avión</th>
-                        <th>Empleado</th>
-                        <th>Fecha Ingreso</th>
-                        <th>Fecha Salida</th>
-                        <th>Tipo</th>
-                        <th>Costo</th>
-                        <th>Costo Extra</th>
-                        <th>Descripción</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
+                        <th>🆔 ID</th>
+                        <th>✈️ Avión</th>
+                        <th>👤 Empleado</th>
+                        <th>📅 Fecha Ingreso</th>
+                        <th>📅 Fecha Salida</th>
+                        <th>🔧 Tipo</th>
+                        <th>💵 Costo</th>
+                        <th>💰 Costo Extra</th>
+                        <th>📝 Descripción</th>
+                        <th>⚙️ Estado</th>
+                        <th>🪄 Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -61,22 +63,21 @@
                             <td>Q @item.CostoExtra.ToString("N2")</td>
                             <td>@item.Descripcion</td>
                             <td>
-                                <span class="badge @(item.Estado == "Activo" ? "bg-success" : item.Estado == "Pendiente" ? "bg-warning text-dark" : "bg-danger")">
-                                    @item.Estado
+                                <span class="badge @(item.Estado == "Activo" ? "bg-success" : item.Estado == "Pendiente" ? "bg-warning text-dark" : "bg-danger") px-3 py-2 rounded-pill shadow-sm">
+                                    @(item.Estado == "Activo" ? "🟢 Activo" : item.Estado == "Pendiente" ? "🟡 Pendiente" : "🔴 Inactivo")
                                 </span>
                             </td>
                             <td>
-                                <div class="btn-group">
+                                <div class="btn-group" role="group">
                                     <a href="@Url.Action("Modificar", "Mantenimientos", new { CodigoMantenimiento = item.IdMantenimiento })"
-                                       class="btn btn-outline-secondary btn-sm" title="Editar">
-                                        <i class="bi bi-pencil-square"></i>
+                                       class="btn btn-outline-primary btn-sm fancy-action" title="Editar Mantenimiento">
+                                        🛠️ <i class="bi bi-pencil-square"></i>
                                     </a>
-                                    <a href="@Url.Action("Eliminar", "Mantenimientos", new { CodigoMantenimiento = item.IdMantenimiento })"
-                                       class="btn btn-outline-danger btn-sm"
-                                       onclick="return confirm('¿Seguro que deseas eliminar este mantenimiento?');"
-                                       title="Eliminar">
-                                        <i class="bi bi-trash"></i>
-                                    </a>
+                                    <button type="button" class="btn btn-outline-danger btn-sm fancy-action"
+                                            onclick="confirmarEliminacion('@item.IdMantenimiento', '@item.IdMantenimiento')"
+                                            title="Eliminar Mantenimiento">
+                                        🗑️ <i class="bi bi-trash"></i>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -88,18 +89,101 @@
 </div>
 
 @section Scripts {
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- DataTables -->
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" />
+
     <script>
         $(document).ready(function () {
             $('#tablaMantenimientos').DataTable({
-                language: { url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json' },
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+                },
                 pageLength: 10,
                 lengthMenu: [5, 10, 25, 50],
                 responsive: true,
                 ordering: true,
                 columnDefs: [
-                    { orderable: false, targets: [10] } // columna de Acciones no ordenable
+                    { orderable: false, targets: [10] }
                 ]
             });
         });
+
+        function confirmarEliminacion(id, numero) {
+            Swal.fire({
+                title: '¿Eliminar Mantenimiento?',
+                html: `🔧 El mantenimiento <b>#${numero}</b> será eliminado permanentemente.`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar',
+                backdrop: 'rgba(0,0,0,0.4)'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = `/Mantenimientos/Eliminar?CodigoMantenimiento=${id}`;
+                }
+            });
+        }
     </script>
+
+    <style>
+        .bg-gradient {
+            background: linear-gradient(135deg, #007bff, #00b4d8);
+        }
+
+        .header-glow {
+            box-shadow: 0 0 25px rgba(0, 174, 255, 0.6);
+        }
+
+        .fancy-btn,
+        .fancy-action {
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+        }
+
+            .fancy-btn:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 20px rgba(0, 174, 255, 0.6);
+            }
+
+            .fancy-action:hover {
+                transform: scale(1.1);
+                box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            }
+
+        table thead {
+            background: linear-gradient(135deg, #90e0ef, #0077b6);
+            color: white;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        table tbody tr:hover {
+            background-color: #caf0f8 !important;
+            transform: scale(1.01);
+            transition: 0.2s ease-in-out;
+        }
+
+        .card {
+            transition: 0.4s ease;
+        }
+
+            .card:hover {
+                transform: scale(1.02);
+                box-shadow: 0 0 25px rgba(0, 123, 255, 0.3);
+            }
+
+        .badge {
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+    </style>
 }

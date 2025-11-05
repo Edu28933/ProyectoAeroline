@@ -1,0 +1,105 @@
+@{
+    ViewData["Title"] = "Confirmar Boleto";
+    Layout = "~/Pages/Shared/_PublicLayout.cshtml";
+}
+
+<div class="animate__animated animate__fadeInUp" style="margin-top: 0;">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header @(ViewBag.Success == true ? "bg-success" : "bg-danger") text-white py-3 rounded-top-4 text-center">
+            <h3 class="mb-0">
+                @if (ViewBag.Success == true)
+                {
+                    <text>✅ <i class="bi bi-check-circle"></i> <strong>Boleto Confirmado</strong></text>
+                }
+                else
+                {
+                    <text>❌ <i class="bi bi-x-circle"></i> <strong>Error al Confirmar</strong></text>
+                }
+            </h3>
+        </div>
+
+        <div class="card-body bg-light text-center">
+            @if (ViewBag.Success == true)
+            {
+                <div class="alert alert-success" role="alert">
+                    <h4 class="alert-heading">🎉 ¡Éxito!</h4>
+                    <p class="mb-0">@ViewBag.Message</p>
+                </div>
+
+                @if (ViewBag.Boleto != null)
+                {
+                    var boleto = ViewBag.Boleto as ProyectoAeroline.Models.BoletosModel;
+                    <div class="table-responsive mb-4">
+                        <table class="table table-bordered shadow-sm align-middle mx-auto" style="max-width: 600px;">
+                            <tr><th>🆔 ID Boleto</th><td>@(boleto?.IdBoleto ?? 0)</td></tr>
+                            <tr><th>⚙️ Estado</th><td><span class="badge bg-success">Confirmado</span></td></tr>
+                            <tr><th>📅 Fecha de Compra</th><td>@(boleto?.FechaCompra.ToString("dd/MM/yyyy HH:mm") ?? "N/A")</td></tr>
+                        </table>
+                    </div>
+                }
+
+                <div class="alert alert-info">
+                    <strong>ℹ️ Información:</strong> Su boleto ha sido confirmado exitosamente. 
+                    Por favor, guarde este número de confirmación para sus registros.
+                </div>
+
+                <div class="alert alert-warning mt-3">
+                    <small>
+                        <strong>🔒 Nota de Seguridad:</strong> Esta es una página pública de confirmación. 
+                        No tiene acceso al sistema de administración de la aerolínea.
+                    </small>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-danger" role="alert">
+                    <h4 class="alert-heading">⚠️ Error</h4>
+                    <p class="mb-0">@ViewBag.Error</p>
+                </div>
+
+                @if (ViewBag.Boleto != null)
+                {
+                    var boleto = ViewBag.Boleto as ProyectoAeroline.Models.BoletosModel;
+                    <div class="table-responsive mb-4">
+                        <table class="table table-bordered shadow-sm align-middle mx-auto" style="max-width: 600px;">
+                            <tr><th>🆔 ID Boleto</th><td>@(boleto?.IdBoleto ?? 0)</td></tr>
+                            <tr><th>⚙️ Estado Actual</th><td><span class="badge @(boleto?.Estado == "Pendiente" ? "bg-warning" : "bg-info")">@(boleto?.Estado ?? "N/A")</span></td></tr>
+                        </table>
+                    </div>
+                }
+
+                <div class="alert alert-warning">
+                    <strong>💡 Sugerencia:</strong> Si el problema persiste, por favor contacte con nuestro equipo de soporte.
+                </div>
+
+                <div class="alert alert-info mt-3">
+                    <small>
+                        <strong>🔒 Nota de Seguridad:</strong> Esta es una página pública de confirmación. 
+                        No tiene acceso al sistema de administración de la aerolínea.
+                    </small>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    
+    <style>
+        .card {
+            transition: 0.4s ease;
+        }
+
+        table th {
+            background-color: #f8f9fa;
+            color: #333;
+            width: 40%;
+        }
+
+        table td {
+            background-color: #fff;
+        }
+    </style>
+}
+

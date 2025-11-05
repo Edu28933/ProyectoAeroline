@@ -28,6 +28,23 @@
                     {
                         <div id="server-alert" class="lg2-alert" role="alert">@le</div>
                     }
+                    
+                    @if (TempData["Info"] != null)
+                    {
+                        <div id="server-info-alert" class="lg2-alert lg2-alert-info" role="alert" style="background-color: #d1ecf1; border-color: #bee5eb; color: #0c5460; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 1.2em;">📧</span>
+                            <span>@TempData["Info"]</span>
+                        </div>
+                    }
+                    
+                    @if (TempData["Success"] != null)
+                    {
+                        <div id="server-success-alert" class="lg2-alert lg2-alert-success" role="alert" style="background-color: #d4edda; border-color: #c3e6cb; color: #155724; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 1.2em;">✅</span>
+                            <span>@TempData["Success"]</span>
+                        </div>
+                    }
+                    
                     <input type="hidden" id="ServerLoginError" value="@(ViewData["LoginError"] ?? "")" />
 
                     <div class="lg2-field">
@@ -279,6 +296,35 @@
               window.location.search.includes("error=oauth_failed")) {
             sessionStorage.removeItem("oauth_in_progress");
             sessionStorage.removeItem("oauth_start_time");
+          }
+
+          // Mostrar y animar alerta de información si existe
+          const infoAlert = document.getElementById("server-info-alert");
+          if (infoAlert) {
+            // Hacer scroll suave hacia la alerta
+            setTimeout(() => {
+              infoAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+              // Agregar animación de entrada
+              infoAlert.style.animation = 'fadeInDown 0.5s ease-out';
+            }, 100);
+            
+            // Agregar estilos de animación si no existen
+            if (!document.getElementById('alert-animation-style')) {
+              const style = document.createElement('style');
+              style.id = 'alert-animation-style';
+              style.textContent = 
+                '@@keyframes fadeInDown {' +
+                '  from {' +
+                '    opacity: 0;' +
+                '    transform: translateY(-10px);' +
+                '  }' +
+                '  to {' +
+                '    opacity: 1;' +
+                '    transform: translateY(0);' +
+                '  }' +
+                '}';
+              document.head.appendChild(style);
+            }
           }
         })();
     </script>

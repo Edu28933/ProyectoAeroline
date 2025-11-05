@@ -366,7 +366,7 @@ namespace ProyectoAeroline.Controllers
             }
 
             // Mostrar mensaje de que se envió el email
-            TempData["Info"] = $"Se ha enviado un correo de confirmación a {email}. Por favor, revisa tu bandeja de entrada y haz clic en el enlace para completar tu registro.";
+            TempData["Info"] = $"Por favor verificar su correo electrónico. Se ha enviado un correo de confirmación a {email}. Revisa tu bandeja de entrada y haz clic en el enlace para completar tu registro.";
             return RedirectToAction("Login");
         }
 
@@ -410,7 +410,9 @@ namespace ProyectoAeroline.Controllers
             // Hashear la contraseña antes de guardarla
             var passwordHash = ProyectoAeroline.Seguridad.PasswordHasher.Hash(vm.Password);
             
-            var id = await usuarios.CrearUsuarioBasicoAsync(vm.Nombre, vm.Correo, rolId: 2, estado: "Activo", passwordHash: passwordHash);
+            // Obtener IdRol de Usuario dinámicamente
+            var idRolUsuario = await ObtenerIdRolUsuarioAsync();
+            var id = await usuarios.CrearUsuarioBasicoAsync(vm.Nombre, vm.Correo, rolId: idRolUsuario, estado: "Activo", passwordHash: passwordHash); // Rol Usuario por defecto
             if (id <= 0)
             {
                 ModelState.AddModelError("", "No se pudo crear la cuenta.");
@@ -757,6 +759,31 @@ namespace ProyectoAeroline.Controllers
                 TempData["Error"] = "Ocurrió un error al procesar la confirmación. Por favor, intenta iniciar sesión con Google nuevamente.";
                 return RedirectToAction("Login");
             }
+        }
+
+        // Método auxiliar para obtener el IdRol de Usuario dinámicamente
+        private async Task<int> ObtenerIdRolUsuarioAsync()
+        {
+            try
+            {
+                var conn = new Conexion();
+                using var conexion = new Microsoft.Data.SqlClient.SqlConnection(conn.GetConnectionString());
+                await conexion.OpenAsync();
+                
+                using var cmd = new Microsoft.Data.SqlClient.SqlCommand(
+                    "SELECT TOP 1 [IdRol] FROM [dbo].[Roles] WHERE [NombreRol] = 'Usuario' AND [FechaEliminacion] IS NULL ORDER BY [IdRol]", 
+                    conexion);
+                var result = await cmd.ExecuteScalarAsync();
+                if (result != null && result != DBNull.Value)
+                {
+                    return Convert.ToInt32(result);
+                }
+            }
+            catch
+            {
+                // Si falla, retornar 5 como fallback
+            }
+            return 5; // Fallback si no se encuentra
         }
     }
 }

@@ -18,15 +18,19 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/sidebars.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/estilosGlobales.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/responsive.css" asp-append-version="true" />
 
 
 </head>
 <body class="sb-has-sidebar body-watermark">
+    <!-- Overlay para móviles -->
+    <div class="sb-overlay"></div>
+    
     <!-- Navbar superior -->
     <header class="navbar navbar-dark bg-dark sticky-top shadow-sm">
         <div class="container-fluid">
-            <button id="btnToggleSidebar" class="btn btn-outline-light me-2" type="button" title="Contraer/expandir">
-                <i class="bi bi-layout-sidebar-inset"></i>
+            <button id="btnToggleSidebar" class="btn btn-outline-light me-2" type="button" title="Menu">
+                <i class="bi bi-list"></i>
             </button>
             <a class="navbar-brand" asp-page="/Index">ProyectoAeroline</a>
             <div class="d-flex align-items-center gap-2">

@@ -4,6 +4,7 @@ using System.Data;
 using System.Threading.Tasks; // <-- NUEVO
 using System;                 // <-- por excepciones/DateTime
 using System.Linq;            // <-- para LINQ
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ProyectoAeroline.Data
 {
@@ -139,9 +140,19 @@ namespace ProyectoAeroline.Data
                 using (var conexion = new SqlConnection(conn.GetConnectionString()))
                 {
                     conexion.Open();
-                    SqlCommand cmd = new SqlCommand("sp_UsuarioBuscar", conexion);
+                    // Buscar directamente con SQL para asegurar que encontramos el usuario incluso si tiene FechaEliminacion
+                    SqlCommand cmd = new SqlCommand(@"
+                        SELECT 
+                            IdUsuario,
+                            IdRol,
+                            Nombre,
+                            Contraseña,
+                            Correo,
+                            Estado,
+                            FechaEliminacion
+                        FROM Usuarios
+                        WHERE IdUsuario = @IdUsuario", conexion);
                     cmd.Parameters.AddWithValue("@IdUsuario", IdUsuario);
-                    cmd.CommandType = CommandType.StoredProcedure;
 
                     using (var dr = cmd.ExecuteReader())
                     {
@@ -150,7 +161,7 @@ namespace ProyectoAeroline.Data
                             oUsuario.IdUsuario = Convert.ToInt32(dr["IdUsuario"]);
                             oUsuario.IdRol = Convert.ToInt32(dr["IdRol"]);
                             oUsuario.Nombre = dr["Nombre"].ToString();
-                            oUsuario.Contraseña = dr["Contraseña"].ToString(); // en DB es 'Contraseña'
+                            oUsuario.Contraseña = dr["Contraseña"].ToString();
                             oUsuario.Correo = dr["Correo"] != DBNull.Value ? dr["Correo"].ToString() : null;
                             oUsuario.Estado = dr["Estado"].ToString();
                         }
@@ -166,14 +177,14 @@ namespace ProyectoAeroline.Data
         }
 
         // Método que elimina un usuario
-        public bool MtdEliminarUsuario(int IdUsuario)
+        // Retorna tupla (bool, string) para indicar éxito y mensaje de error si aplica
+        public (bool Success, string ErrorMessage) MtdEliminarUsuario(int IdUsuario)
         {
             bool respuesta = false;
+            string mensajeError = string.Empty;
             var conn = new Conexion();
 
-            try
-            {
-                using (var conexion = new SqlConnection(conn.GetConnectionString()))
+             using (var conexion = new SqlConnection(conn.GetConnectionString()))
                 {
                     conexion.Open();
                     
@@ -210,24 +221,27 @@ namespace ProyectoAeroline.Data
                         cmdDeletePasswordTokens.ExecuteNonQuery();
                     }
                     
-                    // Ahora eliminar el usuario
-                    SqlCommand cmd = new SqlCommand("sp_UsuarioEliminar", conexion);
-                    cmd.Parameters.AddWithValue("@IdUsuario", IdUsuario);
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.ExecuteNonQuery();
+                    // Ahora eliminar el usuario usando el stored procedure que valida todo
+                    using (var cmd = new SqlCommand("sp_UsuarioEliminar", conexion))
+                    {
+                        cmd.Parameters.AddWithValue("@IdUsuario", IdUsuario);
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.CommandTimeout = 120;
+                        cmd.ExecuteNonQuery();
+                    }
                 }
 
                 respuesta = true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error al eliminar usuario: " + ex.Message);
-                System.Diagnostics.Debug.WriteLine($"Error completo: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
-                respuesta = false;
-            }
+           
 
-            return respuesta;
+            return (respuesta, mensajeError);
+        }
+
+        // Método legacy que mantiene compatibilidad (retorna solo bool)
+        public bool MtdEliminarUsuarioLegacy(int IdUsuario)
+        {
+            var (success, _) = MtdEliminarUsuario(IdUsuario);
+            return success;
         }
 
         // =================== NUEVOS MÉTODOS (ASÍNCRONOS) ===================
@@ -526,7 +540,7 @@ namespace ProyectoAeroline.Data
                         return new UsuarioDto
                         {
                             IdUsuario = Convert.ToInt32(dr["IdUsuario"]),
-                            IdRol = dr["IdRol"] != DBNull.Value ? Convert.ToInt32(dr["IdRol"]) : 2,
+                            IdRol = dr["IdRol"] != DBNull.Value ? Convert.ToInt32(dr["IdRol"]) : ObtenerIdRolUsuarioPorDefecto(), // Rol Usuario por defecto
                             Nombre = dr["Nombre"]?.ToString(),
                             Correo = dr["Correo"]?.ToString(),
                             Estado = dr["Estado"]?.ToString() ?? "Activo",
@@ -563,6 +577,135 @@ namespace ProyectoAeroline.Data
                 return dr["Valido"] != DBNull.Value && Convert.ToInt32(dr["Valido"]) == 1;
             }
             return false;
+        }
+
+        // Método auxiliar para obtener el IdRol de Usuario por defecto
+        private int ObtenerIdRolUsuarioPorDefecto()
+        {
+            try
+            {
+                var conn = new Conexion();
+                using var conexion = new SqlConnection(conn.GetConnectionString());
+                conexion.Open();
+                
+                using var cmd = new SqlCommand("SELECT TOP 1 [IdRol] FROM [dbo].[Roles] WHERE [NombreRol] = 'Usuario' AND [FechaEliminacion] IS NULL ORDER BY [IdRol]", conexion);
+                var result = cmd.ExecuteScalar();
+                if (result != null && result != DBNull.Value)
+                {
+                    return Convert.ToInt32(result);
+                }
+            }
+            catch
+            {
+                // Si falla, retornar 5 como fallback (asumiendo que Usuario siempre será 5 o el último)
+            }
+            return 5; // Fallback si no se encuentra
+        }
+
+        // --- LISTAR ROLES ACTIVOS PARA COMBOBOX ---
+        public List<SelectListItem> MtdListarRolesActivos()
+        {
+            var lista = new List<SelectListItem>();
+            var conn = new Conexion();
+
+            try
+            {
+                using (var conexion = new SqlConnection(conn.GetConnectionString()))
+                {
+                    conexion.Open();
+                    SqlCommand cmd = new SqlCommand(@"
+                        SELECT IdRol, NombreRol 
+                        FROM Roles 
+                        WHERE FechaEliminacion IS NULL
+                        ORDER BY NombreRol", conexion);
+
+                    using (var dr = cmd.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            lista.Add(new SelectListItem
+                            {
+                                Value = dr["IdRol"].ToString(),
+                                Text = $"{dr["IdRol"]} - {dr["NombreRol"]}"
+                            });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al listar roles activos: {ex.Message}");
+            }
+
+            return lista;
+        }
+
+        // --- VERIFICAR SI EL NOMBRE DE USUARIO YA EXISTE ---
+        public bool MtdVerificarNombreExiste(string nombre, int? idUsuarioExcluir = null)
+        {
+            var conn = new Conexion();
+            
+            try
+            {
+                using (var conexion = new SqlConnection(conn.GetConnectionString()))
+                {
+                    conexion.Open();
+                    string query = @"
+                        SELECT COUNT(*) 
+                        FROM Usuarios 
+                        WHERE Nombre = @Nombre 
+                          AND FechaEliminacion IS NULL";
+                    
+                    if (idUsuarioExcluir.HasValue)
+                    {
+                        query += " AND IdUsuario != @IdUsuario";
+                    }
+                    
+                    SqlCommand cmd = new SqlCommand(query, conexion);
+                    cmd.Parameters.AddWithValue("@Nombre", nombre);
+                    
+                    if (idUsuarioExcluir.HasValue)
+                    {
+                        cmd.Parameters.AddWithValue("@IdUsuario", idUsuarioExcluir.Value);
+                    }
+                    
+                    int count = Convert.ToInt32(cmd.ExecuteScalar());
+                    return count > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al verificar nombre de usuario: {ex.Message}");
+                return false;
+            }
+        }
+
+        // --- VERIFICAR SI EL USUARIO YA FUE ELIMINADO ---
+        public bool MtdVerificarUsuarioEliminado(int idUsuario)
+        {
+            var conn = new Conexion();
+            
+            try
+            {
+                using (var conexion = new SqlConnection(conn.GetConnectionString()))
+                {
+                    conexion.Open();
+                    SqlCommand cmd = new SqlCommand(@"
+                        SELECT COUNT(*) 
+                        FROM Usuarios 
+                        WHERE IdUsuario = @IdUsuario 
+                          AND FechaEliminacion IS NOT NULL", conexion);
+                    cmd.Parameters.AddWithValue("@IdUsuario", idUsuario);
+                    
+                    int count = Convert.ToInt32(cmd.ExecuteScalar());
+                    return count > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al verificar si el usuario fue eliminado: {ex.Message}");
+                return false;
+            }
         }
     }
 }

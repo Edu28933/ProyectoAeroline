@@ -64,6 +64,22 @@
 
     <script>
         function confirmarEliminacion() {
+            // Estados que no permiten eliminación
+            const estadosProhibidos = ['Activo', 'Programado', 'En vuelo'];
+            const estado = '@Model.Estado';
+            
+            // Validar estado
+            if (estadosProhibidos.includes(estado)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: '⚠️ No se puede eliminar',
+                    html: `❌ <strong>El vuelo tiene estado "${estado}"</strong><br><br>Los vuelos con estado "${estado}" no pueden ser eliminados. Por favor, cambie el estado antes de intentar eliminar.`,
+                    confirmButtonColor: '#dc3545',
+                    confirmButtonText: 'Entendido'
+                });
+                return;
+            }
+
             Swal.fire({
                 title: '¿Eliminar Vuelo?',
                 html: '✈️ <b>@Model.Aerolinea</b> - <b>@Model.NumeroVuelo</b> será eliminado permanentemente.',
